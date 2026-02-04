@@ -8,32 +8,31 @@ https://github.com/pypa/sampleproject
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
 # To use a consistent encoding
-from codecs import open
-from os import path
+from pathlib import Path
 
-here = path.abspath(path.dirname(__file__))
+here = Path(__file__).parent
 
 # Get the long description from the README file
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
-    long_description = f.read()
+long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
-    name='terrabot',
+    name='terrex',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
     version='1.0.3',
 
-    description='A library for making Terraria bots in a event driven manner',
+    description='Programmable automation client for Terraria worlds',
     long_description=long_description,
+    long_description_content_type="text/markdown",
 
     # The project's main homepage.
-    url='https://github.com/flammified/terrabot',
+    url='https://github.com/makstashkevich/terrex',
 
     # Author details
-    author='Alexander Freeman',
-    author_email='alexander.freeman.nl@gmail.com',
+    author='Maksim Stashkevich',
+    author_email='makstashkevich@gmail.com',
 
     # Choose your license
     license='MIT',
@@ -59,7 +58,7 @@ setup(
     ],
 
     # What does your project relate to?
-    keywords='terraria bot event driven library',
+    keywords='terraria automation bots agents protocol api',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
