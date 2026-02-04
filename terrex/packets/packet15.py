@@ -1,6 +1,6 @@
-from terrabot.util.streamer import Streamer
-from terrabot.events.events import Events
-from terrabot.data.item import Item
+from terrex.util.streamer import Streamer
+from terrex.events.events import Events
+from terrex.data.item import Item
 
 
 class Packet15Parser(object):

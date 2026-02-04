@@ -1,4 +1,4 @@
-from terrabot.events.events import Events
+from terrex.events.events import Events
 
 
 class Packet2Parser(object):

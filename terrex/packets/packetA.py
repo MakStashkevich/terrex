@@ -1,10 +1,10 @@
 import zlib
 
-from terrabot.data.tile import Tile
-from terrabot.util.tileutil import *
-from terrabot.util.streamer import Streamer
+from terrex.data.tile import Tile
+from terrex.util.tileutil import *
+from terrex.util.streamer import Streamer
 
-from terrabot.events.events import Events
+from terrex.events.events import Events
 
 
 class PacketAParser(object):

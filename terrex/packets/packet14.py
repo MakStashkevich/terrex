@@ -1,5 +1,5 @@
 import struct
-from terrabot.util.streamer import Streamer
+from terrex.util.streamer import Streamer
 
 
 class Packet14Parser(object):

@@ -1,5 +1,5 @@
-from terrabot.util.streamer import Streamer
-from terrabot.events import Events
+from terrex.util.streamer import Streamer
+from terrex.events import Events
 from . import packet
 
 

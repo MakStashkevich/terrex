@@ -1,8 +1,8 @@
 from . import packets
 from . import client
 
-from terrabot.data.player import Player
-from terrabot.data.world import World
+from terrex.data.player import Player
+from terrex.data.world import World
 from .events import Events, EventManager
 
 

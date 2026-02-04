@@ -1,6 +1,6 @@
 from . import packet
-from terrabot.util.streamer import Streamer
-from terrabot.events.events import Events
+from terrex.util.streamer import Streamer
+from terrex.events.events import Events
 
 
 class Packet19Parser(object):

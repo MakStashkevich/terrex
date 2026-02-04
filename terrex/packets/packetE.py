@@ -1,6 +1,6 @@
-from terrabot.util.streamer import Streamer
+from terrex.util.streamer import Streamer
 
-from terrabot.events.events import Events
+from terrex.events.events import Events
 
 
 class PacketEParser(object):
