@@ -16,10 +16,10 @@ parsing packets and executing scripted behaviors.
 Originally inspired by an archived TerraBot project by Alexander Freeman (MIT licensed) (inactive for ~10 years),  
 Terrex is a modernized, extended and actively developed fork focused on:
 
-• automation  
-• simulation  
-• protocol control  
-• scalable multi-bot systems  
+* automation
+* simulation
+* protocol control
+* scalable multi-bot systems
 
 Think of it as a runtime for Terraria agents — not just a bot.
 
@@ -35,13 +35,13 @@ pip3 install terrex
 
 ## Core Features
 
-• Connect to Terraria servers as a client
-• Full chat interaction
-• Event-driven packet handling
-• Live world & player state parsing
-• Item & tile updates tracking
-• Programmatic movement (teleport + control layer)
-• Extensible event system for custom logic
+* Connect to Terraria servers as a client
+* Full chat interaction
+* Event-driven packet handling
+* Live world & player state parsing
+* Item & tile updates tracking
+* Programmatic movement (teleport + control layer)
+* Extensible event system for custom logic
 
 ---
 
@@ -79,11 +79,11 @@ Terrex is built as an automation engine — not a cheat client.
 
 Primary use cases include:
 
-• programmable agents
-• server testing & simulation
-• AI experiments
-• scripted behaviors
-• world interaction automation
+* programmable agents
+* server testing & simulation
+* AI experiments
+* scripted behaviors
+* world interaction automation
 
 Anything else is simply an emergent property.
 
@@ -115,11 +115,11 @@ The codebase has been refactored, extended and re-architected for modern Python 
 
 ## Roadmap (high level)
 
-• stable protocol layer
-• multi-agent orchestration
-• scripting behaviors (FSM / behavior trees)
-• performance scaling
-• cleaner API surface
+* stable protocol layer
+* multi-agent orchestration
+* scripting behaviors (FSM / behavior trees)
+* performance scaling
+* cleaner API surface
 
 ---
 
