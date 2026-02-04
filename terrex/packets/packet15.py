@@ -1,27 +1,20 @@
-from terrex.util.streamer import Streamer
-from terrex.events.events import Events
-from terrex.data.item import Item
+from terrex.packets.base import Packet
+from terrex.packets.packet_ids import PacketIds
+from terrex.util.streamer import Reader, Writer
 
+class Packet15(Packet):
+    id = PacketIds.NULL_15.value
 
-class Packet15Parser(object):
+    def __init__(self, pkt_id: int = 0, version: str = ""):
+        self.pkt_id = pkt_id
+        self.version = version
 
-	def parse(self, world, player, data, ev_man):
-		streamer = Streamer(data)
-		streamer.next_byte()  # Skip packet byte
-		item_id = streamer.next_short()
-		position = (streamer.next_float(), streamer.next_float())
-		velocity = (streamer.next_float(), streamer.next_float())
-		stacks = streamer.next_short()
-		prefix = streamer.next_byte()
-		no_delay = streamer.next_byte()
-		net_id = streamer.next_short()
+    def read(self, reader: Reader) -> None:
+        self.pkt_id = reader.read_short()
+        self.version = reader.read_string()
 
-		item_object = Item(item_id, net_id, position, velocity, prefix, stacks)
+    def write(self, writer: Writer) -> None:
+        writer.write_short(self.pkt_id)
+        writer.write_string(self.version)
 
-		if item_id in world.items:
-			ev_man.raise_event(Events.ItemDropUpdate, item_object)
-		else:
-			world.items[item_id] = item_object
-			if not item_id in world.item_owner_index:
-				world.item_owner_index[item_id] = 255
-			ev_man.raise_event(Events.ItemDropped, item_object)
+Packet15.register()

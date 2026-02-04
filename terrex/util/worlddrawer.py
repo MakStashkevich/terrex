@@ -1,26 +1,28 @@
 from PIL import Image, ImageDraw
-from progressbar import *
+from progressbar import ProgressBar, Percentage, Bar, RotatingMarker, ETA, FileTransferSpeed
 
 
 def draw_world(world):
-    image = Image.new("RGB", (world.maxX, world.maxY), "white")
+    height = len(world.tiles)
+    width = len(world.tiles[0]) if height > 0 else 0
+    image = Image.new("RGB", (width, height), "white")
     imgdraw = ImageDraw.Draw(image)
     widgets = ['Percentage: ', Percentage(), ' ', Bar(marker=RotatingMarker()),
                ' ', ETA(), ' Speed: ', FileTransferSpeed()]
-    pbar = ProgressBar(widgets=widgets, maxval=len(world.tiles)).start()
+    pbar = ProgressBar(widgets=widgets, maxval=height).start()
+
+    if height == 0:
+        pbar.finish()
+        return
 
     x = 0
     y = 0
     for j in world.tiles:
         for i in j:
-            try:
-                if i is None:
-                    continue
-                else:
-                    color = "rgb(" + str(i.type) + "," + str(i.type) + "," + str(i.type) + ")"
-                imgdraw.point((x, y), fill=color)
-            except Exception as e:
-                pbar.finish()
+            if i is None:
+                continue
+            color = (int(i.type), int(i.type), int(i.type))
+            imgdraw.point((x, y), fill=color)
             x += 1
         x = 0
         y += 1

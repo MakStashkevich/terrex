@@ -24,6 +24,8 @@ lib64/
 parts/
 sdist/
 var/
+venv/
+terraria-protocol/
 *.egg-info/
 .installed.cfg
 *.egg
