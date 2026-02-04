@@ -1,83 +1,134 @@
-Terrabot
-========
+Terrex
+======
 
-Introduction
-------------
+Programmable automation client for Terraria worlds.
 
 |PyPI version|
 
-| Terrabot is a Terraria bot API written in Python.
-| It is designed to be easy to use and uses the event-listener pattern.
+--------------
+
+What is Terrex?
+---------------
+
+Terrex is a Python framework for building programmable Terraria agents
+(bots).
+
+It provides a clean event-driven API for connecting to servers, reacting
+to world state, parsing packets and executing scripted behaviors.
+
+| Originally inspired by an archived TerraBot project (inactive for ~10
+  years),
+| Terrex is a modernized, extended and actively developed fork focused
+  on:
+
+| • automation
+| • simulation
+| • protocol control
+| • scalable multi-bot systems
+
+Think of it as a runtime for Terraria agents — not just a bot.
+
+--------------
 
 Installation
 ------------
 
-Install the module using pip:
+.. code:: bash
 
-::
-
-    pip3 install terrabot
-
-Current features
-----------------
-
--  Joining servers
--  Chatting
--  Triggering various events, like joining, tiledata and itemdrops
--  Parsing server data to keep classes up-to-date
--  Moving the bot by teleporting
-
-Examples
---------
-
-The following is a very basic bot, which will connect and handle chat.
+   pip3 install terrex
 
 --------------
 
+Core Features
+-------------
+
+• Connect to Terraria servers as a client • Full chat interaction •
+Event-driven packet handling • Live world & player state parsing • Item
+& tile updates tracking • Programmatic movement (teleport + control
+layer) • Extensible event system for custom logic
+
+--------------
+
+Minimal Example
+---------------
+
+A basic bot that connects to a server and reacts to chat messages:
+
 .. code:: python
 
-    from terrabot import TerraBot
-    from terrabot.events import Events
+   from terrex import Terrex
+   from terrex.events import Events
 
-    #Create a TerraBot object
-    bot = TerraBot('127.0.0.1')
-    event = bot.get_event_manager()
+   bot = Terrex("127.0.0.1")
+   events = bot.get_event_manager()
 
-    #Connect a function to an event using a decorator
-    @event.on_event(Events.Chat)
-    def chat(event_id, msg):
-        #Do something with the message
-        #In this case, stop the bot if the word "Stop" occurs
-        print(msg)
-        if "stop" in msg:
-            bot.stop()
+   @events.on_event(Events.Chat)
+   def on_chat(event_id, message):
+       print(message)
 
-    #Start the bot
-    bot.start()
+       if "stop" in message.lower():
+           bot.stop()
 
-    #And wait
-    while bot.running:
-    pass
+   bot.start()
 
-More examples can be found under the 'examples' directory. Also check
-the wiki for more information about the inner workings of the bot and
-how to interface with it.
+   while bot.client.running:
+       pass
+
+More examples are available in the ``examples/`` directory.
+
+--------------
+
+Project Philosophy
+------------------
+
+Terrex is built as an automation engine — not a cheat client.
+
+Primary use cases include:
+
+• programmable agents • server testing & simulation • AI experiments •
+scripted behaviors • world interaction automation
+
+Anything else is simply an emergent property.
+
+--------------
 
 Contributing
 ------------
 
-If you want to contribute, that's great! I would really appreciate the
-help. Just send a pull request and i'll quickly check and accept it.
-These are some areas that need work:
+Terrex is under active development and contributions are welcome.
 
--  NPC packet parsing
--  Item dropping
--  Teleporting other players (>:D)
--  Synchronizing packets like health and update-player-packets
--  Placing tiles (!)
+Current high-priority areas:
 
-For information about the packets, see `this
-link <https://tshock.atlassian.net/wiki/display/TSHOCKPLUGINS/Packet+Documentation>`__.
+- NPC packet parsing
+- Item interactions & drops
+- Player synchronization packets
+- Tile placement & world modification
+- Movement & physics layer
 
-.. |PyPI version| image:: https://badge.fury.io/py/terrabot.svg
-   :target: https://badge.fury.io/py/terrabot
+Packet documentation reference:
+https://tshock.readme.io/docs/multiplayer-packet-structure
+
+--------------
+
+Origins
+-------
+
+Terrex is based on a fork of the original TerraBot project (now archived
+and unmaintained). The codebase has been refactored, extended and
+re-architected for modern Python workflows.
+
+--------------
+
+Roadmap (high level)
+--------------------
+
+• stable protocol layer • multi-agent orchestration • scripting
+behaviors (FSM / behavior trees) • performance scaling • cleaner API
+surface
+
+--------------
+
+Terrex — extended control over Terraria worlds.
+
+.. |PyPI version| image:: https://badge.fury.io/py/terrex.svg
+   :target: https://badge.fury.io/py/terrex

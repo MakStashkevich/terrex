@@ -6,12 +6,12 @@ from terrex.data.world import World
 from .events import Events, EventManager
 
 
-class TerraBot(object):
+class Terrex(object):
     """A class that handles basic functions of a terraria bot like movement and login"""
 
     # Defaults to 7777, because that is the default port for the server
     def __init__(self, ip, port=7777, protocol=188, name="Terrabot"):
-        super(TerraBot, self).__init__()
+        super(Terrex, self).__init__()
 
         self.protocol = protocol
 
