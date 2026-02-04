@@ -1,8 +1,8 @@
-from terrex import TerraBot
+from terrex import Terrex
 from terrex.events import Events
 
 # Create a TerraBot object
-bot = TerraBot('127.0.0.1')
+bot = Terrex('127.0.0.1')
 event = bot.get_event_manager()
 
 
