@@ -13,7 +13,7 @@ Terrex is a Python framework for building programmable Terraria agents (bots).
 It provides a clean event-driven API for connecting to servers, reacting to world state,
 parsing packets and executing scripted behaviors.
 
-Originally inspired by an archived TerraBot project (inactive for ~10 years),  
+Originally inspired by an archived TerraBot project by Alexander Freeman (MIT licensed) (inactive for ~10 years),  
 Terrex is a modernized, extended and actively developed fork focused on:
 
 • automation  
@@ -108,7 +108,7 @@ Packet documentation reference:
 
 ## Origins
 
-Terrex is based on a fork of the original TerraBot project (now archived and unmaintained).
+Terrex is based on a fork of the original TerraBot project by Alexander Freeman (MIT licensed) (now archived and unmaintained).
 The codebase has been refactored, extended and re-architected for modern Python workflows.
 
 ---
