@@ -1,11 +1,11 @@
 from typing import Any
 
-from terrex.packets.base import Packet
+from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
 
-class PlayerMana(Packet):
+class PlayerMana(SyncPacket):
     id = PacketIds.PLAYER_MANA.value
 
     def __init__(self, player_id: int = 0, mana: int = 0, max_mana: int = 0):

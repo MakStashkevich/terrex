@@ -1,11 +1,11 @@
 from typing import Any
 
-from terrex.packets.base import Packet
+from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
 
-class SetLiquid(Packet):
+class SetLiquid(SyncPacket):
     id = PacketIds.SET_LIQUID.value
 
     def __init__(self, x: int = 0, y: int = 0, liquid: int = 0, liquid_type: int = 0):

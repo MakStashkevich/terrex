@@ -1,12 +1,12 @@
 from typing import Any
 
-from terrex.packets.base import Packet
+from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 from terrex.structures.vec2 import Vec2
 
 
-class UpdateItemDrop2(Packet):
+class UpdateItemDrop2(SyncPacket):
     id = PacketIds.UPDATE_ITEM_DROP_2.value
 
     def __init__(self, item_id: int = 0, pos: Vec2 = Vec2(0.0, 0.0), vel: Vec2 = Vec2(0.0, 0.0),

@@ -1,12 +1,12 @@
 from typing import List, Optional
 
-from terrex.packets.base import Packet
+from terrex.packets.base import ServerPacket
 from terrex.packets.packet_ids import PacketIds
-from terrex.util.streamer import Reader, Writer
+from terrex.util.streamer import Reader
 from terrex.structures.vec2 import Vec2
 
 
-class NpcUpdate(Packet):
+class NpcUpdate(ServerPacket):
     id = PacketIds.NPC_UPDATE.value
 
     def __init__(self, npc_id: int = 0, pos: Vec2 = Vec2(0.0, 0.0), vel: Vec2 = Vec2(0.0, 0.0),
@@ -51,33 +51,5 @@ class NpcUpdate(Packet):
         # release_owner if catchable - simplified, assume read if npc_net_id >= 0 and catchable
         if self.npc_net_id >= 0:  # simplified catchable check
             self.release_owner = reader.read_byte()
-
-    def write(self, writer: Writer):
-        writer.write_short(self.npc_id)
-        self.pos.write(writer)
-        self.vel.write(writer)
-        writer.write_ushort(self.target)
-        writer.write_ushort(self.flags)
-        ai_flags = [0x0004, 0x0008, 0x0010, 0x0020]
-        for i in range(4):
-            if self.flags & ai_flags[i]:
-                writer.write_float(self.ai[i])
-        writer.write_short(self.npc_net_id)
-        if self.player_count_scale is not None:
-            writer.write_byte(self.player_count_scale)
-        if self.strength_multiplier is not None:
-            writer.write_float(self.strength_multiplier)
-        if self.life is not None:
-            if abs(self.life) < 128:
-                writer.write_byte(1)
-                writer.write_sbyte(self.life)
-            elif abs(self.life) < 32768:
-                writer.write_byte(2)
-                writer.write_short(self.life)
-            else:
-                writer.write_byte(4)
-                writer.write_int(self.life)
-        if self.release_owner is not None:
-            writer.write_byte(self.release_owner)
 
 NpcUpdate.register()

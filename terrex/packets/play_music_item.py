@@ -1,8 +1,8 @@
-from terrex.packets.base import Packet
+from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
-class PlayMusicItem(Packet):
+class PlayMusicItem(SyncPacket):
     id = PacketIds.PLAY_MUSIC_ITEM.value
 
     def __init__(self, player_id: int = 0, note: float = 0.0):

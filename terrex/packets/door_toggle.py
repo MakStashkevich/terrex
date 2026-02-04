@@ -1,7 +1,7 @@
 from enum import IntEnum
 from typing import Any
 
-from terrex.packets.base import Packet
+from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
@@ -22,7 +22,7 @@ class DoorAction(IntEnum):
         writer.write_byte(self.value)
 
 
-class DoorToggle(Packet):
+class DoorToggle(SyncPacket):
     id = PacketIds.DOOR_TOGGLE.value
 
     def __init__(self, action: DoorAction = DoorAction.OPEN_DOOR, tile_x: int = 0, tile_y: int = 0, direction: int = 0):

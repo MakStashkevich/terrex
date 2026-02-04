@@ -1,5 +1,5 @@
 from typing import Optional, Tuple
-from terrex.packets.base import Packet
+from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 from terrex.structures.vec2 import Vec2
@@ -10,7 +10,7 @@ PULLEY_HAS_VEL = 0x04
 # Константы для флагов PlayerAction
 PLAYER_ACTION_HAS_ORIG_AND_HOME_POS = 0x40
 
-class UpdatePlayer(Packet):
+class UpdatePlayer(SyncPacket):
     id = PacketIds.UPDATE_PLAYER.value
 
     def __init__(

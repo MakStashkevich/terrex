@@ -1,11 +1,11 @@
 from typing import Any
 
-from terrex.packets.base import Packet
+from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
 
-class SyncActiveChest(Packet):
+class SyncActiveChest(SyncPacket):
     id = PacketIds.SYNC_ACTIVE_CHEST.value
 
     def __init__(self, chest_id: int = 0, x: int = 0, y: int = 0, name: str = ""):

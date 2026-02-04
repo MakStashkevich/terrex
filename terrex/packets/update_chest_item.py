@@ -1,11 +1,11 @@
 from typing import Any
 
-from terrex.packets.base import Packet
+from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
 
-class UpdateChestItem(Packet):
+class UpdateChestItem(SyncPacket):
     id = PacketIds.UPDATE_CHEST_ITEM.value
 
     def __init__(self, chest_id: int = 0, item_slot: int = 0, stack: int = 0, prefix: int = 0, item_net_id: int = 0):

@@ -1,8 +1,8 @@
-from terrex.packets.base import Packet
+from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
-class PlayerInventorySlot(Packet):
+class PlayerInventorySlot(SyncPacket):
     id = PacketIds.PLAYER_INVENTORY_SLOT.value
 
     def __init__(self, player_id: int = 0, slot_id: int = 0, stack: int = 0, prefix: int = 0, item_netid: int = 0):

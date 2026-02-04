@@ -1,11 +1,11 @@
 from typing import Any
 
-from terrex.packets.base import Packet
+from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
 
-class NpcStrike(Packet):
+class NpcStrike(SyncPacket):
     id = PacketIds.NPC_STRIKE.value
 
     def __init__(self, npc_id: int = 0, damage: int = 0, knockback: float = 0.0, hit_direction: int = 0, crit: bool = False):

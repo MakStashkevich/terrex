@@ -1,11 +1,12 @@
 from typing import Any
 
-from terrex.packets.base import Packet
+from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
 
-class UpdateSign(Packet):
+# todo: can be send from server?? maybe only ClientPacket?
+class UpdateSign(SyncPacket):
     id = PacketIds.UPDATE_SIGN.value
 
     def __init__(self, sign_id: int = 0, x: int = 0, y: int = 0, text: str = "", player_id: int = 0, flags: int = 0):

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from terrex.packets.base import Packet
+from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
@@ -22,7 +22,7 @@ class HitSwitch:
         writer.write_short(self.y)
 
 
-class PacketHitSwitch(Packet):
+class PacketHitSwitch(SyncPacket):
     ID = PacketIds.HIT_SWITCH
 
     def read(self, reader: Reader) -> None:

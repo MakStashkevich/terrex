@@ -1,12 +1,12 @@
 from typing import List, Optional
 
-from terrex.packets.base import Packet
+from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 from terrex.structures.vec2 import Vec2
 
 
-class ProjectileUpdate(Packet):
+class ProjectileUpdate(SyncPacket):
     id = PacketIds.PROJECTILE_UPDATE.value
 
     def __init__(self, projectile_id: int = 0, pos: Vec2 = Vec2(0.0, 0.0), vel: Vec2 = Vec2(0.0, 0.0),

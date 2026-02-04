@@ -1,13 +1,13 @@
 from typing import List
 
-from terrex.packets.base import Packet
+from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 from terrex.structures.change_type import ChangeType
 from terrex.structures.tile import Tile
 
 
-class SendTileSquare(Packet):
+class SendTileSquare(SyncPacket):
     id = PacketIds.SEND_TILE_SQUARE.value
 
     def __init__(self, tile_y: int = 0, tile_x: int = 0, height: int = 0, width: int = 0,

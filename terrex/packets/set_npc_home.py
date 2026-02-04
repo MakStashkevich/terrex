@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from terrex.packets.base import Packet
+from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
@@ -28,7 +28,7 @@ class SetNpcHome:
         writer.write_byte(self.homeless)
 
 
-class PacketSetNpcHome(Packet):
+class PacketSetNpcHome(SyncPacket):
     ID = PacketIds.NPC_HOME_UPDATE
 
     def read(self, reader: Reader) -> None:

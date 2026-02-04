@@ -3,7 +3,7 @@ import zlib
 
 from dataclasses import dataclass
 
-from terrex.packets.base import Packet
+from terrex.packets.base import ServerPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.structures import Chest, Sign, Tile
 from terrex.structures.tile_entity import TileEntity, read_tile_entity
@@ -68,8 +68,8 @@ def read_decompressed_section(reader: Reader) -> SendSection:
     )
 
 
-class PacketSendSection(Packet):
-    ID = PacketIds.SEND_SECTION
+class PacketSendSection(ServerPacket):
+    id = PacketIds.SEND_SECTION.value
 
     def read(self, reader: Reader) -> None:
         is_compressed = reader.read_byte() != 0
@@ -80,10 +80,5 @@ class PacketSendSection(Packet):
             self.data = read_decompressed_section(section_reader)
         else:
             self.data = read_decompressed_section(reader)
-
-    def write(self, writer: Writer) -> None:
-        # TODO: implement serialization
-        pass
-
 
 PacketSendSection.register()

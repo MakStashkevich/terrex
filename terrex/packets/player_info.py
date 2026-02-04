@@ -1,9 +1,9 @@
 from typing import Tuple
-from terrex.packets.base import Packet
+from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
-class PlayerInfo(Packet):
+class PlayerInfo(SyncPacket):
     id = PacketIds.PLAYER_INFO.value
 
     def __init__(self, name: str = "", hair: int = 0,

@@ -1,11 +1,11 @@
 from typing import Any
 
-from terrex.packets.base import Packet
+from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
 
-class PlayerItemAnimation(Packet):
+class PlayerItemAnimation(SyncPacket):
     id = PacketIds.PLAYER_ITEM_ANIMATION.value
 
     def __init__(self, player_id: int = 0, item_rotation: float = 0.0, item_animation: int = 0):

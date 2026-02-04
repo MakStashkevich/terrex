@@ -1,11 +1,11 @@
 from typing import Any
 
-from terrex.packets.base import Packet
+from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
 
-class SetActiveNpc(Packet):
+class SetActiveNpc(SyncPacket):
     id = PacketIds.SET_ACTIVE_NPC.value
 
     def __init__(self, player_id: int = 0, npc_talk_target: int = 0):

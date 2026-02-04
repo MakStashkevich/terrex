@@ -1,8 +1,8 @@
-from terrex.packets.base import Packet
+from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
-class PlayerHp(Packet):
+class PlayerHp(SyncPacket):
     id = PacketIds.PLAYER_HP.value
 
     def __init__(self, player_id: int = 0, hp: int = 100, max_hp: int = 100):
