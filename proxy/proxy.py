@@ -1,14 +1,13 @@
 import socket
 import threading
 import sys
+import argparse
 from typing import BinaryIO
 from proxy.config import config
 from terrex.packets.packet_ids import PacketIds
 from proxy.parser import IncrementalParser
 
 BUFFER_SIZE = 4096
-SERVER_ADDR = ('t.makstashkevich.com', 7777) # 127.0.0.1
-BIND_ADDR = ('127.0.0.1', 8888)
 
 def toggle_cfg_tags(dir: str, tag: str, value: bool) -> str:
     """Toggle debugging tags for packet logging.
@@ -92,21 +91,30 @@ def user_input():
                 print(f"  {pid.value:3d} (0x{pid.value:02X}): {pid.name}")
         elif cmd == "flush":
             with config.lock:
-                config.flush_traffic[0] = True
-                config.flush_traffic[1] = True
+                config.flush_bin[0] = True
+                config.flush_bin[1] = True
+                config.flush_txt[0] = True
+                config.flush_txt[1] = True
+            print("Flush for all traffic to files enabled")
         elif cmd == "nosave":
             with config.lock:
-                if config.server_traffic:
-                    config.server_traffic.close()
-                    config.server_traffic = None
-                if config.client_traffic:
-                    config.client_traffic.close()
-                    config.client_traffic = None
-            print("Dropped open files")
+                if config.server_traffic_bin:
+                    config.server_traffic_bin.close()
+                    config.server_traffic_bin = None
+                if config.client_traffic_bin:
+                    config.client_traffic_bin.close()
+                    config.client_traffic_bin = None
+                if config.server_traffic_txt:
+                    config.server_traffic_txt.close()
+                    config.server_traffic_txt = None
+                if config.client_traffic_txt:
+                    config.client_traffic_txt.close()
+                    config.client_traffic_txt = None
+            print("Dropped all traffic files")
         else:
             print(f"Could not understand \"{cmd}\". Type help for help")
 
-def forward(direction: str, read_sock: socket.socket, write_sock: socket.socket, parser: IncrementalParser, traffic_file: BinaryIO | None, flush_idx: int, tags: list[bool]):
+def forward(direction: str, read_sock: socket.socket, write_sock: socket.socket, parser: IncrementalParser, tags: list[bool]):
     """Forward raw traffic from read_sock to write_sock while parsing packets for logging.
 
     - Receives raw data chunks from read_sock.
@@ -126,55 +134,143 @@ def forward(direction: str, read_sock: socket.socket, write_sock: socket.socket,
     """
     buf = bytearray(BUFFER_SIZE)
     while True:
-        # Receive up to BUFFER_SIZE bytes from read_sock
         try:
             n = read_sock.recv_into(buf)
         except:
             break
         if n == 0:
-            # EOF: connection closed
             break
         data = bytes(buf[:n])
+
+        # Determine traffic files
+        if direction == "STC":
+            traffic_bin = config.server_traffic_bin
+            traffic_txt = config.server_traffic_txt
+            flush_bin_idx = 0
+            flush_txt_idx = 0
+        else:  # CTS
+            traffic_bin = config.client_traffic_bin
+            traffic_txt = config.client_traffic_txt
+            flush_bin_idx = 1
+            flush_txt_idx = 1
+
         # Thread-safe packet parsing and logging
         with config.lock:
             parser.feed(data)
             while True:
                 packet = parser.next()
                 if packet is None:
-                    # No more complete packets available
                     break
                 try:
+                    # Get packet name
+                    try:
+                        pkt_name = str(PacketIds.from_id(packet.id))
+                    except ValueError:
+                        pkt_name = f"Unknown(0x{packet.id:02X})"
+
                     if tags[packet.id]:
-                        # Log packet details if tagged
-                        try:
-                            pkt_name = str(PacketIds.from_id(packet.id))
-                        except ValueError:
-                            pkt_name = f"Unknown(0x{packet.id:02X})"
                         print(f"{direction}{'<' if direction == 'STC' else '>'} {packet.id} {pkt_name} {vars(packet)}")
+
+                    # Log to txt if enabled (all packets)
+                    if traffic_txt is not None:
+                        traffic_txt.write(f"---0x{packet.id:02X} {pkt_name} ---\n")
+                        traffic_txt.write(f"{vars(packet)}\n\n")
+                        if config.flush_txt[flush_txt_idx]:
+                            traffic_txt.flush()
+                            config.flush_txt[flush_txt_idx] = False
                 except Exception as e:
                     print(f"{direction}! bad packet: {e}")
-            # Log raw traffic to file if enabled
-            if traffic_file is not None:
-                traffic_file.write(data)
-                if config.flush_traffic[flush_idx]:
-                    traffic_file.flush()
-                    config.flush_traffic[flush_idx] = False
-        # Forward raw data unchanged (no modification)
+
+            # Log raw traffic to bin if enabled (raw chunks)
+            if traffic_bin is not None:
+                traffic_bin.write(data)
+                if config.flush_bin[flush_bin_idx]:
+                    traffic_bin.flush()
+                    config.flush_bin[flush_bin_idx] = False
+
+        # Forward raw data unchanged
         try:
             write_sock.sendall(data)
         except:
-            # Send failed: connection issue
             break
+
+    # Final flush to ensure all data is written before exit
+    if config.flush_bin[flush_bin_idx]:
+        with config.lock:
+            if traffic_txt is not None:
+                traffic_txt.flush()
+            if traffic_bin is not None:
+                traffic_bin.flush()
+
     print(f"{direction} task exited")
     read_sock.close()
 
 def main():
+    parser = argparse.ArgumentParser(description="Terraria Protocol Proxy")
+    parser.add_argument("server", nargs="?", default="127.0.0.1:7777",
+        help="Target server address (host:port)")
+    parser.add_argument("bind", nargs="?", default="127.0.0.1:8888",
+        help="Proxy bind address (host:port)")
+    parser.add_argument("--save", choices=["bin", "txt"], default=None,
+        help="Save format: 'bin' (raw binary), 'txt' (parsed text)")
+    parser.add_argument("--flush", choices=["in", "out", "both"], default=None,
+        help="Auto-flush traffic files on startup: 'in' (CTS/client->server), 'out' (STC/server->client), 'both'")
+    args = parser.parse_args()
+
+    def parse_addr(addr_str: str) -> tuple[str, int]:
+        parts = addr_str.rsplit(":", 1)
+        if len(parts) != 2:
+            raise ValueError(f"Invalid address format '{addr_str}'. Expected 'host:port'")
+        host = parts[0].strip()
+        if not host:
+            raise ValueError(f"Empty host in '{addr_str}'")
+        try:
+            port = int(parts[1].strip())
+        except ValueError:
+            raise ValueError(f"Invalid port '{parts[1].strip()}' in '{addr_str}'")
+        if not (1 <= port <= 65535):
+            raise ValueError(f"Port {port} out of range (1-65535) in '{addr_str}'")
+        return (host, port)
+
+    try:
+        SERVER_ADDR = parse_addr(args.server)
+        BIND_ADDR = parse_addr(args.bind)
+    except ValueError as e:
+        print(f"Error: {e}")
+        sys.exit(1)
+
+    with config.lock:
+        save_mode = args.save
+        if save_mode == "bin":
+            config.server_traffic_bin = open("server-traffic.bin", "wb")
+            config.client_traffic_bin = open("client-traffic.bin", "wb")
+        elif save_mode == "txt":
+            config.server_traffic_txt = open("server-traffic.txt", "w", encoding="utf-8")
+            config.client_traffic_txt = open("client-traffic.txt", "w", encoding="utf-8")
+
+        # Auto-flush if requested
+        if args.flush:
+            if args.flush == "in":
+                config.flush_bin[1] = True
+                config.flush_txt[1] = True
+            elif args.flush == "out":
+                config.flush_bin[0] = True
+                config.flush_txt[0] = True
+            elif args.flush == "both":
+                config.flush_bin[0] = config.flush_bin[1] = True
+                config.flush_txt[0] = config.flush_txt[1] = True
+
+    print(f"Proxy bind: {BIND_ADDR}")
+    print(f"Target server: {SERVER_ADDR}")
+    print(f"Binding socket to {BIND_ADDR}...")
     listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    print(f"Binding socket to {BIND_ADDR}...")
     listener.bind(BIND_ADDR)
     listener.listen(1)
     print(f"Socket bound to {BIND_ADDR}. Accepting incoming client connection...")
+    print("Launching input thread (UIT)...")
+    input_thread = threading.Thread(target=user_input, daemon=True)
+    input_thread.start()
     try:
         client_sock, client_addr = listener.accept()
     except KeyboardInterrupt:
@@ -187,20 +283,17 @@ def main():
     server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_sock.connect(SERVER_ADDR)
     print("Connected to the server!")
-    print("Launching input thread (UIT)...")
-    input_thread = threading.Thread(target=user_input, daemon=True)
-    input_thread.start()
     print("Launching Server-to-Client task (STC)...")
     stc_thread = threading.Thread(
         target=forward,
-        args=("STC", server_sock, client_sock, config.server_parser, config.server_traffic, 0, config.dbg_in_tags),
+        args=("STC", server_sock, client_sock, config.server_parser, config.dbg_in_tags),
         daemon=True
     )
     stc_thread.start()
     print("Launching Client-to-Server task (CTS)...")
     cts_thread = threading.Thread(
         target=forward,
-        args=("CTS", client_sock, server_sock, config.client_parser, config.client_traffic, 1, config.dbg_out_tags),
+        args=("CTS", client_sock, server_sock, config.client_parser, config.dbg_out_tags),
         daemon=True
     )
     cts_thread.start()

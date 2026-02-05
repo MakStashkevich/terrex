@@ -50,22 +50,16 @@ class IncrementalParser:
                 continue  # Incomplete payload
 
             packet_cls = registry.get(packet_id)
-            if packet_cls is None:
-                continue  # Unknown packet ID, skip
+            if packet_cls:
+                packet = packet_cls()
+            else:
+                packet = UnknownPacket(packet_id)
 
-            packet = packet_cls()
             try:
                 packet.read(reader)
-                return packet
             except Exception as e:
-                remaining = reader.remaining()
-                # check bytes data for length
-                # NPC_UPDATE (0x17) more spamming with empty data
-                if len(remaining) > 0:
-                    print(f"Error read packet: {e}")
-                    packet = UnknownPacket(packet_id)
-                    packet.read(reader)
-                    return packet
-                else:
-                    continue  # Skip corrupted short packets
+                print(f"Error reading packet {packet_id:02X}: {e}")
+                # Fallback already handled by UnknownPacket.read if applicable
+
+            return packet
         return None

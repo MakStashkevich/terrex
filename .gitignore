@@ -61,6 +61,8 @@ docs/_build/
 # PyBuilder
 target/
 
+# Terrex
 venv/
 terraria-protocol/
 *.bin
+*.txt
