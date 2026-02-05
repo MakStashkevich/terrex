@@ -14,10 +14,10 @@ class PlayerZone(SyncPacket):
 
     def read(self, reader: Reader):
         self.player_id = reader.read_byte()
-        self.flags = reader.read_uint()
+        self.flags = reader.read_int()
 
     def write(self, writer: Writer):
         writer.write_byte(self.player_id)
-        writer.write_uint(self.flags)
+        writer.write_int(self.flags)
 
 PlayerZone.register()

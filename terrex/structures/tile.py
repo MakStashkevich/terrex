@@ -174,7 +174,7 @@ class Tile:
         ty = reader.read_ushort() if flags & TileFlags.ACTIVE else None
         frame = (reader.read_short(), reader.read_short()) if ty and is_important(ty) else None
         wall = reader.read_ushort() if flags & TileFlags.HAS_WALL else None
-        liquid = (reader.read_byte(), reader.read_enum(LiquidType)) if flags & TileFlags.HAS_LIQUID else None
+        liquid = (reader.read_byte(), LiquidType.read(reader)) if flags & TileFlags.HAS_LIQUID else None
         return cls(flags=flags, color=color, wall_color=wall_color, ty=ty, frame=frame, wall=wall, liquid=liquid)
 
     def write(self, writer: Writer) -> None:

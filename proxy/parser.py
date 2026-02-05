@@ -58,9 +58,14 @@ class IncrementalParser:
                 packet.read(reader)
                 return packet
             except Exception as e:
-                print(e)
-                # Deserialization failed for known packet; fallback to unknown packet
-                packet = UnknownPacket(packet_id)
-                packet.read(reader)  # Store remaining raw data
-                return packet
+                remaining = reader.remaining()
+                # check bytes data for length
+                # NPC_UPDATE (0x17) more spamming with empty data
+                if len(remaining) > 0:
+                    print(f"Error read packet: {e}")
+                    packet = UnknownPacket(packet_id)
+                    packet.read(reader)
+                    return packet
+                else:
+                    continue  # Skip corrupted short packets
         return None
