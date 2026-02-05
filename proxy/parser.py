@@ -17,41 +17,50 @@ class UnknownPacket(Packet):
 
 class IncrementalParser:
     def __init__(self):
+        """Initialize the incremental parser with an empty buffer."""
         self.buffer: bytearray = bytearray()
 
     def feed(self, data: bytes) -> None:
+        """Append raw data to the internal buffer for incremental parsing."""
         self.buffer.extend(data)
 
     def next(self) -> Optional[Packet]:
+        """Extract the next complete packet from the buffer.
+
+        Protocol format:
+        - First 2 bytes: little-endian uint16 TOTAL_LENGTH (includes length field itself)
+        - Next (TOTAL_LENGTH - 2) bytes: PAYLOAD, starting with 1-byte packet ID
+        """
         while len(self.buffer) >= 2:
-            length_bytes = self.buffer[:2]
-            length = struct.unpack("<H", length_bytes)[0]
-            if len(self.buffer) < 2 + length:
+            length_total = struct.unpack("<H", self.buffer[:2])[0]
+            if len(self.buffer) < length_total:
                 break
 
-            packet_full = self.buffer[:2 + length]
-            self.buffer = self.buffer[2 + length:]
+            packet_full = self.buffer[:length_total]
+            self.buffer = self.buffer[length_total:]
 
             payload = packet_full[2:]
             if len(payload) == 0:
-                continue
+                continue  # Skip empty payloads
 
             reader = Reader(payload)
             try:
-                packet_id = reader.read_byte()
+                packet_id = reader.read_byte()  # First byte of payload is packet ID
             except IndexError:
-                continue
+                continue  # Incomplete payload
 
             packet_cls = registry.get(packet_id)
             if packet_cls is None:
-                continue
+                continue  # Unknown packet ID, skip
 
             packet = packet_cls()
             try:
                 packet.read(reader)
                 return packet
-            except Exception:
+            except Exception as e:
+                print(e)
+                # Deserialization failed for known packet; fallback to unknown packet
                 packet = UnknownPacket(packet_id)
-                packet.read(reader)
+                packet.read(reader)  # Store remaining raw data
                 return packet
         return None

@@ -11,6 +11,16 @@ SERVER_ADDR = ('t.makstashkevich.com', 7777) # 127.0.0.1
 BIND_ADDR = ('127.0.0.1', 8888)
 
 def toggle_cfg_tags(dir: str, tag: str, value: bool) -> str:
+    """Toggle debugging tags for packet logging.
+
+    Args:
+        dir: 'in' (CTS/client->server), 'out' (STC/server->client), 'both'.
+        tag: 'all' or specific packet ID (0-255).
+        value: True to show, False to hide.
+
+    Returns:
+        Status message.
+    """
     with config.lock:
         if dir == "in":
             in_, out_ = True, False
@@ -23,18 +33,23 @@ def toggle_cfg_tags(dir: str, tag: str, value: bool) -> str:
 
         if tag == "all":
             if in_:
-                config.dbg_in_tags = [value] * 256
+                config.dbg_in_tags[:] = [value] * 256
+                print(f"Set in_tags (CTS) to {value}")
             if out_:
-                config.dbg_out_tags = [value] * 256
+                config.dbg_out_tags[:] = [value] * 256
+                print(f"Set out_tags (STC) to {value}")
             return "Success"
 
         try:
             t = int(tag)
             if 0 <= t < 256:
+                old_in = config.dbg_in_tags[t] if in_ else None
+                old_out = config.dbg_out_tags[t] if out_ else None
                 if in_:
                     config.dbg_in_tags[t] = value
                 if out_:
                     config.dbg_out_tags[t] = value
+                print(f"Tag {t}: in={old_in}->{value if in_ else old_in}, out={old_out}->{value if out_ else old_out}")
                 return "Success"
             return "Tag out of range"
         except ValueError:
@@ -91,21 +106,43 @@ def user_input():
         else:
             print(f"Could not understand \"{cmd}\". Type help for help")
 
-def forward(direction: str, read_sock: socket.socket, write_sock: socket.socket, parser, traffic_file: BinaryIO | None, flush_idx: int, tags: list[bool]):
+def forward(direction: str, read_sock: socket.socket, write_sock: socket.socket, parser: IncrementalParser, traffic_file: BinaryIO | None, flush_idx: int, tags: list[bool]):
+    """Forward raw traffic from read_sock to write_sock while parsing packets for logging.
+
+    - Receives raw data chunks from read_sock.
+    - Feeds data to parser to extract complete packets.
+    - Logs parsed packets if their ID is tagged for debugging.
+    - Writes raw traffic to file if enabled.
+    - Forwards raw data unchanged to write_sock.
+
+    Args:
+        direction: 'STC' or 'CTS' for logging prefix.
+        read_sock: Socket to read raw traffic from.
+        write_sock: Socket to forward raw traffic to.
+        parser: Incremental parser for packet extraction.
+        traffic_file: Optional file to log raw traffic.
+        flush_idx: Index for flush flag (0 for STC, 1 for CTS).
+        tags: List of booleans indicating which packet IDs to log.
+    """
     buf = bytearray(BUFFER_SIZE)
     while True:
+        # Receive up to BUFFER_SIZE bytes from read_sock
         n = read_sock.recv_into(buf)
         if n == 0:
+            # EOF: connection closed
             break
         data = bytes(buf[:n])
+        # Thread-safe packet parsing and logging
         with config.lock:
             parser.feed(data)
             while True:
                 packet = parser.next()
                 if packet is None:
+                    # No more complete packets available
                     break
                 try:
                     if tags[packet.id]:
+                        # Log packet details if tagged
                         try:
                             pkt_name = str(PacketIds.from_id(packet.id))
                         except ValueError:
@@ -113,14 +150,17 @@ def forward(direction: str, read_sock: socket.socket, write_sock: socket.socket,
                         print(f"{direction}{'<' if direction == 'STC' else '>'} {packet.id} {pkt_name} {vars(packet)}")
                 except Exception as e:
                     print(f"{direction}! bad packet: {e}")
+            # Log raw traffic to file if enabled
             if traffic_file is not None:
                 traffic_file.write(data)
                 if config.flush_traffic[flush_idx]:
                     traffic_file.flush()
                     config.flush_traffic[flush_idx] = False
+        # Forward raw data unchanged (no modification)
         try:
             write_sock.sendall(data)
         except:
+            # Send failed: connection issue
             break
     print(f"{direction} task exited")
     read_sock.close()
@@ -150,14 +190,14 @@ def main():
     print("Launching Server-to-Client task (STC)...")
     stc_thread = threading.Thread(
         target=forward,
-        args=("STC", server_sock, client_sock, config.server_parser, config.server_traffic, 0, config.dbg_out_tags),
+        args=("STC", server_sock, client_sock, config.server_parser, config.server_traffic, 0, config.dbg_in_tags),
         daemon=True
     )
     stc_thread.start()
     print("Launching Client-to-Server task (CTS)...")
     cts_thread = threading.Thread(
         target=forward,
-        args=("CTS", client_sock, server_sock, config.client_parser, config.client_traffic, 1, config.dbg_in_tags),
+        args=("CTS", client_sock, server_sock, config.client_parser, config.client_traffic, 1, config.dbg_out_tags),
         daemon=True
     )
     cts_thread.start()
