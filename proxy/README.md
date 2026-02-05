@@ -6,7 +6,7 @@ This directory contains a transparent **TCP proxy server** for intercepting, par
 
 The proxy acts as a man-in-the-middle:
 - Listens on `127.0.0.1:8888` for incoming client connections.
-- Forwards traffic to the real server at `127.0.0.1:7777` (according to the standard, a local server is used, but you can install any other one) (configurable in [`proxy.py`](proxy.py:10)).
+- Forwards traffic to the real server at `127.0.0.1:7777` (according to the standard, a local server is used, but you can install any other one) (configurable in [`proxy.py`](proxy.py)).
 - Parses packets incrementally using [`IncrementalParser`](parser.py).
 - Logs parsed packet details (if enabled via tags).
 - Dumps raw traffic to `server-traffic.bin` (server -> client) and `client-traffic.bin` (client -> server).
@@ -14,7 +14,7 @@ The proxy acts as a man-in-the-middle:
 ## Features
 
 - **Transparent proxying**: No client modifications required; connect client to proxy bind address.
-- **Packet parsing**: Uses [`terrex.packets`](terrex/packets) registry to deserialize packets.
+- **Packet parsing**: Uses [`terrex.packets`](../terrex/packets) registry to deserialize packets.
 - **Selective console logging**: Toggle per-packet-ID logging via commands.
 - **Optional traffic saving**:
   - `--save=bin`: Raw binary dumps (`server-traffic.bin`, `client-traffic.bin`).
@@ -87,7 +87,7 @@ The proxy acts as a man-in-the-middle:
 | `help` | - | Show this help. |
 | `quit` | - | Stop proxy and exit. |
 | `show/hide` | `<in\|out\|both> <all\|TAG>` | Toggle logging for packets (e.g., `show both 34` for `PLAYER_HP`). TAG is decimal (0-255) or hex (e.g., `0x17`). |
-| `list` | - | List all known packet IDs from [`PacketIds`](terrex/packets/packet_ids.py). |
+| `list` | - | List all known packet IDs from [`PacketIds`](../terrex/packets/packet_ids.py). |
 | `flush` | - | Flush **all** dump files (bin/txt). |
 | `nosave` | - | Close **all** dump files. |
 

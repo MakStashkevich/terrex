@@ -69,7 +69,7 @@ Each JSON file contains nested objects mapping localization keys to their transl
 
 Load the locales using [`terrex/util/localization.py`](../terrex/util/localization.py) and use the `get_translation(key)` function to retrieve translated strings from server packets.
 
-**Example** from [`terrex/client.py`](../terrex/client.py:134):
+**Example** from [`terrex/client.py`](../terrex/client.py):
 
 ```python
 if packet_id == 2 and isinstance(packet, packets.Disconnect):
