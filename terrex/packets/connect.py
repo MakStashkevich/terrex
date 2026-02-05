@@ -13,6 +13,6 @@ class Connect(ClientPacket):
         self.version = int(version_str.replace("Terraria", ""))
 
     def write(self, writer: Writer):
-        writer.write_string(f"Terraria{self.version}")
+        writer.write_string("Terraria" + str(self.version))
 
 Connect.register()

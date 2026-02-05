@@ -16,4 +16,8 @@ class RequestSign(ClientPacket):
         writer.write_short(self.x)
         writer.write_short(self.y)
 
+    def read(self, reader: Reader) -> None:
+        self.x = reader.read_short()
+        self.y = reader.read_short()
+
 RequestSign.register()

@@ -11,8 +11,11 @@ class Terrex(object):
     """A class that handles basic functions of a terraria bot like movement and login"""
 
     # Defaults to 7777, because that is the default port for the server
-    def __init__(self, ip, port=7777, protocol=PROTOCOLS[(1, 4, 5, 4)], name="Terrex"):
+    def __init__(self, ip, port=7777, protocol=None, name=None):
         super(Terrex, self).__init__()
+        
+        protocol = PROTOCOLS[(1, 4, 5, 4)] if not protocol else protocol
+        name = "Terrex" if not name else name
 
         self.world = World()
         self.player = Player(name)

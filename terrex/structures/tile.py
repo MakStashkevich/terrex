@@ -105,13 +105,13 @@ class Tile:
         liquid = None
         liquid_code = (flags_bytes[0] & 0x18) >> 3
         if liquid_code == 1:
-            liquid = (reader.read_byte(), LiquidType.Water)
+            liquid = (reader.read_byte(), LiquidType.WATER)
             tile_flags |= TileFlags.HAS_LIQUID  # HAS_LIQUID
         elif liquid_code == 2:
-            liquid = (reader.read_byte(), LiquidType.Lava)
+            liquid = (reader.read_byte(), LiquidType.LAVA)
             tile_flags |= TileFlags.HAS_LIQUID
         elif liquid_code == 3:
-            liquid = (reader.read_byte(), LiquidType.Honey)
+            liquid = (reader.read_byte(), LiquidType.HONEY)
             tile_flags |= TileFlags.HAS_LIQUID
 
         # Wires

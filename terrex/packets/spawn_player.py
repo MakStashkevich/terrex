@@ -1,6 +1,6 @@
 from terrex.packets.base import ClientPacket
 from terrex.packets.packet_ids import PacketIds
-from terrex.util.streamer import Writer
+from terrex.util.streamer import Reader, Writer
 
 class SpawnPlayer(ClientPacket):
     id = PacketIds.SPAWN_PLAYER.value
@@ -19,5 +19,12 @@ class SpawnPlayer(ClientPacket):
         writer.write_float(self.spawn_y)
         writer.write_int(self.respawn_time_remaining)
         writer.write_byte(self.player_spawn_context)
+
+    def read(self, reader: Reader) -> None:
+        self.player_id = reader.read_byte()
+        self.spawn_x = reader.read_float()
+        self.spawn_y = reader.read_float()
+        self.respawn_time_remaining = reader.read_int()
+        self.player_spawn_context = reader.read_byte()
 
 SpawnPlayer.register()

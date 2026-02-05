@@ -25,8 +25,12 @@ class SendTileSquare(SyncPacket):
         self.height = reader.read_byte()
         self.width = reader.read_byte()
         self.change_type = ChangeType.read(reader)
-        num_tiles = self.width * self.height
-        self.tiles = [Tile.read(reader) for _ in range(num_tiles)]
+        tiles = []
+        needed = self.width * self.height
+        while len(tiles) < needed:
+            tile, rle = Tile.deserialize_packed(reader)
+            tiles.extend([tile] * (rle + 1))
+        self.tiles = tiles[:needed]
 
     def write(self, writer: Writer):
         writer.write_short(self.tile_y)

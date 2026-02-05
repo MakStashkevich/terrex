@@ -17,10 +17,10 @@ class Packet(ABC):
         return cls
 
     def read(self, reader: Reader) -> None:
-        raise NotImplementedError("Метод read должен быть переопределен")
+        raise NotImplementedError("Method read must be overridden")
 
     def write(self, writer: Writer) -> None:
-        raise NotImplementedError("Метод write должен быть переопределен")
+        raise NotImplementedError("Method write must be overridden")
 
     def handle(self, world: World, player: Player, evman: EventManager) -> None:
         pass
@@ -33,7 +33,7 @@ class PacketDirection(Enum):
 
 
 class ServerPacket(Packet):
-    """Пакеты Server -> Client. Клиент только читает (read)."""
+    """Server -> Client packets. Client only reads (read)."""
     _direction: PacketDirection = PacketDirection.SERVER
 
     @abstractmethod
@@ -41,10 +41,10 @@ class ServerPacket(Packet):
         pass
 
     def write(self, writer: Writer) -> None:
-        raise NotImplementedError(f"Клиент не отправляет {self.__class__.__name__} (пакет только от сервера)")
+        raise NotImplementedError(f"Client does not send {self.__class__.__name__} (server-only packet)")
 
 class ClientPacket(Packet):
-    """Пакеты Client -> Server. Клиент только пишет (write)."""
+    """Client -> Server packets. Client only writes (write)."""
     _direction: PacketDirection = PacketDirection.CLIENT
 
     @abstractmethod
@@ -52,10 +52,10 @@ class ClientPacket(Packet):
         pass
 
     def read(self, reader: Reader) -> None:
-        raise NotImplementedError(f"Клиент не читает {self.__class__.__name__} (пакет только к серверу)")
+        raise NotImplementedError(f"Client does not read {self.__class__.__name__} (server-bound packet only)")
 
 class SyncPacket(Packet):
-    """Пакеты Server <-> Client (Sync). Оба метода."""
+    """Server <-> Client (Sync) packets. Both methods required."""
     _direction: PacketDirection = PacketDirection.SYNC
 
     @abstractmethod

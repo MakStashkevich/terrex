@@ -14,4 +14,7 @@ class SendPassword(ClientPacket):
     def write(self, writer: Writer):
         writer.write_string(self.password)
 
+    def read(self, reader: Reader) -> None:
+        self.password = reader.read_string()
+
 SendPassword.register()

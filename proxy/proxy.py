@@ -127,7 +127,10 @@ def forward(direction: str, read_sock: socket.socket, write_sock: socket.socket,
     buf = bytearray(BUFFER_SIZE)
     while True:
         # Receive up to BUFFER_SIZE bytes from read_sock
-        n = read_sock.recv_into(buf)
+        try:
+            n = read_sock.recv_into(buf)
+        except:
+            break
         if n == 0:
             # EOF: connection closed
             break

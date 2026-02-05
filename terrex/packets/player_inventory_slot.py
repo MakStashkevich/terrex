@@ -5,6 +5,27 @@ from terrex.util.streamer import Reader, Writer
 class PlayerInventorySlot(SyncPacket):
     id = PacketIds.PLAYER_INVENTORY_SLOT.value
 
+    # 0 - 49 = Inventory
+    # 50 - 53 = Money
+    # 54 - 57 = Ammunition
+    # 58 = Cursor
+    # 59 - 61 = Armor
+    # 62 - 67 = Acsesuars
+    # 68 ???
+    # 69 - 71 = Armor decorations
+    # 72 - 77 = Acsesuars decorations
+    # 78 ???
+    # 79 - 87 = Dye (красители)
+    # 88 ???
+    # 89 - 93 MiscEquips (обычный питомец, светящийся питомец, вагонетка, ездовой питомец, крюк)
+    # 94 - 98 = MiscDyes (красители животных)
+    # 99 - 138 = Piggy bank
+    # 499 = Trash
+    
+    # not tested
+    # 139 - 178 = Safe
+    # 180 - 219 = Defender's Forge
+    # 220 - 259 = Void Vault
     def __init__(self, player_id: int = 0, slot_id: int = 0, stack: int = 0, prefix: int = 0, item_netid: int = 0):
         self.player_id = player_id
         self.slot_id = slot_id

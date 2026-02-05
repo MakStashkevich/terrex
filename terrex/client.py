@@ -118,22 +118,23 @@ class Client:
             try:
                 len_bytes = self._recv_exact(2)
                 length = struct.unpack("<H", len_bytes)[0]
-                payload_full = self._recv_exact(length)
+                payload_full = self._recv_exact(length - 2)
                 packet_id = payload_full[0]
                 payload = payload_full[1:]
 
-                if packet_id == 2:
-                    print(f"[READ] ID пакета: 0x{packet_id:02X} (отключение)")
-                    self.stop()
-                    continue
-
-                print(f"[READ] ID пакета: 0x{packet_id:02X}")
+                # print(f"[READ] ID пакета: 0x{packet_id:02X}")
                 packet_cls = registry.get(packet_id)
                 if packet_cls:
                     packet = packet_cls()
                     reader = Reader(payload)
                     packet.read(reader)
                     packet.handle(self.world, self.player, self._evman)
+                    
+                    if packet_id == 2 and isinstance(packet, packets.Disconnect):
+                        print(f"[READ] ID пакета: 0x{packet_id:02X} (отключение)... Reason: {packet.reason.text}")
+                        self.stop()
+                        continue
+
                     self.recv_queue.put(packet)
                 else:
                     print(f"Неизвестный ID пакета: 0x{packet_id:02X}, name: {PacketIds[packet_id].name}")
@@ -148,12 +149,12 @@ class Client:
         while self.running:
             try:
                 packet: Packet = self.send_queue.get(timeout=1.0)
-                print(f"[WRITE] ID пакета: 0x{packet.id:02X}")
+                # print(f"[WRITE] ID пакета: 0x{packet.id:02X}")
                 writer = Writer()
                 writer.write_byte(packet.id)
                 packet.write(writer)
                 payload = writer.bytes()
-                len_bytes = struct.pack("<H", len(payload))
+                len_bytes = struct.pack("<H", len(payload) + 2)
                 full_packet = len_bytes + payload
                 self.sock.sendall(full_packet)
             except queue.Empty:

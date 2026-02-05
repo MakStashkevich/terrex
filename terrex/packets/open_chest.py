@@ -2,7 +2,7 @@ from typing import Any
 
 from terrex.packets.base import ClientPacket
 from terrex.packets.packet_ids import PacketIds
-from terrex.util.streamer import Writer
+from terrex.util.streamer import Reader, Writer
 
 
 class OpenChest(ClientPacket):
@@ -15,5 +15,9 @@ class OpenChest(ClientPacket):
     def write(self, writer: Writer):
         writer.write_short(self.tile_x)
         writer.write_short(self.tile_y)
+
+    def read(self, reader: Reader) -> None:
+        self.tile_x = reader.read_short()
+        self.tile_y = reader.read_short()
 
 OpenChest.register()

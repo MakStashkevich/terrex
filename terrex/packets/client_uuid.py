@@ -11,4 +11,7 @@ class ClientUuid(ClientPacket):
     def write(self, writer: Writer):
         writer.write_string(self.uuid4)
 
+    def read(self, reader: Reader) -> None:
+        self.uuid4 = reader.read_string()
+
 ClientUuid.register()
