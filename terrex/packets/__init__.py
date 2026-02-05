@@ -85,7 +85,7 @@ from .client_uuid import ClientUuid
 # place object 79
 # sync player chest index 80
 # create combat text 81
-# load net module 82
+from .load_net_module import LoadNetModule
 # set npc kill count 83
 # set player stealth 84
 # force item into nearest chest 85
