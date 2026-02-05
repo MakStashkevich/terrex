@@ -1,3 +1,4 @@
+from terrex.protocols import PROTOCOLS
 from . import packets
 from . import client
 
@@ -10,7 +11,7 @@ class Terrex(object):
     """A class that handles basic functions of a terraria bot like movement and login"""
 
     # Defaults to 7777, because that is the default port for the server
-    def __init__(self, ip, port=7777, protocol=316, name="Terrex"):
+    def __init__(self, ip, port=7777, protocol=PROTOCOLS[(1, 4, 5, 4)], name="Terrex"):
         super(Terrex, self).__init__()
 
         self.world = World()
@@ -18,7 +19,9 @@ class Terrex(object):
 
         self.evman = EventManager()
 
-        self.client = client.Client(ip, port, protocol, self.player, self.world, self.evman)
+        self.client = client.Client(
+            ip, port, protocol, self.player, self.world, self.evman
+        )
 
         # self.evman.method_on_event(Events.PlayerID, self.received_player_id)
         # self.evman.method_on_event(Events.Initialized, self.initialized)
@@ -36,22 +39,24 @@ class Terrex(object):
     def received_player_id(self, event_id, data):
         self.client.send(packets.PlayerInfo(self.player))
         self.client.send(packets.Packet10(self.player))
-        self.client.send(packets.Packet2A(self.player)) # player mana
-        self.client.send(packets.Packet32(self.player)) # update player buff
+        self.client.send(packets.Packet2A(self.player))  # player mana
+        self.client.send(packets.Packet32(self.player))  # update player buff
         for i in range(0, 83):
-            self.client.send(packets.Packet5(self.player, i)) # player inventory slot
-        self.client.send(packets.Packet6()) # request world data
+            self.client.send(packets.Packet5(self.player, i))  # player inventory slot
+        self.client.send(packets.Packet6())  # request world data
 
     def initialized(self, event, data):
-        self.client.send(packets.Packet8(self.player, self.world)) # REQUEST_ESSENTIAL_TILES
+        self.client.send(
+            packets.Packet8(self.player, self.world)
+        )  # REQUEST_ESSENTIAL_TILES
 
     def logged_in(self, event, data):
-        self.client.send(packets.PacketC(self.player, self.world)) # SPAWN_PLAYER
+        self.client.send(packets.PacketC(self.player, self.world))  # SPAWN_PLAYER
 
     def message(self, msg, color=None):
         if self.player.logged_in:
             if color:
-                hex_code = '%02x%02x%02x' % color
+                hex_code = "%02x%02x%02x" % color
                 msg = "[c/" + hex_code + ":" + msg + "]"
             # self.client.send(packets.Packet19(self.player, msg))
 
