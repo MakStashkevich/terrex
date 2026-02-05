@@ -132,7 +132,7 @@ class Client:
                     packet.handle(self.world, self.player, self._evman)
                     
                     if packet_id == 2 and isinstance(packet, packets.Disconnect):
-                        print(f"[READ] ID пакета: 0x{packet_id:02X} (отключение)... Reason: {get_translation(packet.reason)}")
+                        print(f"[READ] Packet ID: 0x{packet_id:02X}. Disconnect with reason: {get_translation(packet.reason)}")
                         self.stop()
                         continue
 
