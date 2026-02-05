@@ -53,13 +53,13 @@ Dumps **all** available languages.
 
 The script creates language-specific directories under `locales/`, such as:
 - `locales/en-US/`
-  - [`en-US.Game.json`](locales/en-US/en-US.Game.json)
-  - [`en-US.Items.json`](locales/en-US/en-US.Items.json)
-  - [`en-US.NPCs.json`](locales/en-US/en-US.NPCs.json)
-  - [`en-US.Projectiles.json`](locales/en-US/en-US.Projectiles.json)
-  - [`en-US.Legacy.json`](locales/en-US/en-US.Legacy.json)
-  - [`en-US.Town.json`](locales/en-US/en-US.Town.json)
-  - [`en-US.json`](locales/en-US/en-US.json)
+  - [`en-US.Game.json`](en-US/en-US.Game.json)
+  - [`en-US.Items.json`](en-US/en-US.Items.json)
+  - [`en-US.NPCs.json`](en-US/en-US.NPCs.json)
+  - [`en-US.Projectiles.json`](en-US/en-US.Projectiles.json)
+  - [`en-US.Legacy.json`](en-US/en-US.Legacy.json)
+  - [`en-US.Town.json`](en-US/en-US.Town.json)
+  - [`en-US.json`](en-US/en-US.json)
 
 Similar structure for `ru-RU/` and other supported languages.
 
@@ -67,9 +67,9 @@ Each JSON file contains nested objects mapping localization keys to their transl
 
 ## Usage
 
-Load the locales using [`terrex/util/localization.py`](terrex/util/localization.py) and use the `get_translation(key)` function to retrieve translated strings from server packets.
+Load the locales using [`terrex/util/localization.py`](../terrex/util/localization.py) and use the `get_translation(key)` function to retrieve translated strings from server packets.
 
-**Example** from [`terrex/client.py`](terrex/client.py:134):
+**Example** from [`terrex/client.py`](../terrex/client.py:134):
 
 ```python
 if packet_id == 2 and isinstance(packet, packets.Disconnect):
@@ -82,4 +82,4 @@ if packet_id == 2 and isinstance(packet, packets.Disconnect):
 - Supports fallback to English if translation is missing.
 - Ideal for logging, UI display, bots, proxies, and any component handling game/server messages.
 
-To switch languages, update the locale loader in [`terrex/util/localization.py`](terrex/util/localization.py).
+To switch languages, update the locale loader in [`terrex/util/localization.py`](../terrex/util/localization.py).
