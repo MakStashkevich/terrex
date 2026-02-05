@@ -1,4 +1,4 @@
-# Docs protocol sync packets of Terraria
+# List of Terraria Packet protocol directions
 
 # Packets
 

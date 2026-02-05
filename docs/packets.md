@@ -1,4 +1,4 @@
-# Docs Multiplayer Packet Structure of Terraria
+# Packet structure for the Terraria multiplayer game
 
 > Original from: [https://tshock.readme.io/docs/multiplayer-packet-structure](https://tshock.readme.io/docs/multiplayer-packet-structure)
 
