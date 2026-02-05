@@ -10,53 +10,50 @@ class Terrex(object):
     """A class that handles basic functions of a terraria bot like movement and login"""
 
     # Defaults to 7777, because that is the default port for the server
-    def __init__(self, ip, port=7777, protocol=188, name="Terrabot"):
+    def __init__(self, ip, port=7777, protocol=316, name="Terrex"):
         super(Terrex, self).__init__()
-
-        self.protocol = protocol
 
         self.world = World()
         self.player = Player(name)
 
         self.evman = EventManager()
 
-        self.client = client.Client(ip, port, self.player, self.world, self.evman)
+        self.client = client.Client(ip, port, protocol, self.player, self.world, self.evman)
 
-        self.evman.method_on_event(Events.PlayerID, self.received_player_id)
-        self.evman.method_on_event(Events.Initialized, self.initialized)
-        self.evman.method_on_event(Events.Login, self.logged_in)
-        self.evman.method_on_event(Events.ItemOwnerChanged, self.item_owner_changed)
+        # self.evman.method_on_event(Events.PlayerID, self.received_player_id)
+        # self.evman.method_on_event(Events.Initialized, self.initialized)
+        # self.evman.method_on_event(Events.Login, self.logged_in)
+        # self.evman.method_on_event(Events.ItemOwnerChanged, self.item_owner_changed)
         # self.event_manager.method_on_event(events.Events.)
 
     def start(self):
-        self.client.start()
-        self.client.add_packet(packets.Packet1(self.protocol))
+        self.client.connect()
 
     def item_owner_changed(self, id, data):
         if self.player.logged_in:
-            self.add_packet(packets.Packet16(data[0], data[1]))
+            self.client.send(packets.PlayerHp(id, data[0], data[1]))
 
     def received_player_id(self, event_id, data):
-        self.client.add_packet(packets.Packet4(self.player))
-        self.client.add_packet(packets.Packet10(self.player))
-        self.client.add_packet(packets.Packet2A(self.player))
-        self.client.add_packet(packets.Packet32(self.player))
+        self.client.send(packets.PlayerInfo(self.player))
+        self.client.send(packets.Packet10(self.player))
+        self.client.send(packets.Packet2A(self.player)) # player mana
+        self.client.send(packets.Packet32(self.player)) # update player buff
         for i in range(0, 83):
-            self.client.add_packet(packets.Packet5(self.player, i))
-        self.client.add_packet(packets.Packet6())
+            self.client.send(packets.Packet5(self.player, i)) # player inventory slot
+        self.client.send(packets.Packet6()) # request world data
 
     def initialized(self, event, data):
-        self.client.add_packet(packets.Packet8(self.player, self.world))
+        self.client.send(packets.Packet8(self.player, self.world)) # REQUEST_ESSENTIAL_TILES
 
     def logged_in(self, event, data):
-        self.client.add_packet(packets.PacketC(self.player, self.world))
+        self.client.send(packets.PacketC(self.player, self.world)) # SPAWN_PLAYER
 
     def message(self, msg, color=None):
         if self.player.logged_in:
             if color:
                 hex_code = '%02x%02x%02x' % color
                 msg = "[c/" + hex_code + ":" + msg + "]"
-            self.client.add_packet(packets.Packet19(self.player, msg))
+            # self.client.send(packets.Packet19(self.player, msg))
 
     def get_event_manager(self):
         return self.evman

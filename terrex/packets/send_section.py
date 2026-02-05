@@ -3,6 +3,7 @@ import zlib
 
 from dataclasses import dataclass
 
+from terrex.events.events import Events
 from terrex.packets.base import ServerPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.structures import Chest, Sign, Tile
@@ -80,5 +81,8 @@ class PacketSendSection(ServerPacket):
             self.data = read_decompressed_section(section_reader)
         else:
             self.data = read_decompressed_section(reader)
+            
+    def handle(self, world, player, evman):
+        evman.raise_event(Events.TileUpdate, self.data)
 
 PacketSendSection.register()

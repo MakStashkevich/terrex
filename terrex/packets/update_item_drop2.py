@@ -1,5 +1,7 @@
 from typing import Any
 
+from terrex.data.item import Item
+from terrex.events.events import Events
 from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
@@ -36,5 +38,17 @@ class UpdateItemDrop2(SyncPacket):
         writer.write_byte(self.prefix)
         writer.write_byte(self.no_delay)
         writer.write_short(self.item_net_id)
+        
+    def handle(self, world, player, evman):
+        # todo: fix Item props
+        item_object = Item(self.item_id, self.item_net_id, self.pos, self.vel, self.prefix, self.stack_size)
+
+        if self.item_id in world.items:
+            evman.raise_event(Events.ItemDropUpdate, item_object)
+        else:
+            world.items[self.item_id] = item_object
+            if not self.item_id in world.item_owner_index:
+                world.item_owner_index[self.item_id] = 255
+            evman.raise_event(Events.ItemDropped, item_object)
 
 UpdateItemDrop2.register()

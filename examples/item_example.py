@@ -1,7 +1,7 @@
 from terrex import Terrex
 from terrex.events import Events
 
-bot = Terrex('127.0.0.1')
+bot = Terrex('t.makstashkevich.com')
 event = bot.get_event_manager()
 
 @event.on_event(Events.ItemOwnerChanged)

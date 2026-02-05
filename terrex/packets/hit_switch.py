@@ -23,7 +23,7 @@ class HitSwitch:
 
 
 class PacketHitSwitch(SyncPacket):
-    ID = PacketIds.HIT_SWITCH
+    id = PacketIds.HIT_SWITCH.value
 
     def read(self, reader: Reader) -> None:
         self.data = HitSwitch.read(reader)

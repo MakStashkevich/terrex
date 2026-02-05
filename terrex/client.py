@@ -5,29 +5,24 @@ import queue
 import time
 from typing import Optional
 
+from terrex import packets
 from terrex.packets.base import registry, Packet
 from terrex.data.world import World
 from terrex.data.player import Player
 from terrex.events.eventmanager import EventManager
-from terrex.packets.client_uuid import ClientUuid
-from terrex.packets.connect import Connect
-from terrex.packets.player_hp import PlayerHp
-from terrex.packets.player_info import PlayerInfo
-from terrex.packets.player_inventory_slot import PlayerInventorySlot
-from terrex.packets.player_mana import PlayerMana
-from terrex.packets.request_essential_tiles import RequestEssentialTiles
-from terrex.packets.request_world_data import RequestWorldData
-from terrex.packets.spawn_player import SpawnPlayer
-from terrex.packets.update_player_buff import UpdatePlayerBuff
-from terrex.util.streamer import Reader
+from terrex.packets.packet_ids import PacketIds
+from terrex.util.streamer import Reader, Writer
 
-PROTOCOL_VERSION = "Terraria238"
 PLAYER_UUID = "01032c81-623f-4435-85e5-e0ec816b09ca"
 
+
 class Client:
-    def __init__(self, host: str, port: int, player: Player, world: World, evman: EventManager):
+    def __init__(
+        self, host: str, port: int, protocol: int, player: Player, world: World, evman: EventManager
+    ):
         self.host = host
         self.port = port
+        self.protocol = protocol
         self.player = player
         self.world = world
         self._evman = evman
@@ -53,17 +48,41 @@ class Client:
         time.sleep(0.1)  # Дать потокам запуститься
 
         # Handshake
-        self.send(Connect(PROTOCOL_VERSION))
-        self.send(PlayerInfo.default())
-        self.send(ClientUuid(PLAYER_UUID))
-        self.send(PlayerHp(player_id=0, hp=100, max_hp=100))
-        self.send(PlayerMana(player_id=0, mana=200, max_mana=200))
-        self.send(UpdatePlayerBuff(player_id=0, buffs=[0] * 22))
+        self.send(packets.Connect(self.protocol))
+        self.send(
+            packets.PlayerInfo(
+                self.player.name,
+                self.player.hairStyle,
+                self.player.skinColor,
+                self.player.hairColor,
+                self.player.eyeColor,
+                self.player.shirtColor,
+                self.player.undershirtColor,
+                self.player.pantsColor,
+                self.player.shoeColor,
+            )
+        )
+        self.send(packets.ClientUuid(PLAYER_UUID))
+        self.send(packets.PlayerHp(player_id=self.player.playerID, hp=self.player.currHP, max_hp=self.player.maxHP))
+        self.send(packets.PlayerMana(player_id=self.player.playerID, mana=self.player.currMana, max_mana=self.player.maxMana))
+        self.send(packets.UpdatePlayerBuff(player_id=self.player.playerID, buffs=[0] * 22))
         for i in range(260):
-            self.send(PlayerInventorySlot(player_id=0, slot_id=i, stack=0, prefix=0, item_netid=0))
-        self.send(RequestWorldData())
-        self.send(RequestEssentialTiles(spawn_x=-1, spawn_y=-1))
-        self.send(SpawnPlayer(player_id=0, spawn_x=-1.0, spawn_y=-1.0, respawn_time_remaining=0, player_spawn_context=0))
+            self.send(
+                packets.PlayerInventorySlot(
+                    player_id=self.player.playerID, slot_id=i, stack=0, prefix=0, item_netid=0
+                )
+            )
+        self.send(packets.RequestWorldData())
+        self.send(packets.RequestEssentialTiles(spawn_x=-1, spawn_y=-1))
+        self.send(
+            packets.SpawnPlayer(
+                player_id=self.player.playerID,
+                spawn_x=-1.0,
+                spawn_y=-1.0,
+                respawn_time_remaining=0,
+                player_spawn_context=0,
+            )
+        )
 
     def send(self, packet: Packet) -> None:
         """Отправить пакет в очередь."""
@@ -100,12 +119,15 @@ class Client:
                 len_bytes = self._recv_exact(2)
                 length = struct.unpack("<H", len_bytes)[0]
                 payload_full = self._recv_exact(length)
-                if len(payload_full) != length:
-                    continue
-
                 packet_id = payload_full[0]
                 payload = payload_full[1:]
 
+                if packet_id == 2:
+                    print(f"[READ] ID пакета: 0x{packet_id:02X} (отключение)")
+                    self.stop()
+                    continue
+
+                print(f"[READ] ID пакета: 0x{packet_id:02X}")
                 packet_cls = registry.get(packet_id)
                 if packet_cls:
                     packet = packet_cls()
@@ -114,7 +136,7 @@ class Client:
                     packet.handle(self.world, self.player, self._evman)
                     self.recv_queue.put(packet)
                 else:
-                    print(f"Неизвестный ID пакета: 0x{packet_id:02X}")
+                    print(f"Неизвестный ID пакета: 0x{packet_id:02X}, name: {PacketIds[packet_id].name}")
             except (ConnectionError, Exception) as e:
                 print(f"Ошибка чтения: {e}")
                 break
@@ -125,7 +147,8 @@ class Client:
         """Поток отправки пакетов."""
         while self.running:
             try:
-                packet = self.send_queue.get(timeout=1.0)
+                packet: Packet = self.send_queue.get(timeout=1.0)
+                print(f"[WRITE] ID пакета: 0x{packet.id:02X}")
                 writer = Writer()
                 writer.write_byte(packet.id)
                 packet.write(writer)

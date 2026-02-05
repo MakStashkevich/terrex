@@ -50,6 +50,9 @@ class Reader:
     def eof(self) -> bool:
         return self.index >= len(self.data)
 
+    def read_bool(self) -> bool:
+        return bool(self.read_byte())
+    
 class Writer:
     """Запись данных в байтовый буфер Terraria протокола."""
     def __init__(self):
@@ -79,6 +82,9 @@ class Writer:
 
     def write_bytes(self, value: bytes):
         self.data.extend(value)
+
+    def write_bool(self, value: bool):
+        self.write_byte(1 if value else 0)
 
     def bytes(self) -> bytes:
         return bytes(self.data)

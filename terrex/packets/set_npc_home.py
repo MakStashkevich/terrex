@@ -29,7 +29,7 @@ class SetNpcHome:
 
 
 class PacketSetNpcHome(SyncPacket):
-    ID = PacketIds.NPC_HOME_UPDATE
+    id = PacketIds.NPC_HOME_UPDATE.value
 
     def read(self, reader: Reader) -> None:
         self.data = SetNpcHome.read(reader)
