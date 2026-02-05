@@ -24,8 +24,6 @@ lib64/
 parts/
 sdist/
 var/
-venv/
-terraria-protocol/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -62,3 +60,7 @@ docs/_build/
 
 # PyBuilder
 target/
+
+venv/
+terraria-protocol/
+*.bin
