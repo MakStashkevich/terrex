@@ -12,6 +12,7 @@ from terrex.data.player import Player
 from terrex.events.eventmanager import EventManager
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
+from terrex.util.localization import get_translation
 
 PLAYER_UUID = "01032c81-623f-4435-85e5-e0ec816b09ca"
 
@@ -131,7 +132,7 @@ class Client:
                     packet.handle(self.world, self.player, self._evman)
                     
                     if packet_id == 2 and isinstance(packet, packets.Disconnect):
-                        print(f"[READ] ID пакета: 0x{packet_id:02X} (отключение)... Reason: {packet.reason.text}")
+                        print(f"[READ] ID пакета: 0x{packet_id:02X} (отключение)... Reason: {get_translation(packet.reason)}")
                         self.stop()
                         continue
 
