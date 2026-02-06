@@ -66,3 +66,4 @@ venv/
 terraria-protocol/
 *.bin
 *.txt
+!LICENSE.txt
