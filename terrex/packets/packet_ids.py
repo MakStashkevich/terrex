@@ -144,6 +144,15 @@ class PacketIds(IntEnum):
     SET_COUNTS_AS_HOST = 0x8B
     SET_MISC_EVENT_VALUES = 0x8C
 
+    # Unknown packets
+    PACKET166 = 166
+    PACKET169 = 169
+    PACKET177 = 177
+    PACKET180 = 180
+    PACKET220 = 220
+    PACKET230 = 230
+    PACKET243 = 243
+
     @classmethod
     def from_id(cls, packet_id: int) -> 'PacketIds':
         """Получить enum по ID пакета."""
