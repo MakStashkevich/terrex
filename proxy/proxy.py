@@ -5,6 +5,7 @@ import argparse
 from typing import BinaryIO
 from proxy.config import config
 from terrex.packets.packet_ids import PacketIds
+from terrex.packets.base import stringify_value
 from proxy.parser import IncrementalParser
 
 BUFFER_SIZE = 4096
@@ -168,13 +169,14 @@ def forward(direction: str, read_sock: socket.socket, write_sock: socket.socket,
                     except ValueError:
                         pkt_name = f"Unknown(0x{packet.id:02X})"
 
+                    log_payload = stringify_value(vars(packet))
                     if tags[packet.id]:
-                        print(f"{direction}{'<' if direction == 'STC' else '>'} {packet.id} {pkt_name} {vars(packet)}")
+                        print(f"{direction}{'<' if direction == 'STC' else '>'} {packet.id} {pkt_name} {log_payload}")
 
                     # Log to txt if enabled (all packets)
                     if traffic_txt is not None:
                         traffic_txt.write(f"---0x{packet.id:02X} {pkt_name} ---\n")
-                        traffic_txt.write(f"{vars(packet)}\n\n")
+                        traffic_txt.write(f"{log_payload}\n\n")
                         if config.flush_txt[flush_txt_idx]:
                             traffic_txt.flush()
                             config.flush_txt[flush_txt_idx] = False
