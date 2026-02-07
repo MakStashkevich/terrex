@@ -4,6 +4,7 @@ import sys
 import argparse
 from datetime import datetime
 from proxy.config import config
+from proxy.middleware import client_packet_middleware
 from terrex.packets.packet_ids import PacketIds
 from terrex.packets.base import stringify_value
 from proxy.parser import IncrementalParser
@@ -149,6 +150,8 @@ def forward(direction: str, read_sock: socket.socket, write_sock: socket.socket,
         if n == 0:
             break
         data = bytes(buf[:n])
+        if direction == "CTS":
+            data = client_packet_middleware(data)
 
         # Determine traffic files
         if direction == "STC":
