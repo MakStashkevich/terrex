@@ -2,13 +2,17 @@ import socket
 import threading
 import sys
 import argparse
-from typing import BinaryIO
+from datetime import datetime
 from proxy.config import config
 from terrex.packets.packet_ids import PacketIds
 from terrex.packets.base import stringify_value
 from proxy.parser import IncrementalParser
 
 BUFFER_SIZE = 4096
+
+
+def current_timestamp() -> str:
+    return datetime.now().astimezone().isoformat(sep=" ", timespec="milliseconds")
 
 def toggle_cfg_tags(dir: str, tag: str, value: bool) -> str:
     """Toggle debugging tags for packet logging.
@@ -96,6 +100,7 @@ def user_input():
                 config.flush_bin[1] = True
                 config.flush_txt[0] = True
                 config.flush_txt[1] = True
+                config.flush_both_txt = True
             print("Flush for all traffic to files enabled")
         elif cmd == "nosave":
             with config.lock:
@@ -111,7 +116,9 @@ def user_input():
                 if config.client_traffic_txt:
                     config.client_traffic_txt.close()
                     config.client_traffic_txt = None
-            print("Dropped all traffic files")
+                if config.both_traffic_txt:
+                    config.both_traffic_txt.close()
+                    config.both_traffic_txt = None
         else:
             print(f"Could not understand \"{cmd}\". Type help for help")
 
@@ -169,17 +176,24 @@ def forward(direction: str, read_sock: socket.socket, write_sock: socket.socket,
                     except ValueError:
                         pkt_name = f"Unknown(0x{packet.id:02X})"
 
+                    timestamp = current_timestamp()
                     log_payload = stringify_value(vars(packet))
                     if tags[packet.id]:
                         print(f"{direction}{'<' if direction == 'STC' else '>'} {packet.id} {pkt_name} {log_payload}")
 
                     # Log to txt if enabled (all packets)
                     if traffic_txt is not None:
-                        traffic_txt.write(f"---0x{packet.id:02X} {pkt_name} ---\n")
+                        traffic_txt.write(f"[{timestamp}] ---0x{packet.id:02X} {pkt_name} ---\n")
                         traffic_txt.write(f"{log_payload}\n\n")
                         if config.flush_txt[flush_txt_idx]:
                             traffic_txt.flush()
-                            config.flush_txt[flush_txt_idx] = False
+
+                    # Log to shared both-traffic file
+                    if config.both_traffic_txt is not None:
+                        config.both_traffic_txt.write(f"[{timestamp}] {direction} ---0x{packet.id:02X} {pkt_name} ---\n")
+                        config.both_traffic_txt.write(f"{log_payload}\n\n")
+                        if config.flush_both_txt:
+                            config.both_traffic_txt.flush()
                 except Exception as e:
                     print(f"{direction}! bad packet: {e}")
 
@@ -188,7 +202,6 @@ def forward(direction: str, read_sock: socket.socket, write_sock: socket.socket,
                 traffic_bin.write(data)
                 if config.flush_bin[flush_bin_idx]:
                     traffic_bin.flush()
-                    config.flush_bin[flush_bin_idx] = False
 
         # Forward raw data unchanged
         try:
@@ -249,6 +262,7 @@ def main():
         elif save_mode == "txt":
             config.server_traffic_txt = open("server-traffic.txt", "w", encoding="utf-8")
             config.client_traffic_txt = open("client-traffic.txt", "w", encoding="utf-8")
+            config.both_traffic_txt = open("both-traffic.txt", "w", encoding="utf-8")
 
         # Auto-flush if requested
         if args.flush:
@@ -261,6 +275,7 @@ def main():
             elif args.flush == "both":
                 config.flush_bin[0] = config.flush_bin[1] = True
                 config.flush_txt[0] = config.flush_txt[1] = True
+                config.flush_both_txt = True
 
     print(f"Proxy bind: {BIND_ADDR}")
     print(f"Target server: {SERVER_ADDR}")
