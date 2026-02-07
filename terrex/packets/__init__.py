@@ -55,92 +55,103 @@ from .set_liquid import SetLiquid
 from .complete_connection_and_spawn import CompleteConnectionAndSpawn
 from .update_player_buff import UpdatePlayerBuff
 # special npc effect 51
-# unlock 52
-# add npc buff 53
+from .unlock import Unlock
+from .add_npc_buff import AddNpcBuff
 # update npc buff 54
-# add player buff 55
+from .add_player_buff import AddPlayerBuff
 from .update_npc_name import UpdateNpcName
-# update good evil 57
+from .update_good_evil import UpdateGoodEvil
 from .play_music_item import PlayMusicItem
 from .hit_switch import PacketHitSwitch
 from .set_npc_home import PacketSetNpcHome
 # spawn boss invasion 61
-# player dodge 62
-# paint title 63
-# paint wall 64
+from .player_dodge import PlayerDodge
+from .paint_tile import PaintTile
+from .paint_wall import PaintWall
 # player NPC teleport 65
-# heal other player 66
-# placeholder 67
+from .heal_other_player import HealOtherPlayer
+from .placeholder import Placeholder
 from .client_uuid import ClientUuid
-# get chest name 69
-# catch npc 70
+from .get_chest_name import GetChestName
+from .catch_npc import CatchNpc
 # release npc 71
 # travelling merchant inventory 72
 # teleportation potion 73
-# angler quest 74
-# complete angler quest today 75
-# number of angler quests completed 76
-# create temporary animation 77
-# report invasion progress 78
-# place object 79
+from .angler_quest import AnglerQuest
+from .complete_angler_quest import CompleteAnglerQuest
+from .angler_quests import AnglerQuests
+from .create_temporary_animation import CreateTemporaryAnimation
+from .invasion_progress import InvasionProgress
+from .place_object import PlaceObject
 # sync player chest index 80
-# create combat text 81
+from .create_combat_text import CreateCombatText
 from .load_net_module import LoadNetModule
-# set npc kill count 83
-# set player stealth 84
+from .set_npc_kill_count import SetNpcKillCount
+from .set_player_stealth import SetPlayerStealth
 # force item into nearest chest 85
 # update tile entity 86
-# place tile entity 87
+from .place_tile_entity import PlaceTileEntity
 # tweak item (fka. alter item drop) 88
-# place item frame 89
+from .place_item_frame import PlaceItemFrame
 from .update_item_drop2 import UpdateItemDrop2
 # sync emote bubble 91
-# sync extra value 92
+from .sync_extra_value import SyncExtraValue
 # social handshake 93
-# deprecated 94
-# kill portal 95
+from .packet94 import Packet94
+from .kill_portal import KillPortal
 # player teleport portal 96
 # notify player npc killed 97
 # notify player of event 98
-# update minion target 99
-# npc teleport portal 100
-# update shield strengths 101
-# nebula level up 102
-# moon lord countdown 103
-# npc shop item 104
-# gem lock toggle 105
-# poof of smoke 106
+from .set_minion_target import SetMinionTarget
+from .npc_teleport_portal import NpcTeleportPortal
+from .update_shield_strengths import UpdateShieldStrengths
+from .nebula_level_up import NebulaLevelUp
+from .moon_lord_countdown import MoonLordCountdown
+from .npc_shop_item import NpcShopItem
+from .gem_lock_toggle import GemLockToggle
+from .poof_of_smoke import PoofOfSmoke
 # smart text message (fka. chat message v2) 107
 # wired cannon shot 108
-# mass wire operation 109
-# mass wire operation consume 110
+from .mass_wire import MassWire
+from .mass_consume_wire import MassConsumeWire
 # toggle birthday party 111
-# growfx 112
-# crystal invasion start 113
-# crystal invasion wipe all 114
+from .grow_fx import GrowFx
+from .crystal_invasion_start import CrystalInvasionStart
+from .crystal_invasion_wipe import CrystalInvasionWipe
 # minion attack target update 115
-# crystal invasion send wait time 116
-# player hurt v2 117
-# player death v2 118
-# combat text string 119
-# emoji 120
-# te display doll item sync 121
-# request tile entity interaction 122
-# weapons rack try placing 123
-# te hat rack item sync 124
+from .crystal_invasion_wait import CrystalInvasionWait
+from .player_hurt import PlayerHurt
+from player_death import PlayerDeath
+from .combat_text import CombatText
+from .emoji import Emoji
+from .doll_sync import DollSync
+from .interact_tile_entity import InteractTileEntity
+from .place_weapon_rack import PlaceWeaponRack
+from .hat_rack_sync import HatRackSync
 # sync tile picking 125
 # sync revenge marker 126
 # remove revenge marker 127
-# land golf ball in cup 128
-# finished connecting to server 129
-# fish out npc 130
+from .land_golf_ball import LandGolfBall
+from .connection_complete import ConnectionComplete
+from .fish_out_npc import FishOutNpc
 # tamper with npc 131
-# play legacy sound 132
-# food platter try placing 133
-# update player luck factors 134
-# dead player 135
+from .play_legacy_sound import PlayLegacySound
+from .place_food import PlaceFood
+from .update_player_luck import UpdatePlayerLuck
+from .dead_player import DeadPlayer
 # sync cavern monster type 136
-# request npc buff removal 137
-# client finished inventory changes on this tick (formerly client synced inventory) 138
-# set counts as host for gameplay 139
-# set misc event values 140
+from .request_npc_debuff import RequestNpcDebuff
+from .client_synced_inventory import ClientSyncedInventory
+from .set_as_host import SetAsHost
+from .set_event import SetEvent
+
+
+
+# Unknown packets
+from .packet166 import Packet166
+from .packet169 import Packet169
+from .packet177 import Packet177
+from .packet180 import Packet180
+from .packet220 import Packet220
+from .packet230 import Packet230
+from .packet243 import Packet243
