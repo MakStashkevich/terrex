@@ -121,7 +121,7 @@ from .crystal_invasion_wipe import CrystalInvasionWipe
 # minion attack target update 115
 from .crystal_invasion_wait import CrystalInvasionWait
 from .player_hurt import PlayerHurt
-from player_death import PlayerDeath
+from .player_death import PlayerDeath
 from .combat_text import CombatText
 from .emoji import Emoji
 from .doll_sync import DollSync
