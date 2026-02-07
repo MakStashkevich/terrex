@@ -1,7 +1,7 @@
 import enum
 
 
-class Events(enum.Enum):
+class Event(enum.Enum):
     # Trigger: chat message
     # Data: message as string
     Chat = 0

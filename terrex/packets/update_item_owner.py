@@ -1,6 +1,6 @@
 from typing import Any
 
-from terrex.events.events import Events
+from terrex.events.events import Event
 from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
@@ -23,6 +23,6 @@ class UpdateItemOwner(SyncPacket):
         
     def handle(self, world, player, evman):
         world.item_owner_index[self.item_id] = self.player_id
-        evman.raise_event(Events.ItemOwnerChanged, (self.item_id, self.player_id))
+        evman.raise_event(Event.ItemOwnerChanged, (self.item_id, self.player_id))
 
 UpdateItemOwner.register()

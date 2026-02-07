@@ -1,3 +1,8 @@
+from typing import Any, Callable
+
+from terrex.events.events import Event
+
+
 class EventManager(object):
 
     def __init__(self):
@@ -10,28 +15,31 @@ class EventManager(object):
         eventmanager = bot.get_event_manager()
 
         @eventmanager.on_event(Events.CHAT)
-        def chat_message(self, event_id, data):
+        def chat_message(self, data):
             print(data)
 
     """
-    def on_event(self, event_id):
-        def add_wrapper(f):
+    def on_event(self, event_id: Event):
+        def add_wrapper(f: Callable[[Any], None]):
             if event_id not in self.event_listeners:
                 self.event_listeners[event_id] = []
-            self.event_listeners[event_id].append(f)
+            if callable(f):
+                self.event_listeners[event_id].append(f)
             return f
         return add_wrapper
 
-    def method_on_event(self, event_id, listener):
+    def method_on_event(self, event_id: Event, listener: Callable[[Any], None]):
         if event_id not in self.event_methods:
             self.event_methods[event_id] = []
-        self.event_methods[event_id].append(listener)
+        if callable(listener):
+            self.event_methods[event_id].append(listener)
 
-    def raise_event(self, event_id, data):
+    def raise_event(self, event_id: Event, data: Any):
         # print("Event happened: ", event_id)
         if event_id in self.event_listeners:
             for f in self.event_listeners[event_id]:
                 f(event_id, data)
         if event_id in self.event_methods:
             for f in self.event_methods[event_id]:
-                f(event_id, data)
+                if callable(f):
+                    f(data)

@@ -1,4 +1,5 @@
 from typing import Dict, Type
+from terrex.events.events import Event
 from terrex.structures.load_net_packet import LoadNetPacket
 from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
@@ -43,11 +44,15 @@ class LoadNetModule(SyncPacket):
         self.variant = reader.read_ushort()
         body_cls = BODY_CLASSES.get(self.variant)
         if body_cls is None:
-            raise ValueError(f"Неизвестный вариант LoadNetModule: {self.variant}")
+            raise ValueError(f"Unknown variant LoadNetModule: {self.variant}")
         self.body = body_cls.read(reader)
 
     def write(self, writer: Writer) -> None:
         writer.write_ushort(self.variant)
         self.body.write(writer)
+
+    def handle(self, world, player, evman):
+        if self.variant == 1 and isinstance(self.body, LoadNetModuleServerText): # server text
+            evman.raise_event(Event.Chat, self.body)
 
 LoadNetModule.register()

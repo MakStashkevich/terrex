@@ -1,2 +1,2 @@
 from .eventmanager import EventManager
-from .events import Events
+from .events import Event
