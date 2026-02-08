@@ -3,9 +3,9 @@ from terrex.structures.rgb import Rgb
 
 class Player(object):
 
-    def __init__(self, name):
-        self.playerID = 0
-        self.name = "Terrex"
+    def __init__(self, name: str = "terrex"):
+        self.id = -1
+        self.name = name
         
         # connection flags
         self.initialized = False

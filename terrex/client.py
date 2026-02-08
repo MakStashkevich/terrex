@@ -152,11 +152,11 @@ class Client:
                 and not packet.is_server
             ):
                 # save server player id
-                self.player.playerID = packet.player_id
+                self.player.id = packet.player_id
 
                 # send player info to server
                 player_info = packets.PlayerInfo(
-                    player_id=self.player.playerID,
+                    player_id=self.player.id,
                     skin_variant=self.player.skinVariant,
                     voice_variant=self.player.voice_variant,
                     voice_pitch_offset=self.player.voice_pitch_offset,
@@ -190,38 +190,36 @@ class Client:
                 player_info.used_ambrosia = self.player.used_ambrosia
                 player_info.ate_artisan_bread = self.player.ate_artisan_bread
                 self.send(player_info)
-                
+
                 self.send(packets.ClientUuid(PLAYER_UUID))
                 self.send(
                     packets.PlayerHp(
-                        player_id=self.player.playerID,
+                        player_id=self.player.id,
                         hp=self.player.currHP,
                         max_hp=self.player.maxHP,
                     )
                 )
                 self.send(
                     packets.PlayerMana(
-                        player_id=self.player.playerID,
+                        player_id=self.player.id,
                         mana=self.player.currMana,
                         max_mana=self.player.maxMana,
                     )
                 )
                 self.send(
-                    packets.UpdatePlayerBuff(
-                        player_id=self.player.playerID, buffs=[0] * 22
-                    )
+                    packets.UpdatePlayerBuff(player_id=self.player.id, buffs=[0] * 22)
                 )
                 self.send(
                     packets.UpdatePlayerLoadout(
-                        player_id=self.player.playerID,
+                        player_id=self.player.id,
                         loadout_index=0,
-                        accessory_visibility=self.player.accessory_visibility
+                        accessory_visibility=self.player.accessory_visibility,
                     )
                 )
-                for i in range(989):
+                for i in range(990):
                     self.send(
                         packets.PlayerInventorySlot(
-                            player_id=self.player.playerID,
+                            player_id=self.player.id,
                             slot_id=i,
                             stack=0,
                             prefix=0,
@@ -238,7 +236,7 @@ class Client:
             if packet.id == PacketIds.COMPLETE_CONNECTION_SPAWN.value:
                 self.send(
                     packets.SpawnPlayer(
-                        player_id=self.player.playerID,
+                        player_id=self.player.id,
                         spawn_x=0.0,
                         spawn_y=0.0,
                         respawn_time_remaining=114,
@@ -261,15 +259,17 @@ class Client:
                 # then server send: LOAD_NET_MODULE (LoadNetModuleServerText messages MOTD & connect success player)
                 # UPDATE_TILE_ENTITY
                 self.connected_to_server = True
-                
+
                 if self.ping_thread is None:
-                    self.ping_thread = threading.Thread(target=self._ping_loop, daemon=True)
+                    self.ping_thread = threading.Thread(
+                        target=self._ping_loop, daemon=True
+                    )
                     self.ping_thread.start()
-                
+
                 # Set player teem if needed
                 self.send(
                     packets.PlayerTeam(
-                        player_id=self.player.playerID,
+                        player_id=self.player.id,
                         team=2,  # green team
                     )
                 )
@@ -277,14 +277,12 @@ class Client:
                 # -------- repeated every minute --------
                 self.send(
                     packets.PlayerZone(
-                        player_id=self.player.playerID,
+                        player_id=self.player.id,
                         flags=0,  # 131072 / todo: check this
                     )
                 )
                 self.send(
-                    packets.UpdatePlayerBuff(
-                        player_id=self.player.playerID, buffs=[0] * 22
-                    )
+                    packets.UpdatePlayerBuff(player_id=self.player.id, buffs=[0] * 22)
                 )  # repeat???
 
                 # ---0x0D UPDATE_PLAYER (0x0D) ---
@@ -303,7 +301,7 @@ class Client:
 
                 self.send(
                     packets.UpdatePlayerLuck(
-                        player_id=self.player.playerID,
+                        player_id=self.player.id,
                         ladybug_luck_time_remaining=0,
                         torch_luck=0,
                         luck_potion=0,

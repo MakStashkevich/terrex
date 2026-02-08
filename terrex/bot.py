@@ -15,18 +15,25 @@ class Terrex(object):
     """A class that handles basic functions of a terraria bot like movement and login"""
 
     # Defaults to 7777, because that is the default port for the server
-    def __init__(self, ip, port=7777, server_password: str = "", version=TERRARIA_VERSION, name=None):
+    def __init__(
+        self,
+        ip,
+        port=7777,
+        server_password: str = "",
+        version=TERRARIA_VERSION,
+        player=Player(),
+    ):
         super(Terrex, self).__init__()
-        
+
         if version not in PROTOCOLS:
             version_str = f"v{'.'.join(map(str, version))}"
-            raise ValueError(f"Protocol for Terraria version {version_str} not supported")
+            raise ValueError(
+                f"Protocol for Terraria version {version_str} not supported"
+            )
         protocol = PROTOCOLS[version]
-        
-        name = "Terrex" if not name else name
 
         self.world = World()
-        self.player = Player(name)
+        self.player = player
 
         self.evman = EventManager()
 
@@ -39,14 +46,16 @@ class Terrex(object):
 
     def send_message(self, text, color: structures.Rgb = structures.Rgb(255, 255, 255)):
         if self.player.logged_in:
-            self.client.send(packets.LoadNetModule(
-                variant=1,
-                body=structures.LoadNetModuleServerText(
-                    author=self.player.playerID,
-                    text=text,
-                    color=color,
+            self.client.send(
+                packets.LoadNetModule(
+                    variant=1,
+                    body=structures.LoadNetModuleServerText(
+                        author=self.player.id,
+                        text=text,
+                        color=color,
+                    ),
                 )
-            ))
+            )
 
     def get_event_manager(self):
         return self.evman
