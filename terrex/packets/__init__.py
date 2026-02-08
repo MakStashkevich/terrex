@@ -70,7 +70,7 @@ from .paint_tile import PaintTile
 from .paint_wall import PaintWall
 from .player_npc_teleport import PlayerNpcTeleport
 from .heal_other_player import HealOtherPlayer
-from .placeholder import Placeholder
+from .placeholder import Placeholder # null on official server, but may be used on TShock
 from .client_uuid import ClientUuid
 from .get_chest_name import GetChestName
 from .catch_npc import CatchNpc
@@ -143,9 +143,28 @@ from .sync_cavern_monster_type import SyncCavernMonsterType
 from .request_npc_debuff import RequestNpcDebuff
 from .client_synced_inventory import ClientSyncedInventory
 from .set_as_host import SetAsHost
-from .set_event import SetEvent
+# set misc event values 140
 
 
-# new packets from 1.4.5.0+
+# todo: add all new packets from 1.4.5.0+
+# ------
+# LucyAxeMove (ClientPacket) 141
+# Unknown update data for player (ClientPacket) 142
+# AttemptToSkipWaitTime for player (ClientPacket) 143
+# HaveDryadDoStardewAnimation for NPC (SyncPacket???) 144
+# NPC ShimmerTransformToItem (ServerPacket?) 145
+# NPC ShimmerTransformToNPC (ServerPacket?) 146
 from .update_player_loadout import UpdatePlayerLoadout
+# GetItemUsedLuckyCoin (ClientPacket) 148
+# null 149
+# SetOrRequestSpectating (SyncPacket) 150
+# PickAnItemSlotToSpawnItemOn (ServerPacket) 0-400 151
+# PlayerUseSoundSync (SyncPacket???) 152
+# NPC ApplyEelWhipDoT (ServerPacket) 153
 from .ping import Ping
+# SendMaxChestItems (ServerPacket) 155
+# DebugPlaceTileEntityKiteAnchorItem (ServerPacket???) (156
+# UpdatePlayerTeam (SyncPacket) 157
+# null 158
+# Control Check Rope Usability (ClientPacket) 159
+# SyncItemOnSection (ServerPacket???) 160

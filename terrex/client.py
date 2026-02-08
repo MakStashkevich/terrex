@@ -213,12 +213,11 @@ class Client:
                 )
                 self.send(
                     packets.UpdatePlayerLoadout(
-                        target_id=self.player.playerID,
+                        player_id=self.player.playerID,
                         loadout_index=0,
                         accessory_visibility=self.player.accessory_visibility
                     )
                 )
-                # LoadoutUpdate (0x93, id=147): accessory visibility for loadout 0
                 for i in range(989):
                     self.send(
                         packets.PlayerInventorySlot(
