@@ -73,14 +73,31 @@ class PacketSendSection(ServerPacket):
     id = PacketIds.SEND_SECTION.value
 
     def read(self, reader: Reader) -> None:
-        is_compressed = reader.read_byte() != 0
+        # self.raw = reader.remaining()
+        self.x_start = None
+        self.y_start = None
+        
+        is_compressed = reader.read_bool()
+        self.check_comressed = True
         if is_compressed:
+            self.compressed = True
+
             remaining = reader.remaining()
             decompressed = zlib.decompress(remaining)
             section_reader = Reader(decompressed)
             self.data = read_decompressed_section(section_reader)
+            
+            self.x_start = self.data.x_start
+            self.y_start = self.data.y_start
         else:
+            self.compressed = False
+            
             self.data = read_decompressed_section(reader)
+            
+            self.x_start = self.data.x_start
+            self.y_start = self.data.y_start
+        
+        self.is_ended = True
             
     def handle(self, world, player, evman):
         evman.raise_event(Event.TileUpdate, self.data)

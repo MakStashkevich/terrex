@@ -5,7 +5,7 @@ import queue
 import time
 from typing import Optional
 
-from terrex import packets
+from terrex import packets, structures
 from terrex.packets.base import registry, Packet
 from terrex.data.world import World
 from terrex.data.player import Player
@@ -19,11 +19,12 @@ PLAYER_UUID = "01032c81-623f-4435-85e5-e0ec816b09ca"
 
 class Client:
     def __init__(
-        self, host: str, port: int, protocol: int, player: Player, world: World, evman: EventManager
+        self, host: str, port: int, protocol: int, server_password: str, player: Player, world: World, evman: EventManager
     ):
         self.host = host
         self.port = port
         self.protocol = protocol
+        self.server_password = server_password
         self.player = player
         self.world = world
         self._evman = evman
@@ -32,6 +33,7 @@ class Client:
         self.send_queue = queue.Queue()
         self.recv_queue = queue.Queue()
         self.running = False
+        self.connected_to_server = False
         self.reader_thread: Optional[threading.Thread] = None
         self.writer_thread: Optional[threading.Thread] = None
 
@@ -48,42 +50,8 @@ class Client:
 
         time.sleep(0.1)  # Дать потокам запуститься
 
-        # Handshake
+        # Send connect packet
         self.send(packets.Connect(self.protocol))
-        self.send(
-            packets.PlayerInfo(
-                self.player.name,
-                self.player.hairStyle,
-                self.player.skinColor,
-                self.player.hairColor,
-                self.player.eyeColor,
-                self.player.shirtColor,
-                self.player.undershirtColor,
-                self.player.pantsColor,
-                self.player.shoeColor,
-            )
-        )
-        self.send(packets.ClientUuid(PLAYER_UUID))
-        self.send(packets.PlayerHp(player_id=self.player.playerID, hp=self.player.currHP, max_hp=self.player.maxHP))
-        self.send(packets.PlayerMana(player_id=self.player.playerID, mana=self.player.currMana, max_mana=self.player.maxMana))
-        self.send(packets.UpdatePlayerBuff(player_id=self.player.playerID, buffs=[0] * 22))
-        for i in range(260):
-            self.send(
-                packets.PlayerInventorySlot(
-                    player_id=self.player.playerID, slot_id=i, stack=0, prefix=0, item_netid=0
-                )
-            )
-        self.send(packets.RequestWorldData())
-        self.send(packets.RequestEssentialTiles(spawn_x=-1, spawn_y=-1))
-        self.send(
-            packets.SpawnPlayer(
-                player_id=self.player.playerID,
-                spawn_x=-1.0,
-                spawn_y=-1.0,
-                respawn_time_remaining=0,
-                player_spawn_context=0,
-            )
-        )
 
     def send(self, packet: Packet) -> None:
         """Отправить пакет в очередь."""
@@ -131,9 +99,7 @@ class Client:
                     packet.read(reader)
                     packet.handle(self.world, self.player, self._evman)
                     
-                    if packet_id == 2 and isinstance(packet, packets.Disconnect):
-                        print(f"[READ] Packet ID: 0x{packet_id:02X}. Disconnect with reason: {get_translation(packet.reason)}")
-                        self.stop()
+                    if not self._handle_server_packet(packet):
                         continue
 
                     self.recv_queue.put(packet)
@@ -144,6 +110,129 @@ class Client:
                 break
 
         self.running = False
+
+    def _handle_server_packet(self, packet: Packet) -> bool:
+        if packet.id == PacketIds.DISCONNECT.value and isinstance(packet, packets.Disconnect):
+            print(f"[READ] Packet ID: 0x{packet.id:02X}. Disconnect with reason: {get_translation(packet.reason)}")
+            self.stop()
+            return False
+        
+        if self.running and not self.connected_to_server:
+            # server req password
+            if packet.id == PacketIds.REQUEST_PASSWORD.value:
+                packet = packets.SendPassword(self.server_password)
+                self.send(packet)
+            
+            # server accept password and get server slot user id
+            if packet.id == PacketIds.SET_USER_SLOT.value and isinstance(packet, packets.SetUserSlot) and not packet.is_server:
+                # save server player id
+                self.player.playerID = packet.player_id
+                
+                # send player info to server
+                self.send(
+                    packets.PlayerInfo(
+                        self.player.name,
+                        self.player.hairStyle,
+                        self.player.skinColor,
+                        self.player.hairColor,
+                        self.player.eyeColor,
+                        self.player.shirtColor,
+                        self.player.undershirtColor,
+                        self.player.pantsColor,
+                        self.player.shoeColor,
+                    )
+                )
+                self.send(packets.ClientUuid(PLAYER_UUID))
+                self.send(packets.PlayerHp(player_id=self.player.playerID, hp=self.player.currHP, max_hp=self.player.maxHP))
+                self.send(packets.PlayerMana(player_id=self.player.playerID, mana=self.player.currMana, max_mana=self.player.maxMana))
+                self.send(packets.UpdatePlayerBuff(player_id=self.player.playerID, buffs=[0] * 22))
+                # Unknown(0x93): {'id': 147, 'raw': '0000f801'}
+                for i in range(989):
+                    self.send(
+                        packets.PlayerInventorySlot(
+                            player_id=self.player.playerID, slot_id=i, stack=0, prefix=0, item_netid=0
+                        )
+                    )
+                self.send(packets.RequestWorldData())
+                # server: WORLD_INFO
+                self.send(packets.RequestEssentialTiles(spawn_x=-1, spawn_y=-1))
+                # server: WORLD_INFO & STATUS (load data by blocks...) & SEND_SECTION's, Unknown(0x9B) {'id': 155, 'raw': '1b012800'}, UPDATE_CHEST_ITEM's
+            
+            # server say: you can spawn player
+            if packet.id == PacketIds.COMPLETE_CONNECTION_SPAWN.value:
+                self.send(
+                    packets.SpawnPlayer(
+                        player_id=self.player.playerID,
+                        spawn_x=0.0,
+                        spawn_y=0.0,
+                        respawn_time_remaining=114,
+                        player_spawn_context=2,
+                    )
+                )
+                self.send(packets.LoadNetModule(
+                    variant=5,
+                    body=structures.LoadNetModuleCreativeUnlocks(
+                        item_id=14,
+                        sacrifice_count=0
+                    )
+                ))
+                # then server send: NPC_HOME_UPDATE (0-29), current ANGLER_QUEST, 6 packets of SYNC_REVENGE_MARKER
+            
+            # server say: you successful connected to server
+            if packet.id == PacketIds.FINISHED_CONNECTING_TO_SERVER.value:
+                # then server send: LOAD_NET_MODULE (LoadNetModuleServerText messages MOTD & connect success player)
+                # UPDATE_TILE_ENTITY
+                self.connected_to_server = True
+                
+                # Set player teem if needed
+                self.send(packets.PlayerTeam(
+                    player_id=self.player.playerID,
+                    team=2, # green team
+                ))
+                
+                # -------- repeated every minute --------
+                self.send(packets.PlayerZone(
+                    player_id=self.player.playerID,
+                    flags=0, # 131072 / todo: check this
+                ))
+                self.send(packets.UpdatePlayerBuff(player_id=self.player.playerID, buffs=[0] * 22)) # repeat???
+                
+                # ---0x0D UPDATE_PLAYER (0x0D) ---
+                # {'player_id': 0, 'keys': 64, 'pulley': 16, 'action': 10, 'sleep_info': 0, 'selected_item': 0, 'pos': {'x': 67166.0, 'y': 6742.0, 'TILE_TO_POS_SCALE': 16.0}, 'vel': None, 'original_and_home_pos': None}
+
+                # ---0x0D UPDATE_PLAYER (0x0D) ---
+                # {'player_id': 0, 'keys': 64, 'pulley': 16, 'action': 10, 'sleep_info': 2, 'selected_item': 0, 'pos': {'x': 67166.0, 'y': 6742.0, 'TILE_TO_POS_SCALE': 16.0}, 'vel': None, 'original_and_home_pos': None}
+
+                # --------- end repeated block
+                
+                # ---0x1B PROJECTILE_UPDATE (0x1B) ---
+                # {'projectile_id': 0, 'pos': {'x': 67167.0, 'y': 6743.0, 'TILE_TO_POS_SCALE': 16.0}, 'vel': {'x': 0.0, 'y': 0.0, 'TILE_TO_POS_SCALE': 16.0}, 'owner': 0, 'ty': 398, 'flags': 0, 'ai': [0.0, 0.0], 'damage': None, 'knockback': None, 'original_damage': None, 'proj_uuid': None}
+
+                # ---0x1B PROJECTILE_UPDATE (0x1B) ---
+                # {'projectile_id': 1, 'pos': {'x': 67163.5, 'y': 6750.5, 'TILE_TO_POS_SCALE': 16.0}, 'vel': {'x': 0.0, 'y': 0.0, 'TILE_TO_POS_SCALE': 16.0}, 'owner': 0, 'ty': 18, 'flags': 0, 'ai': [0.0, 0.0], 'damage': None, 'knockback': None, 'original_damage': None, 'proj_uuid': None}
+                
+                self.send(packets.UpdatePlayerLuck(
+                    player_id=self.player.playerID,
+                    ladybug_luck_time_remaining=0,
+                    torch_luck=0,
+                    luck_potion=0,
+                    has_garden_gnome_nearby=0,
+                ))
+                # Update npc names from 0 to 29
+                for i in range(29):
+                    self.send(packets.UpdateNpcName(
+                        npc_id=i,
+                        name=None,
+                        town_npc_variation_idx=None
+                    ))
+                
+                # ---0x9A Unknown(0x9A) ---
+                # {'id': 154, 'raw': ''}
+
+                # ---0x97 Unknown(0x97) ---
+                # {'id': 151, 'raw': '7400'}
+
+        return True
 
     def _writer_loop(self) -> None:
         """Поток отправки пакетов."""

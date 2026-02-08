@@ -1,0 +1,23 @@
+from terrex.packets.base import ClientPacket
+from terrex.packets.packet_ids import PacketIds
+from terrex.util.streamer import Reader, Writer
+
+class MinionAttackTargetUpdate(ClientPacket):
+    id = 115
+
+    def __init__(self, player_id: int = 0, minion_target: int = 0):
+        self.player_id = player_id
+        self.minion_target = minion_target
+
+    def read(self, reader: Reader) -> None:
+        self.player_id = reader.read_byte()
+        self.minion_target = reader.read_short()
+
+    def write(self, writer: Writer) -> None:
+        writer.write_byte(self.player_id)
+        writer.write_short(self.minion_target)
+
+    def handle(self, world, player, evman):
+        pass
+
+MinionAttackTargetUpdate.register()

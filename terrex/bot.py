@@ -14,7 +14,7 @@ class Terrex(object):
     """A class that handles basic functions of a terraria bot like movement and login"""
 
     # Defaults to 7777, because that is the default port for the server
-    def __init__(self, ip, port=7777, version=TERRARIA_VERSION, name=None):
+    def __init__(self, ip, port=7777, server_password: str = "", version=TERRARIA_VERSION, name=None):
         super(Terrex, self).__init__()
         
         if version not in PROTOCOLS:
@@ -30,7 +30,7 @@ class Terrex(object):
         self.evman = EventManager()
 
         self.client = client.Client(
-            ip, port, protocol, self.player, self.world, self.evman
+            ip, port, protocol, server_password, self.player, self.world, self.evman
         )
 
         # self.evman.method_on_event(Events.PlayerID, self.received_player_id)

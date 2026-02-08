@@ -36,9 +36,9 @@ BODY_CLASSES: Dict[int, Type['LoadNetPacket']] = {
 class LoadNetModule(SyncPacket):
     id = PacketIds.LOAD_NET_MODULE.value
 
-    def __init__(self):
-        self.variant: int = 0
-        self.body: LoadNetPacket = None
+    def __init__(self, variant: int = 0, body: LoadNetPacket = None):
+        self.variant = variant
+        self.body = body
 
     def read(self, reader: Reader) -> None:
         self.variant = reader.read_ushort()
