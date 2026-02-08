@@ -4,7 +4,6 @@ import sys
 import argparse
 from datetime import datetime
 from proxy.config import config
-from proxy.middleware import client_packet_middleware
 from terrex.packets.packet_ids import PacketIds
 from terrex.packets.base import stringify_value
 from proxy.parser import IncrementalParser
@@ -14,6 +13,7 @@ BUFFER_SIZE = 4096
 
 def current_timestamp() -> str:
     return datetime.now().astimezone().isoformat(sep=" ", timespec="milliseconds")
+
 
 def toggle_cfg_tags(dir: str, tag: str, value: bool) -> str:
     """Toggle debugging tags for packet logging.
@@ -54,11 +54,14 @@ def toggle_cfg_tags(dir: str, tag: str, value: bool) -> str:
                     config.dbg_in_tags[t] = value
                 if out_:
                     config.dbg_out_tags[t] = value
-                print(f"Tag {t}: in={old_in}->{value if in_ else old_in}, out={old_out}->{value if out_ else old_out}")
+                print(
+                    f"Tag {t}: in={old_in}->{value if in_ else old_in}, out={old_out}->{value if out_ else old_out}"
+                )
                 return "Success"
             return "Tag out of range"
         except ValueError:
             return "Failed to parse tag number"
+
 
 def user_input():
     print("Now handling user input. Type help for help")
@@ -72,7 +75,8 @@ def user_input():
             continue
         cmd = argv[0]
         if cmd == "help":
-            print("""
+            print(
+                """
 * help: show this message
 * quit: stop processing stdin
 * show <in|out|both> <all|TAG>: show the dbg repr of matching messages
@@ -80,7 +84,8 @@ def user_input():
 * list: list all tags along with the name
 * flush: flush network traffic writes to disk
 * nosave: stop saving network traffic to disk
-""")
+"""
+            )
             continue
         if cmd == "quit":
             sys.exit(0)
@@ -89,7 +94,7 @@ def user_input():
                 print("Both dir and tag must be provided")
                 continue
             dirr, tag = argv[1], argv[2]
-            value = (cmd == "show")
+            value = cmd == "show"
             print(toggle_cfg_tags(dirr, tag, value))
         elif cmd == "list":
             print("Packet tags:")
@@ -121,9 +126,16 @@ def user_input():
                     config.both_traffic_txt.close()
                     config.both_traffic_txt = None
         else:
-            print(f"Could not understand \"{cmd}\". Type help for help")
+            print(f'Could not understand "{cmd}". Type help for help')
 
-def forward(direction: str, read_sock: socket.socket, write_sock: socket.socket, parser: IncrementalParser, tags: list[bool]):
+
+def forward(
+    direction: str,
+    read_sock: socket.socket,
+    write_sock: socket.socket,
+    parser: IncrementalParser,
+    tags: list[bool],
+):
     """Forward raw traffic from read_sock to write_sock while parsing packets for logging.
 
     - Receives raw data chunks from read_sock.
@@ -150,8 +162,10 @@ def forward(direction: str, read_sock: socket.socket, write_sock: socket.socket,
         if n == 0:
             break
         data = bytes(buf[:n])
-        if direction == "CTS":
-            data = client_packet_middleware(data)
+
+        # if direction == "CTS":
+        #     from proxy.middleware import client_packet_middleware
+        #     data = client_packet_middleware(data)
 
         # Determine traffic files
         if direction == "STC":
@@ -182,18 +196,24 @@ def forward(direction: str, read_sock: socket.socket, write_sock: socket.socket,
                     timestamp = current_timestamp()
                     log_payload = stringify_value(vars(packet))
                     if tags[packet.id]:
-                        print(f"{direction}{'<' if direction == 'STC' else '>'} {packet.id} {pkt_name} {log_payload}")
+                        print(
+                            f"{direction}{'<' if direction == 'STC' else '>'} {packet.id} {pkt_name} {log_payload}"
+                        )
 
                     # Log to txt if enabled (all packets)
                     if traffic_txt is not None:
-                        traffic_txt.write(f"[{timestamp}] ---0x{packet.id:02X} {pkt_name} ---\n")
+                        traffic_txt.write(
+                            f"[{timestamp}] ---0x{packet.id:02X} {pkt_name} ---\n"
+                        )
                         traffic_txt.write(f"{log_payload}\n\n")
                         if config.flush_txt[flush_txt_idx]:
                             traffic_txt.flush()
 
                     # Log to shared both-traffic file
                     if config.both_traffic_txt is not None:
-                        config.both_traffic_txt.write(f"[{timestamp}] {direction} ---0x{packet.id:02X} {pkt_name} ---\n")
+                        config.both_traffic_txt.write(
+                            f"[{timestamp}] {direction} ---0x{packet.id:02X} {pkt_name} ---\n"
+                        )
                         config.both_traffic_txt.write(f"{log_payload}\n\n")
                         if config.flush_both_txt:
                             config.both_traffic_txt.flush()
@@ -223,22 +243,41 @@ def forward(direction: str, read_sock: socket.socket, write_sock: socket.socket,
     print(f"{direction} task exited")
     read_sock.close()
 
+
 def main():
     parser = argparse.ArgumentParser(description="Terraria Protocol Proxy")
-    parser.add_argument("server", nargs="?", default="127.0.0.1:7777",
-        help="Target server address (host:port)")
-    parser.add_argument("bind", nargs="?", default="127.0.0.1:8888",
-        help="Proxy bind address (host:port)")
-    parser.add_argument("--save", choices=["bin", "txt"], default=None,
-        help="Save format: 'bin' (raw binary), 'txt' (parsed text)")
-    parser.add_argument("--flush", choices=["in", "out", "both"], default=None,
-        help="Auto-flush traffic files on startup: 'in' (CTS/client->server), 'out' (STC/server->client), 'both'")
+    parser.add_argument(
+        "server",
+        nargs="?",
+        default="127.0.0.1:7777",
+        help="Target server address (host:port)",
+    )
+    parser.add_argument(
+        "bind",
+        nargs="?",
+        default="127.0.0.1:8888",
+        help="Proxy bind address (host:port)",
+    )
+    parser.add_argument(
+        "--save",
+        choices=["bin", "txt"],
+        default=None,
+        help="Save format: 'bin' (raw binary), 'txt' (parsed text)",
+    )
+    parser.add_argument(
+        "--flush",
+        choices=["in", "out", "both"],
+        default=None,
+        help="Auto-flush traffic files on startup: 'in' (CTS/client->server), 'out' (STC/server->client), 'both'",
+    )
     args = parser.parse_args()
 
     def parse_addr(addr_str: str) -> tuple[str, int]:
         parts = addr_str.rsplit(":", 1)
         if len(parts) != 2:
-            raise ValueError(f"Invalid address format '{addr_str}'. Expected 'host:port'")
+            raise ValueError(
+                f"Invalid address format '{addr_str}'. Expected 'host:port'"
+            )
         host = parts[0].strip()
         if not host:
             raise ValueError(f"Empty host in '{addr_str}'")
@@ -263,8 +302,12 @@ def main():
             config.server_traffic_bin = open("server-traffic.bin", "wb")
             config.client_traffic_bin = open("client-traffic.bin", "wb")
         elif save_mode == "txt":
-            config.server_traffic_txt = open("server-traffic.txt", "w", encoding="utf-8")
-            config.client_traffic_txt = open("client-traffic.txt", "w", encoding="utf-8")
+            config.server_traffic_txt = open(
+                "server-traffic.txt", "w", encoding="utf-8"
+            )
+            config.client_traffic_txt = open(
+                "client-traffic.txt", "w", encoding="utf-8"
+            )
             config.both_traffic_txt = open("both-traffic.txt", "w", encoding="utf-8")
 
         # Auto-flush if requested
@@ -306,15 +349,27 @@ def main():
     print("Launching Server-to-Client task (STC)...")
     stc_thread = threading.Thread(
         target=forward,
-        args=("STC", server_sock, client_sock, config.server_parser, config.dbg_in_tags),
-        daemon=True
+        args=(
+            "STC",
+            server_sock,
+            client_sock,
+            config.server_parser,
+            config.dbg_in_tags,
+        ),
+        daemon=True,
     )
     stc_thread.start()
     print("Launching Client-to-Server task (CTS)...")
     cts_thread = threading.Thread(
         target=forward,
-        args=("CTS", client_sock, server_sock, config.client_parser, config.dbg_out_tags),
-        daemon=True
+        args=(
+            "CTS",
+            client_sock,
+            server_sock,
+            config.client_parser,
+            config.dbg_out_tags,
+        ),
+        daemon=True,
     )
     cts_thread.start()
     try:
@@ -322,6 +377,7 @@ def main():
         cts_thread.join()
     except KeyboardInterrupt:
         print("\nShutting down proxy gracefully...")
+
 
 if __name__ == "__main__":
     main()

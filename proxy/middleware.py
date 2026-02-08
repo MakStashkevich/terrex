@@ -10,6 +10,7 @@ from terrex.util.streamer import Reader, Writer
 class AnyPacket(Packet):
     pass
 
+
 def client_packet_middleware(data: bytes) -> bytes:
     if not data:
         return data
@@ -27,11 +28,11 @@ def client_packet_middleware(data: bytes) -> bytes:
             result.extend(data[offset:])
             return bytes(result)
 
-        payload = data[offset + 2:packet_end]
+        payload = data[offset + 2 : packet_end]
         if payload:
             payload = rewrite_packet(payload)
             packet_length = 2 + len(payload)
-        
+
         header = struct.pack("<H", packet_length)
         result.extend(header)
         result.extend(payload)
@@ -40,18 +41,19 @@ def client_packet_middleware(data: bytes) -> bytes:
     result.extend(data[offset:])
     return bytes(result)
 
+
 def rewrite_packet(payload: bytes) -> bytes:
     packet = None
     packet_id = payload[0]
     reader = Reader(payload[1:])
 
-    if packet_id == PacketIds.NPC_STRIKE.value:
-        packet = NpcStrike()
-        packet.read(reader)
-        packet.damage = 10000
-        packet.knockback = 50
-        packet.crit = True
-    
+    # if packet_id == PacketIds.NPC_STRIKE.value:
+    #     packet = NpcStrike()
+    #     packet.read(reader)
+    #     packet.damage = 10000
+    #     packet.knockback = 50
+    #     packet.crit = True
+
     if packet_id == PacketIds.UPDATE_PLAYER_LUCK_FACTORS.value:
         packet = UpdatePlayerLuck()
         packet.read(reader)
@@ -59,11 +61,11 @@ def rewrite_packet(payload: bytes) -> bytes:
         packet.ladybug_luck_time_remaining = 10
         packet.luck_potion = 10
         packet.torch_luck = 10
-        
+
     if packet:
         writer = Writer()
         writer.write_byte(packet.id)
         packet.write(writer)
         payload = writer.bytes()
-    
+
     return payload
