@@ -212,7 +212,7 @@ class Client:
                     )
                 )
                 self.send(
-                    packets.LoadoutPlayerUpdate(
+                    packets.UpdatePlayerLoadout(
                         target_id=self.player.playerID,
                         loadout_index=0,
                         accessory_visibility=self.player.accessory_visibility

@@ -147,5 +147,5 @@ from .set_event import SetEvent
 
 
 # new packets from 1.4.5.0+
-from .loadout_player_update import LoadoutPlayerUpdate
+from .update_player_loadout import UpdatePlayerLoadout
 from .ping import Ping

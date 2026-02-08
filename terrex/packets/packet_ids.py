@@ -147,7 +147,7 @@ class PacketIds(IntEnum):
     SET_MISC_EVENT_VALUES = 0x8C
 
     # Added from: 1.4.5.0+
-    LOADOUT_PLAYER_UPDATE = 0x93
+    UPDATE_PLAYER_LOADOUT = 0x93
     PING = 0x9A
 
     @classmethod
