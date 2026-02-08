@@ -163,7 +163,7 @@ class Client:
                     hair=self.player.hair,
                     name=self.player.name,
                     hair_dye=self.player.hair_dye,
-                    accessory_visibility=0,
+                    accessory_visibility=self.player.accessory_visibility,
                     hide_misc=self.player.hide_misc,
                     hair_color=self.player.hair_color,
                     skin_color=self.player.skin_color,
@@ -211,7 +211,14 @@ class Client:
                         player_id=self.player.playerID, buffs=[0] * 22
                     )
                 )
-                # Unknown(0x93): {'id': 147, 'raw': '0000f801'}
+                self.send(
+                    packets.LoadoutPlayerUpdate(
+                        target_id=self.player.playerID,
+                        loadout_index=0,
+                        accessory_visibility=self.player.accessory_visibility
+                    )
+                )
+                # LoadoutUpdate (0x93, id=147): accessory visibility for loadout 0
                 for i in range(989):
                     self.send(
                         packets.PlayerInventorySlot(

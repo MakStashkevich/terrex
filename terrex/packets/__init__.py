@@ -147,14 +147,5 @@ from .set_event import SetEvent
 
 
 # new packets from 1.4.5.0+
+from .loadout_player_update import LoadoutPlayerUpdate
 from .ping import Ping
-
-
-# Unknown packets
-from .packet166 import Packet166
-from .packet169 import Packet169
-from .packet177 import Packet177
-from .packet180 import Packet180
-from .packet220 import Packet220
-from .packet230 import Packet230
-from .packet243 import Packet243

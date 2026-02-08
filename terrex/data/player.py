@@ -22,7 +22,7 @@ class Player(object):
         self.voice_pitch_offset = 0.0
         self.hair = 0
         self.hair_dye = 255
-        self.accessory_visibility = [False] * 4
+        self.accessory_visibility = 0
         self.hide_misc = False
         
         # skin colors

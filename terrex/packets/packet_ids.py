@@ -1,7 +1,9 @@
 from enum import IntEnum
 
+
 class PacketIds(IntEnum):
     """Enum с ID всех пакетов Terraria в hex формате."""
+
     # Основные пакеты
     CONNECT_REQUEST = 0x01
     DISCONNECT = 0x02
@@ -96,7 +98,7 @@ class PacketIds(IntEnum):
     SYNC_EMOTE_BUBBLE = 0x5B
     SYNC_EXTRA_VALUE = 0x5C
     SOCIAL_HANDSHAKE = 0x5D
-    DEPRECATED_94 = 0x5E
+    DEPRECATED_SEND_DEBUG_COMMAND = 0x5E # exactly deprecated?
     KILL_PORTAL = 0x5F
     PLAYER_TELEPORT_PORTAL = 0x60
     NOTIFY_PLAYER_NPC_KILLED = 0x61
@@ -143,21 +145,13 @@ class PacketIds(IntEnum):
     CLIENT_FINISHED_INVENTORY_CHANGES = 0x8A
     SET_COUNTS_AS_HOST = 0x8B
     SET_MISC_EVENT_VALUES = 0x8C
-    
+
     # Added from: 1.4.5.0+
+    LOADOUT_PLAYER_UPDATE = 0x93
     PING = 0x9A
 
-    # Unknown packets
-    PACKET166 = 166
-    PACKET169 = 169
-    PACKET177 = 177
-    PACKET180 = 180
-    PACKET220 = 220
-    PACKET230 = 230
-    PACKET243 = 243
-
     @classmethod
-    def from_id(cls, packet_id: int) -> 'PacketIds':
+    def from_id(cls, packet_id: int) -> "PacketIds":
         """Получить enum по ID пакета."""
         try:
             return cls(packet_id)

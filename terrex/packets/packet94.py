@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class Packet94(ServerPacket):
-    id = PacketIds.DEPRECATED_94.value
+    id = PacketIds.DEPRECATED_SEND_DEBUG_COMMAND.value
 
     def __init__(self, buf: bytes = b""):
         self.buf = buf
