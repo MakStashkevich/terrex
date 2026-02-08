@@ -1,3 +1,4 @@
+from terrex import structures
 from terrex.protocols import PROTOCOLS
 from . import packets
 from . import client
@@ -33,42 +34,19 @@ class Terrex(object):
             ip, port, protocol, server_password, self.player, self.world, self.evman
         )
 
-        # self.evman.method_on_event(Events.PlayerID, self.received_player_id)
-        # self.evman.method_on_event(Events.Initialized, self.initialized)
-        # self.evman.method_on_event(Events.Login, self.logged_in)
-        # self.evman.method_on_event(Events.ItemOwnerChanged, self.item_owner_changed)
-        # self.event_manager.method_on_event(events.Events.)
-
     def start(self):
         self.client.connect()
 
-    def item_owner_changed(self, id, data):
+    def send_message(self, text, color: structures.Rgb = structures.Rgb(255, 255, 255)):
         if self.player.logged_in:
-            self.client.send(packets.PlayerHp(id, data[0], data[1]))
-
-    def received_player_id(self, event_id, data):
-        self.client.send(packets.PlayerInfo(self.player))
-        self.client.send(packets.Packet10(self.player))
-        self.client.send(packets.Packet2A(self.player))  # player mana
-        self.client.send(packets.Packet32(self.player))  # update player buff
-        for i in range(0, 83):
-            self.client.send(packets.Packet5(self.player, i))  # player inventory slot
-        self.client.send(packets.Packet6())  # request world data
-
-    def initialized(self, event, data):
-        self.client.send(
-            packets.Packet8(self.player, self.world)
-        )  # REQUEST_ESSENTIAL_TILES
-
-    def logged_in(self, event, data):
-        self.client.send(packets.PacketC(self.player, self.world))  # SPAWN_PLAYER
-
-    def message(self, msg, color=None):
-        if self.player.logged_in:
-            if color:
-                hex_code = "%02x%02x%02x" % color
-                msg = "[c/" + hex_code + ":" + msg + "]"
-            # self.client.send(packets.Packet19(self.player, msg))
+            self.client.send(packets.LoadNetModule(
+                variant=1,
+                body=structures.LoadNetModuleServerText(
+                    author=self.player.playerID,
+                    text=text,
+                    color=color,
+                )
+            ))
 
     def get_event_manager(self):
         return self.evman
