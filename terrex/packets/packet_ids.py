@@ -143,6 +143,9 @@ class PacketIds(IntEnum):
     CLIENT_FINISHED_INVENTORY_CHANGES = 0x8A
     SET_COUNTS_AS_HOST = 0x8B
     SET_MISC_EVENT_VALUES = 0x8C
+    
+    # Added from: 1.4.5.0+
+    PING = 0x9A
 
     # Unknown packets
     PACKET166 = 166

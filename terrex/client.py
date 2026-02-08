@@ -36,6 +36,11 @@ class Client:
         self.connected_to_server = False
         self.reader_thread: Optional[threading.Thread] = None
         self.writer_thread: Optional[threading.Thread] = None
+        self.ping_thread: Optional[threading.Thread] = None
+        self.current_ping = 0
+        self._waiting_ping = False
+        self._ping_last_sent = 0.0
+        self._ping_start_time = 0.0
 
     def connect(self) -> None:
         """Подключиться к серверу и выполнить handshake."""
@@ -45,8 +50,10 @@ class Client:
 
         self.reader_thread = threading.Thread(target=self._reader_loop, daemon=True)
         self.writer_thread = threading.Thread(target=self._writer_loop, daemon=True)
+        self.ping_thread = threading.Thread(target=self._ping_loop, daemon=True)
         self.reader_thread.start()
         self.writer_thread.start()
+        self.ping_thread.start()
 
         time.sleep(0.1)  # Дать потокам запуститься
 
@@ -112,6 +119,10 @@ class Client:
         self.running = False
 
     def _handle_server_packet(self, packet: Packet) -> bool:
+        if packet.id == PacketIds.PING.value:
+            self.on_ping_received()
+            return False
+        
         if packet.id == PacketIds.DISCONNECT.value and isinstance(packet, packets.Disconnect):
             print(f"[READ] Packet ID: 0x{packet.id:02X}. Disconnect with reason: {get_translation(packet.reason)}")
             self.stop()
@@ -199,15 +210,15 @@ class Client:
                 
                 # ---0x0D UPDATE_PLAYER (0x0D) ---
                 # {'player_id': 0, 'keys': 64, 'pulley': 16, 'action': 10, 'sleep_info': 0, 'selected_item': 0, 'pos': {'x': 67166.0, 'y': 6742.0, 'TILE_TO_POS_SCALE': 16.0}, 'vel': None, 'original_and_home_pos': None}
-
+ 
                 # ---0x0D UPDATE_PLAYER (0x0D) ---
                 # {'player_id': 0, 'keys': 64, 'pulley': 16, 'action': 10, 'sleep_info': 2, 'selected_item': 0, 'pos': {'x': 67166.0, 'y': 6742.0, 'TILE_TO_POS_SCALE': 16.0}, 'vel': None, 'original_and_home_pos': None}
-
+ 
                 # --------- end repeated block
                 
                 # ---0x1B PROJECTILE_UPDATE (0x1B) ---
                 # {'projectile_id': 0, 'pos': {'x': 67167.0, 'y': 6743.0, 'TILE_TO_POS_SCALE': 16.0}, 'vel': {'x': 0.0, 'y': 0.0, 'TILE_TO_POS_SCALE': 16.0}, 'owner': 0, 'ty': 398, 'flags': 0, 'ai': [0.0, 0.0], 'damage': None, 'knockback': None, 'original_damage': None, 'proj_uuid': None}
-
+ 
                 # ---0x1B PROJECTILE_UPDATE (0x1B) ---
                 # {'projectile_id': 1, 'pos': {'x': 67163.5, 'y': 6750.5, 'TILE_TO_POS_SCALE': 16.0}, 'vel': {'x': 0.0, 'y': 0.0, 'TILE_TO_POS_SCALE': 16.0}, 'owner': 0, 'ty': 18, 'flags': 0, 'ai': [0.0, 0.0], 'damage': None, 'knockback': None, 'original_damage': None, 'proj_uuid': None}
                 
@@ -228,10 +239,10 @@ class Client:
                 
                 # ---0x9A Unknown(0x9A) ---
                 # {'id': 154, 'raw': ''}
-
+ 
                 # ---0x97 Unknown(0x97) ---
                 # {'id': 151, 'raw': '7400'}
-
+ 
         return True
 
     def _writer_loop(self) -> None:
@@ -255,6 +266,41 @@ class Client:
 
         self.running = False
 
+    def send_ping(self) -> None:
+        """Отправить пинг-пакет."""
+        self.send(packets.Ping())
+
+    def on_ping_received(self) -> None:
+        """Обработать полученный пинг."""
+        now = time.time() * 1000
+        self.current_ping = int(now - self._ping_start_time)
+        self._waiting_ping = False
+
+    def update_ping(self) -> None:
+        """Обновить пинг-логику."""
+        now = time.time() * 1000
+        if self._waiting_ping:
+            self.current_ping = max(self.current_ping, int(now - self._ping_start_time))
+            return
+        if now - self._ping_last_sent >= 250:
+            self._ping_start_time = now
+            self._waiting_ping = True
+            self.send_ping()
+            self._ping_last_sent = now
+
+    def _ping_loop(self) -> None:
+        """Поток пинга."""
+        while self.running:
+            self.update_ping()
+            time.sleep(0.05)
+
+    def reset_ping(self) -> None:
+        """Сбросить пинг."""
+        self.current_ping = 0
+        self._waiting_ping = False
+        self._ping_last_sent = 0.0
+        self._ping_start_time = 0.0
+
     def stop(self) -> None:
         """Остановить клиент."""
         self.running = False
@@ -264,3 +310,5 @@ class Client:
             self.reader_thread.join(timeout=1.0)
         if self.writer_thread:
             self.writer_thread.join(timeout=1.0)
+        if self.ping_thread:
+            self.ping_thread.join(timeout=1.0)

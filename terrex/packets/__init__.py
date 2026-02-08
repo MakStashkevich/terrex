@@ -146,6 +146,9 @@ from .set_as_host import SetAsHost
 from .set_event import SetEvent
 
 
+# new packets from 1.4.5.0+
+from .ping import Ping
+
 
 # Unknown packets
 from .packet166 import Packet166
