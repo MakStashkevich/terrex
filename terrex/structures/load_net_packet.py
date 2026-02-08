@@ -1,28 +1,43 @@
 from typing import Union
-from abc import ABC
+from abc import ABC, abstractmethod
+from terrex.util.streamer import Reader, Writer
 
-from terrex.packets.base import ServerPacket, ClientPacket, SyncPacket
 
-
-class LoadNetServerPacket(ServerPacket, ABC):
+class LoadNetServerPacket(ABC):
     """
     Server -> Client
     """
-    pass
+    @abstractmethod
+    def read(self, reader: Reader) -> None:
+        pass
+
+    def write(self, writer: Writer) -> None:
+        raise NotImplementedError("LoadNetServerPacket does not implement write")
 
 
-class LoadNetClientPacket(ClientPacket, ABC):
+class LoadNetClientPacket(ABC):
     """
     Client -> Server
     """
-    pass
+    def read(self, reader: Reader) -> None:
+        raise NotImplementedError("LoadNetClientPacket does not implement read")
+
+    @abstractmethod
+    def write(self, writer: Writer) -> None:
+        pass
 
 
-class LoadNetSyncPacket(SyncPacket, ABC):
+class LoadNetSyncPacket(ABC):
     """
     Server <-> Client (Sync)
     """
-    pass
+    @abstractmethod
+    def read(self, reader: Reader) -> None:
+        pass
+
+    @abstractmethod
+    def write(self, writer: Writer) -> None:
+        pass
 
 
 LoadNetPacket = Union[LoadNetServerPacket, LoadNetClientPacket, LoadNetSyncPacket]

@@ -6,8 +6,6 @@ from dataclasses import dataclass
 from terrex.events.events import Event
 from terrex.packets.base import ServerPacket
 from terrex.packets.packet_ids import PacketIds
-from terrex.structures import Chest, Sign, Tile
-from terrex.structures.tile_entity import TileEntity, read_tile_entity
 from terrex.util.streamer import Reader, Writer
 
 
@@ -17,13 +15,16 @@ class SendSection:
     y_start: int
     width: int
     height: int
-    tiles: List[Tile]
-    chests: List[Chest]
-    signs: List[Sign]
-    tile_entities: List[Any]  # Union of TileEntity types
+    tiles: List["Tile"] # pyright: ignore[reportUndefinedVariable]
+    chests: List["Chest"] # pyright: ignore[reportUndefinedVariable]
+    signs: List["Sign"] # pyright: ignore[reportUndefinedVariable]
+    tile_entities: List["TileEntity"] # pyright: ignore[reportUndefinedVariable]
 
 
 def read_decompressed_section(reader: Reader) -> SendSection:
+    from terrex.structures import Chest, Sign, Tile
+    from terrex.structures.tile_entity import read_tile_entity
+    
     x_start = reader.read_int()
     y_start = reader.read_int()
     width = reader.read_short()

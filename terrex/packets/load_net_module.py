@@ -19,7 +19,7 @@ from terrex.structures.load_net_module import (
     LoadNetModuleCreativePowerPermissions,
 )
 
-BODY_CLASSES: Dict[int, Type['LoadNetPacket']] = {
+BODY_CLASSES: Dict[int, Type["LoadNetPacket"]] = {
     0: LoadNetModuleLiquid,
     1: LoadNetModuleServerText,
     2: LoadNetModulePing,
@@ -32,6 +32,7 @@ BODY_CLASSES: Dict[int, Type['LoadNetPacket']] = {
     9: LoadNetModuleParticles,
     10: LoadNetModuleCreativePowerPermissions,
 }
+
 
 class LoadNetModule(SyncPacket):
     id = PacketIds.LOAD_NET_MODULE.value
@@ -52,7 +53,10 @@ class LoadNetModule(SyncPacket):
         self.body.write(writer)
 
     def handle(self, world, player, evman):
-        if self.variant == 1 and isinstance(self.body, LoadNetModuleServerText): # server text
+        if self.variant == 1 and isinstance(
+            self.body, LoadNetModuleServerText
+        ):  # server text
             evman.raise_event(Event.Chat, self.body)
+
 
 LoadNetModule.register()
