@@ -12,7 +12,9 @@ from terrex.data.world import World
 from terrex.data.player import Player
 from terrex.events.eventmanager import EventManager
 from terrex.packets.packet_ids import PacketIds
-from terrex.structures.game_content.creative.creative_power.spawn_rate_slider_per_player_power import SpawnRateSliderPerPlayerPower
+from terrex.structures.game_content.creative.creative_power.spawn_rate_slider_per_player_power import (
+    SpawnRateSliderPerPlayerPower,
+)
 from terrex.structures.game_content.net_modules import NetCreativePowersModule
 from terrex.util.streamer import Reader, Writer
 from terrex.util.localization import get_translation
@@ -164,7 +166,7 @@ class Client:
                 # send player info to server
                 player_info = packets.PlayerInfo(
                     player_id=self.player.id,
-                    skin_variant=self.player.skinVariant,
+                    skin_variant=self.player.skin_variant,
                     voice_variant=self.player.voice_variant,
                     voice_pitch_offset=self.player.voice_pitch_offset,
                     hair=self.player.hair,
@@ -223,7 +225,7 @@ class Client:
                         accessory_visibility=self.player.accessory_visibility,
                     )
                 )
-                for i in range(0, 139): # 138
+                for i in range(0, 139):  # 138
                     self.send(
                         packets.PlayerInventorySlot(
                             player_id=self.player.id,
@@ -233,7 +235,7 @@ class Client:
                             item_netid=0,
                         )
                     )
-                for i in range(299, 339): # 338
+                for i in range(299, 339):  # 338
                     self.send(
                         packets.PlayerInventorySlot(
                             player_id=self.player.id,
@@ -243,7 +245,7 @@ class Client:
                             item_netid=0,
                         )
                     )
-                for i in range(499, 540): # 539
+                for i in range(499, 540):  # 539
                     self.send(
                         packets.PlayerInventorySlot(
                             player_id=self.player.id,
@@ -253,7 +255,7 @@ class Client:
                             item_netid=0,
                         )
                     )
-                for i in range(700, 740): # 739
+                for i in range(700, 740):  # 739
                     self.send(
                         packets.PlayerInventorySlot(
                             player_id=self.player.id,
@@ -263,7 +265,7 @@ class Client:
                             item_netid=0,
                         )
                     )
-                for i in range(900, 990): # 989
+                for i in range(900, 990):  # 989
                     self.send(
                         packets.PlayerInventorySlot(
                             player_id=self.player.id,
@@ -348,10 +350,14 @@ class Client:
                 self.send(
                     packets.UpdatePlayerLuck(
                         player_id=self.player.id,
-                        ladybug_luck_time_remaining=0,
-                        torch_luck=0,
-                        luck_potion=0,
-                        has_garden_gnome_nearby=0,
+                        ladybug_luck_time_left=self.player.ladybug_luck_time_left,
+                        torch_luck=self.player.torch_luck,
+                        luck_potion=self.player.luck_potion,
+                        has_garden_gnome_nearby=self.player.has_garden_gnome_nearby,
+                        broken_mirror_bad_luck=self.player.broken_mirror_bad_luck,
+                        equipment_based_luck_bonus=self.player.equipment_based_luck_bonus,
+                        coin_luck=self.player.coin_luck,
+                        kite_luck_level=self.player.kite_luck_level,
                     )
                 )
                 # Update npc names from 0 to 29
@@ -432,9 +438,21 @@ class Client:
         if self.sock:
             self.sock.close()
         current_thread = threading.current_thread()
-        if self.reader_thread and self.reader_thread != current_thread and self.reader_thread.is_alive():
+        if (
+            self.reader_thread
+            and self.reader_thread != current_thread
+            and self.reader_thread.is_alive()
+        ):
             self.reader_thread.join(timeout=1.0)
-        if self.writer_thread and self.writer_thread != current_thread and self.writer_thread.is_alive():
+        if (
+            self.writer_thread
+            and self.writer_thread != current_thread
+            and self.writer_thread.is_alive()
+        ):
             self.writer_thread.join(timeout=1.0)
-        if self.ping_thread and self.ping_thread != current_thread and self.ping_thread.is_alive():
+        if (
+            self.ping_thread
+            and self.ping_thread != current_thread
+            and self.ping_thread.is_alive()
+        ):
             self.ping_thread.join(timeout=1.0)

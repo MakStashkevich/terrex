@@ -8,28 +8,27 @@ class UpdatePlayerLuck(SyncPacket):
 
     # maximum luck: 1.0
     # minimum luck: -0.4
-    def __init__(self,
-                 player_id: int = 0,
-                 ladybug_luck_time_remaining: int = 0,
-                 torch_luck: float = 0.0,
-                 luck_potion: int = 0,
-                 has_garden_gnome_nearby: bool = False,
-                 broken_mirror_bad_luck: int = 0,
-                 equipment_based_luck_bonus: float = 0.0,
-                 coin_luck: float = 0.0,
-                 kite_luck_level: int = 0):
+    def __init__(
+        self,
+        player_id: int = 0,
+        ladybug_luck_time_left: int = 0,
+        torch_luck: float = 0.0,
+        luck_potion: int = 0,
+        has_garden_gnome_nearby: bool = False,
+        broken_mirror_bad_luck: bool = False,
+        equipment_based_luck_bonus: float = 0.0,
+        coin_luck: float = 0.0,
+        kite_luck_level: int = 0,
+    ):
         self.player_id = player_id
-        self.ladybug_luck_time_left = ladybug_luck_time_remaining # +0.2-0.4 (if ladubug is golden) (time 12-24 min)
-        self.torch_luck = torch_luck # +0.2 (+0.1 if torch primary)
-        self.luck_potion = luck_potion # +0.1 - 0.2 - 0.3 (5 - 10 - 15 min)
-        self.has_garden_gnome_nearby = has_garden_gnome_nearby # +0.2
+        self.ladybug_luck_time_left = ladybug_luck_time_left
+        self.torch_luck = torch_luck
+        self.luck_potion = luck_potion
+        self.has_garden_gnome_nearby = has_garden_gnome_nearby
         self.broken_mirror_bad_luck = broken_mirror_bad_luck
         self.equipment_based_luck_bonus = equipment_based_luck_bonus
         self.coin_luck = coin_luck
         self.kite_luck_level = kite_luck_level
-        
-        # счастливая монета +0.05
-        # подкова +0.05
 
     def read(self, reader: Reader):
         self.player_id = reader.read_byte()
