@@ -49,7 +49,7 @@ class LoadNetModule(SyncPacket):
     def __init__(self, variant: int = 0, net_module: NetModule = None):
         self.variant = variant
         self.net_module = net_module
-
+ 
     def read(self, reader: Reader) -> None:
         self.variant = reader.read_ushort()
         net_module = NET_MODULES.get(self.variant)
