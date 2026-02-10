@@ -1,16 +1,22 @@
+from dataclasses import dataclass
 from terrex.structures.game_content.bestiary import Bestiary
 from terrex.util.streamer import Reader, Writer
-from .base import NetServerModule
+from .net_module import NetServerModule
 
 
+@dataclass()
 class NetBestiaryModule(NetServerModule):
-    def __init__(self, bestiary: Bestiary):
-        self.bestiary = bestiary
+    id: int = 4
+    bestiary: Bestiary | None = None
 
     @classmethod
-    def read(cls, reader: Reader) -> 'NetBestiaryModule':
-        bestiary = Bestiary.read(reader)
-        return cls(bestiary)
+    def create(cls, bestiary: Bestiary) -> "NetBestiaryModule":
+        obj = cls()
+        obj.bestiary = bestiary
+        return obj
+    
+    def read(self, reader: Reader) -> 'NetBestiaryModule':
+        self.bestiary = Bestiary.read(reader)
 
     def write(self, writer: Writer) -> None:
         self.bestiary.write(writer)

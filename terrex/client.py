@@ -6,13 +6,13 @@ import time
 import traceback
 from typing import Optional
 
-from terrex import packets, structures
+from terrex import packets
 from terrex.packets.base import registry, Packet
 from terrex.data.world import World
 from terrex.data.player import Player
 from terrex.events.eventmanager import EventManager
 from terrex.packets.packet_ids import PacketIds
-from terrex.structures.game_content.creative.creative_power import CreativePower
+from terrex.structures.game_content.creative.creative_power.spawn_rate_slider_per_player_power import SpawnRateSliderPerPlayerPower
 from terrex.structures.game_content.net_modules import NetCreativePowersModule
 from terrex.util.streamer import Reader, Writer
 from terrex.util.localization import get_translation
@@ -292,9 +292,8 @@ class Client:
                 )
                 self.send(
                     packets.LoadNetModule(
-                        variant=5,
-                        body=NetCreativePowersModule(
-                            power=CreativePower(power_id=14, slider_current_value_cache=0.0)
+                        module=NetCreativePowersModule.create(
+                            power=SpawnRateSliderPerPlayerPower.create(value=0.0)
                         ),
                     )
                 )

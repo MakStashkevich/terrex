@@ -1,7 +1,8 @@
 from enum import IntEnum
+from dataclasses import dataclass
 from terrex.structures.game_content.teleport_pylon_type import TeleportPylonType
 from terrex.util.streamer import Reader, Writer
-from .base import NetSyncModule
+from .net_module import NetSyncModule
 
 
 class TeleportPylonOperation(IntEnum):
@@ -10,20 +11,28 @@ class TeleportPylonOperation(IntEnum):
     HandleTeleportRequest = 2
 
 
+@dataclass()
 class NetTeleportPylonModule(NetSyncModule):
-    def __init__(self, operation: TeleportPylonOperation, x: int, y: int, pylon_type: TeleportPylonType):
-        self.operation = operation
-        self.x = x
-        self.y = y
-        self.pylon_type = pylon_type
+    id: int = 7
+    operation: TeleportPylonOperation | None = None
+    x: int | None = None
+    y: int | None = None
+    pylon_type: TeleportPylonType | None = None
 
     @classmethod
-    def read(cls, reader: Reader) -> 'NetTeleportPylonModule':
-        operation = TeleportPylonOperation(reader.read_byte())
-        x = reader.read_short()
-        y = reader.read_short()
-        pylon_type = TeleportPylonType(reader.read_byte())
-        return cls(operation, x, y, pylon_type)
+    def create(cls, operation: TeleportPylonOperation, x: int, y: int, pylon_type: TeleportPylonType) -> "NetTeleportPylonModule":
+        obj = cls()
+        obj.operation = operation
+        obj.x = x
+        obj.y = y
+        obj.pylon_type = pylon_type
+        return obj
+
+    def read(self, reader: Reader) -> None:
+        self.operation = TeleportPylonOperation(reader.read_byte())
+        self.x = reader.read_short()
+        self.y = reader.read_short()
+        self.pylon_type = TeleportPylonType(reader.read_byte())
 
     def write(self, writer: Writer) -> None:
         writer.write_byte(self.operation.value)

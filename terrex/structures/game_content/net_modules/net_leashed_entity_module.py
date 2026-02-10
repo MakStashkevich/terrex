@@ -1,7 +1,8 @@
 from enum import IntEnum
 from typing import Tuple
+from dataclasses import dataclass
 from terrex.util.streamer import Reader, Writer
-from .base import NetServerModule
+from .net_module import NetServerModule
 
 
 class LeashedEntityMessageType(IntEnum):
@@ -10,37 +11,46 @@ class LeashedEntityMessageType(IntEnum):
     PartialSync = 2
 
 
+@dataclass()
 class NetLeashedEntityModule(NetServerModule):
-    def __init__(
-        self,
+    id: int = 13
+    msg_type: LeashedEntityMessageType | None = None
+    slot: int | None = None
+    leashed_type: int | None = None
+    anchor: Tuple[int, int] | None = None
+    extra_data: bytes | None = None
+
+    @classmethod
+    def create(
+        cls,
         msg_type: LeashedEntityMessageType,
         slot: int,
         leashed_type: int | None = None,
-        anchor: tuple[int, int] | None = None,
-        extra_data: bytes = b"",
-    ):
-        self.msg_type = msg_type
-        self.slot = slot
-        self.leashed_type = leashed_type
-        self.anchor = anchor
-        self.extra_data = extra_data
+        anchor: Tuple[int, int] | None = None,
+        extra_data: bytes | None = None,
+    ) -> "NetLeashedEntityModule":
+        obj = cls()
+        obj.msg_type = msg_type
+        obj.slot = slot
+        obj.leashed_type = leashed_type
+        obj.anchor = anchor
+        obj.extra_data = extra_data
+        return obj
 
-    @classmethod
-    def read(cls, reader: Reader) -> 'NetLeashedEntityModule':
-        msg_type = LeashedEntityMessageType(reader.read_byte())
-        slot = reader.read_7bit_encoded_int()
-        leashed_type = None
-        anchor = None
-        extra_data = b""
-        if msg_type in (LeashedEntityMessageType.FullSync, LeashedEntityMessageType.PartialSync):
-            leashed_type = reader.read_7bit_encoded_int()
-            if msg_type == LeashedEntityMessageType.FullSync:
+    def read(self, reader: Reader) -> None:
+        self.msg_type = LeashedEntityMessageType(reader.read_byte())
+        self.slot = reader.read_7bit_encoded_int()
+        self.leashed_type = None
+        self.anchor = None
+        self.extra_data = b""
+        if self.msg_type in (LeashedEntityMessageType.FullSync, LeashedEntityMessageType.PartialSync):
+            self.leashed_type = reader.read_7bit_encoded_int()
+            if self.msg_type == LeashedEntityMessageType.FullSync:
                 anchor_x = reader.read_short()
                 anchor_y = reader.read_short()
-                anchor = (anchor_x, anchor_y)
+                self.anchor = (anchor_x, anchor_y)
         remaining_len = len(reader.remaining())
-        extra_data = reader.read_bytes(remaining_len)
-        return cls(msg_type, slot, leashed_type, anchor, extra_data)
+        self.extra_data = reader.read_bytes(remaining_len)
 
     def write(self, writer: Writer) -> None:
         writer.write_byte(self.msg_type.value)

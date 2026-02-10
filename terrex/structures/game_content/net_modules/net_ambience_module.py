@@ -1,20 +1,30 @@
+from dataclasses import dataclass
 from terrex.structures.game_content.ambience.sky_entity_type import SkyEntityType
 from terrex.util.streamer import Reader, Writer
-from .base import NetServerModule
+from .net_module import NetServerModule
 
 
+@dataclass()
 class NetAmbienceModule(NetServerModule):
-    def __init__(self, player_id: int, rand_next_num: int, sky_entity_type: SkyEntityType):
-        self.player_id = player_id
-        self.rand_next_num = rand_next_num
-        self.sky_entity_type = sky_entity_type
+    id: int = 3
+    player_id: int | None = None
+    rand_next_num: int | None = None
+    sky_entity_type: SkyEntityType | None = None
 
     @classmethod
-    def read(cls, reader: Reader) -> 'NetAmbienceModule':
-        player_id = reader.read_byte()
-        rand_next_num = reader.read_int()
-        sky_entity_type = SkyEntityType(reader.read_byte())
-        return cls(player_id, rand_next_num, sky_entity_type)
+    def create(
+        cls, player_id: int, rand_next_num: int, sky_entity_type: SkyEntityType
+    ) -> "NetAmbienceModule":
+        obj = cls()
+        obj.player_id = player_id
+        obj.rand_next_num = rand_next_num
+        obj.sky_entity_type = sky_entity_type
+        return obj
+
+    def read(self, reader: Reader) -> None:
+        self.player_id = reader.read_byte()
+        self.rand_next_num = reader.read_int()
+        self.sky_entity_type = SkyEntityType(reader.read_byte())
 
     def write(self, writer: Writer) -> None:
         writer.write_byte(self.player_id)

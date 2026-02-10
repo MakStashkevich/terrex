@@ -20,20 +20,5 @@ from .start_night_immediately_power import StartNightImmediatelyPower
 from .start_noon_immediately_power import StartNoonImmediatelyPower
 from .stop_biome_spread_power import StopBiomeSpreadPower
 
-CREATIVE_POWER_REGISTRY: dict[int, type] = {
-    0: FreezeTimePower,
-    1: StartDayImmediatelyPower,
-    2: StartNoonImmediatelyPower,
-    3: StartNightImmediatelyPower,
-    4: StartMidnightImmediatelyPower,
-    5: GodmodePower,
-    6: ModifyWindDirectionAndStrengthPower,
-    7: ModifyRainPower,
-    8: ModifyTimeRatePower,
-    9: FreezeRainPower,
-    10: FreezeWindDirectionAndStrengthPower,
-    11: FarPlacementRangePower,
-    12: DifficultySliderPower,
-    13: StopBiomeSpreadPower,
-    14: SpawnRateSliderPerPlayerPower,
-}
+# registry
+from .creative_power import creative_power_registry, CreativePower

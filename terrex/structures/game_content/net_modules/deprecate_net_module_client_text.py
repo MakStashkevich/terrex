@@ -1,18 +1,23 @@
+from dataclasses import dataclass
 from terrex.util.streamer import Reader, Writer
-from .base import NetClientModule
+from .net_module import NetClientModule
 
 
+@dataclass()
 class LoadNetModuleClientText(NetClientModule):
-    def __init__(self, command: str, text: str):
-        self.command = command
-        self.text = text
+    id: int = 0
+    command: str | None = None
+    text: str | None = None
 
     @classmethod
-    def read(cls, reader: Reader) -> 'LoadNetModuleClientText':
-        # Fallback read, may not be accurate
-        command = reader.read_string()
-        text = reader.read_string()
-        return cls(command, text)
+    def create(cls, command: str, text: str) -> "LoadNetModuleClientText":
+        obj = cls()
+        obj.command = command
+        obj.text = text
+        return obj
+
+    def read(self, reader: Reader) -> None:
+        raise NotImplementedError("NetClientModule does not implement read")
 
     def write(self, writer: Writer) -> None:
         writer.write_string(self.command)

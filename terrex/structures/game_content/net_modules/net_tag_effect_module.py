@@ -1,7 +1,8 @@
 from enum import IntEnum
 from typing import List, Tuple
+from dataclasses import dataclass
 from terrex.util.streamer import Reader, Writer
-from .base import NetServerModule
+from .net_module import NetServerModule
 
 
 class TagEffectMessageType(IntEnum):
@@ -12,43 +13,53 @@ class TagEffectMessageType(IntEnum):
     ClearProcOnNPC = 4
 
 
+@dataclass()
 class NetTagEffectModule(NetServerModule):
-    def __init__(
-        self,
+    id: int = 12
+    player_id: int | None = None
+    msg_type: TagEffectMessageType | None = None
+    effect_id: int | None = None
+    npc_index: int | None = None
+    time_left_sparse: List[Tuple[int, int]] | None = None
+    proc_time_sparse: List[Tuple[int, int]] | None = None
+
+    @classmethod
+    def create(
+        cls,
         player_id: int,
         msg_type: TagEffectMessageType,
         effect_id: int | None = None,
         npc_index: int | None = None,
-        time_left_sparse: list[tuple[int, int]] | None = None,
-        proc_time_sparse: list[tuple[int, int]] | None = None,
-    ):
-        self.player_id = player_id
-        self.msg_type = msg_type
-        self.effect_id = effect_id
-        self.npc_index = npc_index
-        self.time_left_sparse = time_left_sparse
-        self.proc_time_sparse = proc_time_sparse
+        time_left_sparse: List[Tuple[int, int]] | None = None,
+        proc_time_sparse: List[Tuple[int, int]] | None = None,
+    ) -> "NetTagEffectModule":
+        obj = cls()
+        obj.player_id = player_id
+        obj.msg_type = msg_type
+        obj.effect_id = effect_id
+        obj.npc_index = npc_index
+        obj.time_left_sparse = time_left_sparse
+        obj.proc_time_sparse = proc_time_sparse
+        return obj
+
+    def read(self, reader: Reader) -> None:
+        self.player_id = reader.read_byte()
+        self.msg_type = TagEffectMessageType(reader.read_byte())
+        self.effect_id = None
+        self.npc_index = None
+        self.time_left_sparse = None
+        self.proc_time_sparse = None
+        if self.msg_type == TagEffectMessageType.FullState:
+            self.effect_id = reader.read_short()
+            self.time_left_sparse = self._read_sparse(reader)
+            self.proc_time_sparse = self._read_sparse(reader)
+        elif self.msg_type == TagEffectMessageType.ChangeActiveEffect:
+            self.effect_id = reader.read_short()
+        elif self.msg_type in (TagEffectMessageType.ApplyTagToNPC, TagEffectMessageType.EnableProcOnNPC, TagEffectMessageType.ClearProcOnNPC):
+            self.npc_index = reader.read_byte()
 
     @classmethod
-    def read(cls, reader: Reader) -> 'NetTagEffectModule':
-        player_id = reader.read_byte()
-        msg_type = TagEffectMessageType(reader.read_byte())
-        effect_id = None
-        npc_index = None
-        time_left_sparse = None
-        proc_time_sparse = None
-        if msg_type == TagEffectMessageType.FullState:
-            effect_id = reader.read_short()
-            time_left_sparse = cls._read_sparse(reader)
-            proc_time_sparse = cls._read_sparse(reader)
-        elif msg_type == TagEffectMessageType.ChangeActiveEffect:
-            effect_id = reader.read_short()
-        elif msg_type in (TagEffectMessageType.ApplyTagToNPC, TagEffectMessageType.EnableProcOnNPC, TagEffectMessageType.ClearProcOnNPC):
-            npc_index = reader.read_byte()
-        return cls(player_id, msg_type, effect_id, npc_index, time_left_sparse, proc_time_sparse)
-
-    @classmethod
-    def _read_sparse(cls, reader: Reader) -> list[tuple[int, int]]:
+    def _read_sparse(cls, reader: Reader) -> List[Tuple[int, int]]:
         sparse = []
         while True:
             idx = reader.read_byte()
@@ -70,7 +81,7 @@ class NetTagEffectModule(NetServerModule):
         elif self.msg_type in (TagEffectMessageType.ApplyTagToNPC, TagEffectMessageType.EnableProcOnNPC, TagEffectMessageType.ClearProcOnNPC):
             writer.write_byte(self.npc_index)
 
-    def _write_sparse(self, writer: Writer, sparse: list[tuple[int, int]]) -> None:
+    def _write_sparse(self, writer: Writer, sparse: List[Tuple[int, int]]) -> None:
         for idx, time in sparse:
             writer.write_byte(idx)
             writer.write_int(time)

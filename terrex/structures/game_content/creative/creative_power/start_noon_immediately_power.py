@@ -1,12 +1,16 @@
 from dataclasses import dataclass
-
 from terrex.structures.game_content.creative.creative_power.creative_power import CreativePower
 from terrex.util.streamer import Reader, Writer
 
+ 
 
-@dataclass
+@dataclass()
 class StartNoonImmediatelyPower(CreativePower):
     id: int = 2
+
+    @classmethod
+    def create(cls) -> "StartNoonImmediatelyPower":
+        return cls()
 
     def read(self, reader: Reader) -> None:
         pass

@@ -1,17 +1,24 @@
+from dataclasses import dataclass
 from terrex.util.streamer import Reader, Writer
-from .base import NetServerModule
+from .net_module import NetServerModule
 
 
+@dataclass()
 class NetUnbreakableWallScanModule(NetServerModule):
-    def __init__(self, player_id: int, inside_unbreakable_walls: bool):
-        self.player_id = player_id
-        self.inside_unbreakable_walls = inside_unbreakable_walls
+    id: int = 14
+    player_id: int | None = None
+    inside_unbreakable_walls: bool | None = None
 
     @classmethod
-    def read(cls, reader: Reader) -> 'NetUnbreakableWallScanModule':
-        player_id = reader.read_byte()
-        inside = reader.read_bool()
-        return cls(player_id, inside)
+    def create(cls, player_id: int, inside_unbreakable_walls: bool) -> "NetUnbreakableWallScanModule":
+        obj = cls()
+        obj.player_id = player_id
+        obj.inside_unbreakable_walls = inside_unbreakable_walls
+        return obj
+
+    def read(self, reader: Reader) -> None:
+        self.player_id = reader.read_byte()
+        self.inside_unbreakable_walls = reader.read_bool()
 
     def write(self, writer: Writer) -> None:
         writer.write_byte(self.player_id)

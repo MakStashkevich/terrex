@@ -1,27 +1,33 @@
-from typing import List
+from dataclasses import dataclass
+from typing import List, Tuple
 from terrex.util.streamer import Reader, Writer
-from .base import NetServerModule
+from .net_module import NetServerModule
 
-
+@dataclass()
 class NetCraftingRequestModule(NetServerModule):
-    def __init__(self, items: list[tuple[int, int]], chests: list[int | None]):
-        self.items = items  # (item_id, stack)
-        self.chests = chests  # chest.index or None (-1)
+    id: int = 11
+    items: List[Tuple[int, int]] | None = None
+    chests: List[int | None] | None = None
 
     @classmethod
-    def read(cls, reader: Reader) -> 'NetCraftingRequestModule':
+    def create(cls, items: List[Tuple[int, int]], chests: List[int | None]) -> 'NetCraftingRequestModule':
+        obj = cls()
+        obj.items = items
+        obj.chests = chests
+        return obj
+
+    def read(self, reader: Reader) -> None:
         num_items = reader.read_7bit_encoded_int()
-        items = []
+        self.items = []
         for _ in range(num_items):
             item_id = reader.read_int()
             stack = reader.read_7bit_encoded_int()
-            items.append((item_id, stack))
+            self.items.append((item_id, stack))
         num_chests = reader.read_7bit_encoded_int()
-        chests = []
+        self.chests = []
         for _ in range(num_chests):
             idx = reader.read_7bit_encoded_int()
-            chests.append(None if idx < 0 else idx)
-        return cls(items, chests)
+            self.chests.append(None if idx < 0 else idx)
 
     def write(self, writer: Writer) -> None:
         writer.write_7bit_encoded_int(len(self.items))

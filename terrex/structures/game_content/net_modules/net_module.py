@@ -1,14 +1,14 @@
-from abc import ABC, abstractmethod
 import inspect
-from typing import Any, Dict, Type
+from typing import Any
+from abc import ABC, abstractmethod
 from terrex.util.streamer import Reader, Writer
 from terrex.util.stringify import stringify_value
+from typing import Type, Dict
+
+net_module_registry: Dict[int, Type["NetModule"]] = {}
 
 
-creative_power_registry: Dict[int, Type["CreativePower"]] = {}
-
-
-class CreativePower(ABC):
+class NetModule(ABC):
     id: int
 
     def __init_subclass__(cls):
@@ -23,17 +23,22 @@ class CreativePower(ABC):
         if "create" not in cls.__dict__:
             raise TypeError(f"{cls.__name__} must implement classmethod create()")
 
-        if cls.id in creative_power_registry:
+        if cls.id in net_module_registry:
             raise ValueError(
-                f"CreativePower id {cls.id} already registered for {creative_power_registry[cls.id]}"
+                f"Module id {cls.id} already registered for {net_module_registry[cls.id]}"
             )
-        creative_power_registry[cls.id] = cls
+        net_module_registry[cls.id] = cls
 
     def __to_log_dict(self) -> dict[str, Any]:
         return {name: stringify_value(value) for name, value in vars(self).items()}
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.__to_log_dict()})"
+
+    @classmethod
+    @abstractmethod
+    def create(cls, *args, **kwargs):
+        pass
 
     @abstractmethod
     def read(self, reader: Reader) -> None:
@@ -42,3 +47,21 @@ class CreativePower(ABC):
     @abstractmethod
     def write(self, writer: Writer) -> None:
         pass
+
+
+class NetServerModule(NetModule, ABC):
+    """
+    Server -> Client
+    """
+
+
+class NetClientModule(NetModule, ABC):
+    """
+    Client -> Server
+    """
+
+
+class NetSyncModule(NetModule, ABC):
+    """
+    Server <-> Client (Sync)
+    """
