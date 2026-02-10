@@ -10,10 +10,10 @@ from terrex.util.streamer import Reader, Writer
 registry: Dict[int, Type['Packet']] = {}
 
 def stringify_netstring(value: 'NetString') -> dict[str, Any]: # type: ignore
-    from terrex.structures.net_string import NetString
+    from terrex.structures.net_string import NetworkText
     from terrex.util.localization import get_translation
     
-    if not isinstance(value, NetString):
+    if not isinstance(value, NetworkText):
         return {}
 
     return {
@@ -25,9 +25,9 @@ def stringify_netstring(value: 'NetString') -> dict[str, Any]: # type: ignore
 
 
 def stringify_value(value: Any) -> Any:
-    from terrex.structures.net_string import NetString
+    from terrex.structures.net_string import NetworkText
 
-    if isinstance(value, NetString):
+    if isinstance(value, NetworkText):
         return stringify_netstring(value)
     if isinstance(value, dict):
         return {key: stringify_value(item) for key, item in value.items()}

@@ -8,6 +8,7 @@ class LiquidType(IntEnum):
     WATER = 1
     LAVA = 2
     HONEY = 3
+    SHIMMER = 4
 
     @classmethod
     def read(cls, reader: Reader) -> 'LiquidType':

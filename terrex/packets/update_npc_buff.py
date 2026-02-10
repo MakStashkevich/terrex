@@ -6,20 +6,28 @@ from ..util.streamer import Reader, Writer
 
 class UpdateNpcBuff(ServerPacket):
     id = PacketIds.UPDATE_NPC_BUFF.value
+    MAX_BUFF = 20 # NPC.maxBuffs
 
     def __init__(self) -> None:
         self.npc_id: int = 0
-        self.buffs: List[Tuple[int, int]] = [(0, 0)] * 5  # (buff_id, time)
+        self.buffs: List[Tuple[int, int]] = [] # (buff_type, buff_time)
 
     def read(self, reader: Reader) -> None:
         self.npc_id = reader.read_short()
         self.buffs = []
-        for _ in range(5):
-            buff_id = reader.read_ushort()
-            time = reader.read_short()
-            self.buffs.append((buff_id, time))
+        while len(self.buffs) < self.MAX_BUFF:
+            buff_type = reader.read_ushort()
+            if buff_type == 0: # packet every end on 0 ushort
+                break # packet ended
+            time = reader.read_ushort()
+            self.buffs.append((buff_type, time))
 
+    # not used by client
     def write(self, writer: Writer) -> None:
-        raise NotImplementedError("Server does not send UpdateNpcBuff (client-bound packet only)")
+        writer.write_short(self.npc_id)
+        for buff_type, time in self.buffs:
+            writer.write_ushort(buff_type)
+            writer.write_ushort(time)
+        writer.write_ushort(0)
 
 UpdateNpcBuff.register()

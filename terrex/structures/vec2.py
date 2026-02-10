@@ -14,13 +14,13 @@ class Vec2:
     @classmethod
     def read(cls, reader: Reader) -> 'Vec2':
         return cls(
-            reader.read_float(),
-            reader.read_float(),
+            reader.read_single(),
+            reader.read_single(),
         )
 
     def write(self, writer: Writer) -> None:
-        writer.write_float(self.x)
-        writer.write_float(self.y)
+        writer.write_single(self.x)
+        writer.write_single(self.y)
 
     @classmethod
     def from_tile_pos(cls, x: int, y: int) -> 'Vec2':

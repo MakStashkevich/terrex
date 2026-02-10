@@ -38,7 +38,7 @@ class EventManager(object):
         # print("Event happened: ", event_id)
         if event_id in self.event_listeners:
             for f in self.event_listeners[event_id]:
-                f(event_id, data)
+                f(data)
         if event_id in self.event_methods:
             for f in self.event_methods[event_id]:
                 if callable(f):

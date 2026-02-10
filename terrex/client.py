@@ -3,6 +3,7 @@ import struct
 import threading
 import queue
 import time
+import traceback
 from typing import Optional
 
 from terrex import packets, structures
@@ -11,6 +12,8 @@ from terrex.data.world import World
 from terrex.data.player import Player
 from terrex.events.eventmanager import EventManager
 from terrex.packets.packet_ids import PacketIds
+from terrex.structures.game_content.creative.creative_power import CreativePower
+from terrex.structures.game_content.net_modules.net_modules import NetCreativePowersModule
 from terrex.util.streamer import Reader, Writer
 from terrex.util.localization import get_translation
 
@@ -116,11 +119,15 @@ class Client:
 
                     self.recv_queue.put(packet)
                 else:
-                    print(
-                        f"Неизвестный ID пакета: 0x{packet_id:02X}, name: {PacketIds[packet_id].name}"
-                    )
+                    try:
+                        name = PacketIds(packet_id).name
+                    except ValueError:
+                        name = "UNKNOWN"
+                    print(f"Неизвестный ID пакета: 0x{packet_id:02X}, name: {name}")
+                    continue
             except (ConnectionError, Exception) as e:
-                print(f"Ошибка чтения: {e}")
+                print(traceback.format_exc())
+                print(f"Error read packet by client: {e}")
                 break
 
         self.running = False
@@ -216,7 +223,47 @@ class Client:
                         accessory_visibility=self.player.accessory_visibility,
                     )
                 )
-                for i in range(990):
+                for i in range(0, 139): # 138
+                    self.send(
+                        packets.PlayerInventorySlot(
+                            player_id=self.player.id,
+                            slot_id=i,
+                            stack=0,
+                            prefix=0,
+                            item_netid=0,
+                        )
+                    )
+                for i in range(299, 339): # 338
+                    self.send(
+                        packets.PlayerInventorySlot(
+                            player_id=self.player.id,
+                            slot_id=i,
+                            stack=0,
+                            prefix=0,
+                            item_netid=0,
+                        )
+                    )
+                for i in range(499, 540): # 539
+                    self.send(
+                        packets.PlayerInventorySlot(
+                            player_id=self.player.id,
+                            slot_id=i,
+                            stack=0,
+                            prefix=0,
+                            item_netid=0,
+                        )
+                    )
+                for i in range(700, 740): # 739
+                    self.send(
+                        packets.PlayerInventorySlot(
+                            player_id=self.player.id,
+                            slot_id=i,
+                            stack=0,
+                            prefix=0,
+                            item_netid=0,
+                        )
+                    )
+                for i in range(900, 990): # 989
                     self.send(
                         packets.PlayerInventorySlot(
                             player_id=self.player.id,
@@ -246,8 +293,8 @@ class Client:
                 self.send(
                     packets.LoadNetModule(
                         variant=5,
-                        body=structures.LoadNetModuleCreativeUnlocks(
-                            item_id=14, sacrifice_count=0
+                        body=NetCreativePowersModule(
+                            power=CreativePower(power_id=0, enabled=False)
                         ),
                     )
                 )

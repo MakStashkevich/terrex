@@ -1,7 +1,7 @@
 import time
 from terrex import Terrex
 from terrex.events import Event
-from terrex.structures.load_net_module import LoadNetModuleServerText
+from terrex.structures.net_modules import NetTextModule
 
 # Create a Terrex object
 # used with proxy on port 8888
@@ -11,7 +11,7 @@ event = bot.get_event_manager()
 
 # Connect a function to an event using a decorator
 @event.on_event(Event.Chat)
-def chat(module: LoadNetModuleServerText):
+def chat(module: NetTextModule):
     msg = module.text.text
     # Do something with the message
     # In this case, stop the bot if the word "Stop" occurs

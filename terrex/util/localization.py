@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from typing import Optional
 
-from terrex.structures.net_string import NetString, NetStringMode
+from terrex.structures.net_string import NetworkText, NetworkTextMode
 
 
 class LocaleType(Enum):
@@ -16,7 +16,7 @@ class LocaleType(Enum):
 
 
 def get_translation(
-    netstring: NetString,
+    netstring: NetworkText,
     lang: str = "ru-RU",
     locale_type: LocaleType = LocaleType.LEGACY
 ) -> str:
@@ -25,12 +25,12 @@ def get_translation(
     Example: "LegacyMultiplayer.1" -> "Incorrect password"
     Supports LITERAL, FORMATTABLE, LOCALIZATION_KEY.
     """
-    if netstring.mode == NetStringMode.LITERAL:
+    if netstring.mode == NetworkTextMode.LITERAL:
         return netstring.text
 
     base_text = netstring.text
 
-    if netstring.mode == NetStringMode.LOCALIZATION_KEY:
+    if netstring.mode == NetworkTextMode.LOCALIZATION_KEY:
         if "." not in base_text:
             pass  # fallback to base_text
         else:

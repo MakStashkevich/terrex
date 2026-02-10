@@ -4,30 +4,635 @@ import struct
 from dataclasses import dataclass, field
 
 from terrex.util.streamer import Reader, Writer
-from terrex.structures.liquid_type import LiquidType
+from terrex.structures.game_content.liquid_type import LiquidType
 
 TILE_FRAME_IMPORTANT = [
-    0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1,
-    0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0,
-    1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0,
-    0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1,
-    1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
-    0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0,
-    0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0,
-    0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
-    0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0,
-    1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1,
-    0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1,
-    1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0,
-    0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    0,
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    1,
+    1,
+    0,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    0,
+    0,
+    1,
+    0,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    1,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    0,
+    0,
+    1,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    0,
+    0,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
 ]
+
 
 def is_important(ty: int) -> bool:
     if 0 <= ty < len(TILE_FRAME_IMPORTANT):
@@ -52,6 +657,10 @@ class TileFlags:
     SLOPE2 = 0x2000
     SLOPE3 = 0x4000
     WIRE4 = 0x8000
+    INVISIBLE_BLOCK = 0x10000
+    INVISIBLE_WALL = 0x20000
+    FULLBRIGHT_BLOCK = 0x40000
+    FULLBRIGHT_WALL = 0x80000
 
 
 @dataclass
@@ -65,22 +674,30 @@ class Tile:
     liquid: Optional[Tuple[int, LiquidType]] = None  # u8, LiquidType
 
     @classmethod
-    def deserialize_packed(cls, reader: Reader) -> Tuple['Tile', int]:
+    def deserialize_packed(cls, reader: Reader) -> Tuple["Tile", int]:
         flags_bytes = [reader.read_byte(), 0, 0]
-        if flags_bytes[0] & 0x01 != 0:
+        if flags_bytes[0] & 0x01:
             flags_bytes[1] = reader.read_byte()
-            if flags_bytes[1] & 0x01 != 0:
+            if flags_bytes[1] & 0x01:
                 flags_bytes[2] = reader.read_byte()
+                if flags_bytes[2] & 0x01:
+                    flags_bytes.append(reader.read_byte())  # num4
 
-        tile_flags = 0  # u16
-
+        tile_flags = 0
         ty = None
-        frame = None
+        frame = (-1, -1)
         color = None
-        if flags_bytes[0] & 0x02 != 0:
-            tile_flags |= TileFlags.ACTIVE  # ACTIVE
-            if flags_bytes[0] & 0x20 != 0:
-                ty_val = reader.read_ushort()
+        wall = None
+        wall_color = None
+        liquid = None
+
+        # ACTIVE tile
+        if flags_bytes[0] & 0x02:
+            tile_flags |= TileFlags.ACTIVE
+            if flags_bytes[0] & 0x20:
+                low = reader.read_byte()
+                high = reader.read_byte()
+                ty_val = (high << 8) | low
             else:
                 ty_val = reader.read_byte()
             ty = ty_val
@@ -88,72 +705,83 @@ class Tile:
             if is_important(ty_val):
                 frame = (reader.read_short(), reader.read_short())
 
-            if flags_bytes[2] & 0x08 != 0:
-                tile_flags |= TileFlags.HAS_COLOR  # HAS_COLOR
+            if len(flags_bytes) > 3 and flags_bytes[3] & 0x08:
+                tile_flags |= TileFlags.HAS_COLOR
                 color = reader.read_byte()
 
-        wall = None
-        wall_color = None
-        if flags_bytes[0] & 0x04 != 0:
-            tile_flags |= TileFlags.HAS_WALL  # HAS_WALL
-            wall_val = reader.read_byte()
-            if flags_bytes[2] & 0x10 != 0:
-                tile_flags |= TileFlags.HAS_WALL_COLOR  # HAS_WALL_COLOR
+        # WALL
+        if flags_bytes[0] & 0x04:
+            tile_flags |= TileFlags.HAS_WALL
+            wall = reader.read_byte()
+            if len(flags_bytes) > 3 and flags_bytes[3] & 0x10:
+                tile_flags |= TileFlags.HAS_WALL_COLOR
                 wall_color = reader.read_byte()
-            wall = wall_val
 
-        liquid = None
+        # LIQUID
         liquid_code = (flags_bytes[0] & 0x18) >> 3
-        if liquid_code == 1:
-            liquid = (reader.read_byte(), LiquidType.WATER)
-            tile_flags |= TileFlags.HAS_LIQUID  # HAS_LIQUID
-        elif liquid_code == 2:
-            liquid = (reader.read_byte(), LiquidType.LAVA)
-            tile_flags |= TileFlags.HAS_LIQUID
-        elif liquid_code == 3:
-            liquid = (reader.read_byte(), LiquidType.HONEY)
+        if liquid_code != 0:
+            amt = reader.read_byte()
+            if len(flags_bytes) > 3 and flags_bytes[3] & 0x80:
+                liq_type = LiquidType.SHIMMER
+            elif liquid_code == 2:
+                liq_type = LiquidType.LAVA
+            elif liquid_code == 3:
+                liq_type = LiquidType.HONEY
+            else:
+                liq_type = LiquidType.WATER
+            liquid = (amt, liq_type)
             tile_flags |= TileFlags.HAS_LIQUID
 
         # Wires
-        if flags_bytes[1] & 0x02 != 0:
-            tile_flags |= TileFlags.WIRE1  # WIRE1
-        if flags_bytes[1] & 0x04 != 0:
-            tile_flags |= TileFlags.WIRE2  # WIRE2
-        if flags_bytes[1] & 0x08 != 0:
-            tile_flags |= TileFlags.WIRE3  # WIRE3
-        if flags_bytes[2] & 0x20 != 0:
-            tile_flags |= TileFlags.WIRE4  # WIRE4
+        if flags_bytes[1] & 0x02:
+            tile_flags |= TileFlags.WIRE1
+        if flags_bytes[1] & 0x04:
+            tile_flags |= TileFlags.WIRE2
+        if flags_bytes[1] & 0x08:
+            tile_flags |= TileFlags.WIRE3
+        if flags_bytes[2] & 0x20:
+            tile_flags |= TileFlags.WIRE4
 
         # Shape
         shape = (flags_bytes[1] & 0x70) >> 4
         if shape == 1:
-            tile_flags |= TileFlags.HALF_BRICK  # HALF_BRICK
+            tile_flags |= TileFlags.HALF_BRICK
         elif shape == 2:
-            tile_flags |= TileFlags.SLOPE1  # SLOPE1
+            tile_flags |= TileFlags.SLOPE1
         elif shape == 3:
-            tile_flags |= TileFlags.SLOPE2  # SLOPE2
+            tile_flags |= TileFlags.SLOPE2
         elif shape == 4:
-            tile_flags |= TileFlags.SLOPE3  # SLOPE3
+            tile_flags |= TileFlags.SLOPE3
 
-        if flags_bytes[2] & 0x02 != 0:
-            tile_flags |= TileFlags.ACTUATOR  # ACTUATOR
-        if flags_bytes[2] & 0x04 != 0:
-            tile_flags |= TileFlags.INACTIVE  # INACTIVE
+        if flags_bytes[2] & 0x02:
+            tile_flags |= TileFlags.ACTUATOR
+        if flags_bytes[2] & 0x04:
+            tile_flags |= TileFlags.INACTIVE
 
-        if flags_bytes[2] & 0x40 != 0:
-            if wall is not None:
-                wall |= (reader.read_byte() << 8)
-            else:
-                raise ValueError("Wall high byte without wall")
+        # Wall high byte
+        if flags_bytes[2] & 0x40:
+            wall = (reader.read_byte() << 8) | (wall if wall else 0)
+
+        # num4 flags (extra)
+        num4 = flags_bytes[3] if len(flags_bytes) > 3 else 0
+        if num4 > 1:
+            if num4 & 0x02:
+                tile_flags |= TileFlags.INVISIBLE_BLOCK
+            if num4 & 0x04:
+                tile_flags |= TileFlags.INVISIBLE_WALL
+            if num4 & 0x08:
+                tile_flags |= TileFlags.FULLBRIGHT_BLOCK
+            if num4 & 0x10:
+                tile_flags |= TileFlags.FULLBRIGHT_WALL
 
         # RLE
-        rle_code = (flags_bytes[0] & 0xc0) >> 6
+        rle_code = (flags_bytes[0] & 0xC0) >> 6
         if rle_code == 0:
             rle = 0
         elif rle_code == 1:
             rle = reader.read_byte()
-        else:
-            rle = reader.read_ushort()
+        else:  # 2 or 3
+            rle = reader.read_short()
 
         return cls(
             flags=tile_flags,
@@ -162,20 +790,156 @@ class Tile:
             ty=ty,
             frame=frame,
             wall=wall,
-            liquid=liquid
+            liquid=liquid,
         ), rle
 
+    # @classmethod
+    # def deserialize_packed(cls, reader: Reader) -> Tuple["Tile", int]:
+    #     flags_bytes = [reader.read_byte(), 0, 0]
+    #     if flags_bytes[0] & 0x01 != 0:
+    #         flags_bytes[1] = reader.read_byte()
+    #         if flags_bytes[1] & 0x01 != 0:
+    #             flags_bytes[2] = reader.read_byte()
+    #             if flags_bytes[2] & 0x01 != 0:
+    #                 flags_bytes.append(reader.read_byte())
+
+    #     tile_flags = 0  # u16
+
+    #     ty = None
+    #     frame = None
+    #     color = None
+    #     if flags_bytes[0] & 0x02 != 0:
+    #         tile_flags |= TileFlags.ACTIVE  # ACTIVE
+    #         if flags_bytes[0] & 0x20 != 0:
+    #             low = reader.read_byte()
+    #             high = reader.read_byte()
+    #             ty_val = (high << 8) | low
+    #         else:
+    #             ty_val = reader.read_byte()
+    #         ty = ty_val
+
+    #         if is_important(ty_val):
+    #             frame = (reader.read_short(), reader.read_short())
+    #         else:
+    #             frame = (-1, -1)
+    #         if flags_bytes[2] & 0x08 != 0:
+    #             tile_flags |= TileFlags.HAS_COLOR  # HAS_COLOR
+    #             color = reader.read_byte()
+
+    #     wall = None
+    #     wall_color = None
+    #     if flags_bytes[0] & 0x04 != 0:
+    #         tile_flags |= TileFlags.HAS_WALL  # HAS_WALL
+    #         wall = reader.read_byte()
+    #         if flags_bytes[2] & 0x10 != 0:
+    #             tile_flags |= TileFlags.HAS_WALL_COLOR  # HAS_WALL_COLOR
+    #             wall_color = reader.read_byte()
+
+    #     liquid = None
+    #     liquid_code = (flags_bytes[0] & 0x18) >> 3
+    #     if liquid_code != 0:
+    #         amt = reader.read_byte()
+    #         if flags_bytes[2] & 0x80 != 0:
+    #             liq_type = LiquidType.SHIMMER
+    #         elif liquid_code == 2:
+    #             liq_type = LiquidType.LAVA
+    #         elif liquid_code == 3:
+    #             liq_type = LiquidType.HONEY
+    #         else:
+    #             liq_type = LiquidType.WATER
+    #         liquid = (amt, liq_type)
+    #         tile_flags |= TileFlags.HAS_LIQUID
+
+    #     # Wires
+    #     if flags_bytes[1] & 0x02 != 0:
+    #         tile_flags |= TileFlags.WIRE1  # WIRE1
+    #     if flags_bytes[1] & 0x04 != 0:
+    #         tile_flags |= TileFlags.WIRE2  # WIRE2
+    #     if flags_bytes[1] & 0x08 != 0:
+    #         tile_flags |= TileFlags.WIRE3  # WIRE3
+    #     if flags_bytes[2] & 0x20 != 0:
+    #         tile_flags |= TileFlags.WIRE4  # WIRE4
+
+    #     # Shape
+    #     shape = (flags_bytes[1] & 0x70) >> 4
+    #     if shape == 1:
+    #         tile_flags |= TileFlags.HALF_BRICK  # HALF_BRICK
+    #     elif shape == 2:
+    #         tile_flags |= TileFlags.SLOPE1  # SLOPE1
+    #     elif shape == 3:
+    #         tile_flags |= TileFlags.SLOPE2  # SLOPE2
+    #     elif shape == 4:
+    #         tile_flags |= TileFlags.SLOPE3  # SLOPE3
+
+    #     if flags_bytes[2] & 0x02 != 0:
+    #         tile_flags |= TileFlags.ACTUATOR  # ACTUATOR
+    #     if flags_bytes[2] & 0x04 != 0:
+    #         tile_flags |= TileFlags.INACTIVE  # INACTIVE
+
+    #     if flags_bytes[2] & 0x40 != 0:
+    #         wall |= reader.read_byte() << 8
+
+    #     # num4 flags
+    #     num4 = flags_bytes[3] if len(flags_bytes) > 3 else 0
+    #     if num4 > 1:
+    #         if num4 & 0x02 != 0:
+    #             tile_flags |= TileFlags.INVISIBLE_BLOCK
+    #         if num4 & 0x04 != 0:
+    #             tile_flags |= TileFlags.INVISIBLE_WALL
+    #         if num4 & 0x08 != 0:
+    #             tile_flags |= TileFlags.FULLBRIGHT_BLOCK
+    #         if num4 & 0x10 != 0:
+    #             tile_flags |= TileFlags.FULLBRIGHT_WALL
+
+    #     # RLE
+    #     rle_code = (flags_bytes[0] & 0xC0) >> 6
+    #     if rle_code == 0:
+    #         rle = 0
+    #     elif rle_code == 1:
+    #         rle = reader.read_byte()
+    #     else:
+    #         rle = reader.read_short()
+
+    #     return (
+    #         cls(
+    #             flags=tile_flags,
+    #             color=color,
+    #             wall_color=wall_color,
+    #             ty=ty,
+    #             frame=frame,
+    #             wall=wall,
+    #             liquid=liquid,
+    #         ),
+    #         rle,
+    #     )
+
     @classmethod
-    def read(cls, reader: Reader) -> 'Tile':
+    def read(cls, reader: Reader) -> "Tile":
         # Fallback unpacked read
         flags = reader.read_ushort()
         color = reader.read_byte() if flags & TileFlags.HAS_COLOR else None
         wall_color = reader.read_byte() if flags & TileFlags.HAS_WALL_COLOR else None
         ty = reader.read_ushort() if flags & TileFlags.ACTIVE else None
-        frame = (reader.read_short(), reader.read_short()) if ty and is_important(ty) else None
+        frame = (
+            (reader.read_short(), reader.read_short())
+            if ty and is_important(ty)
+            else None
+        )
         wall = reader.read_ushort() if flags & TileFlags.HAS_WALL else None
-        liquid = (reader.read_byte(), LiquidType.read(reader)) if flags & TileFlags.HAS_LIQUID else None
-        return cls(flags=flags, color=color, wall_color=wall_color, ty=ty, frame=frame, wall=wall, liquid=liquid)
+        liquid = (
+            (reader.read_byte(), LiquidType.read(reader))
+            if flags & TileFlags.HAS_LIQUID
+            else None
+        )
+        return cls(
+            flags=flags,
+            color=color,
+            wall_color=wall_color,
+            ty=ty,
+            frame=frame,
+            wall=wall,
+            liquid=liquid,
+        )
 
     def write(self, writer: Writer) -> None:
         # TODO: implement serialization

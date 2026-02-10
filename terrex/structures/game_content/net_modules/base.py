@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from terrex.util.streamer import Reader, Writer
 
 
-class LoadNetServerPacket(ABC):
+class NetServerModule(ABC):
     """
     Server -> Client
     """
@@ -15,7 +15,7 @@ class LoadNetServerPacket(ABC):
         raise NotImplementedError("LoadNetServerPacket does not implement write")
 
 
-class LoadNetClientPacket(ABC):
+class NetClientModule(ABC):
     """
     Client -> Server
     """
@@ -27,7 +27,7 @@ class LoadNetClientPacket(ABC):
         pass
 
 
-class LoadNetSyncPacket(ABC):
+class NetSyncModule(ABC):
     """
     Server <-> Client (Sync)
     """
@@ -40,4 +40,4 @@ class LoadNetSyncPacket(ABC):
         pass
 
 
-LoadNetPacket = Union[LoadNetServerPacket, LoadNetClientPacket, LoadNetSyncPacket]
+NetModule = Union[NetServerModule, NetClientModule, NetSyncModule]

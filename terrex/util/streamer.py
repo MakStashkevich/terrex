@@ -2,10 +2,11 @@ import struct
 
 class Reader:
     """Reading data from Terraria protocol byte buffer."""
-    def __init__(self, data: bytes):
+    def __init__(self, data: bytes, protocol_version: int = 0):
         """Initializes the reader with byte data."""
         self.data = data
         self.index = 0
+        self.version = protocol_version
 
     def read_byte(self) -> int:
         """Reads an unsigned 8-bit integer (byte, uint8)."""
@@ -62,7 +63,37 @@ class Reader:
         res = struct.unpack("<f", self.data[self.index:self.index+4])[0]
         self.index += 4
         return res
+    
+    def read_single(self) -> float:
+        """Reads a 32-bit IEEE 754 float (Single, little-endian)."""
+        if self.index + 4 > len(self.data):
+            raise ValueError(f"Cannot read single: only {len(self.data) - self.index} bytes remaining")
+        res = struct.unpack_from("<f", self.data, self.index)[0]
+        self.index += 4
+        return res
+    
+    def read_double(self) -> float:
+        """Reads a 64-bit IEEE 754 double (little-endian)."""
+        if self.index + 8 > len(self.data):
+            raise ValueError(f"Cannot read double: only {len(self.data) - self.index} bytes remaining")
+        res = struct.unpack("<d", self.data[self.index:self.index + 8])[0]
+        self.index += 8
+        return res
+    
+    def read_7bit_encoded_int(reader) -> int:
+        """Reads a .NET 7-bit encoded int (variable-length)."""
+        value = 0
+        shift = 0
 
+        while True:
+            b = reader.read_byte()
+            value |= (b & 0x7F) << shift
+            if (b & 0x80) == 0:
+                break
+            shift += 7
+        return value
+
+    # BinaryReader.ReadString()
     def read_string(self) -> str:
         """Reads a Pascal string: 1-byte length (0-127) followed by UTF-8 bytes."""
         length = self.read_byte()
@@ -72,8 +103,21 @@ class Reader:
         self.index += length
         return res
 
+    def read_dotnet_string(self) -> str:
+        """Reads a Terraria string: 7-bit varint length."""
+        length = self.read_7bit_int()
+        print("STRING LEN:", length, "AT", self.index)
+        data = self.read_bytes(length)
+        print("RAW STRING", data.hex(), "AT", self.index - length)
+        try:
+            return data.decode("utf-8")
+        except UnicodeDecodeError:
+            return repr(data)
+    
     def read_bytes(self, length: int) -> bytes:
         """Reads the specified number of raw bytes."""
+        if self.index + length > len(self.data):
+            raise ValueError("Not enough bytes remaining")
         res = self.data[self.index:self.index + length]
         self.index += length
         return res
@@ -123,6 +167,32 @@ class Writer:
     def write_float(self, value: float):
         """Writes a 32-bit IEEE 754 float (little-endian)."""
         self.data.extend(struct.pack("<f", value))
+        
+    def write_single(self, value: float):
+        """Writes a 32-bit IEEE 754 float (Single, little-endian)."""
+        self.data.extend(struct.pack("<f", value))
+
+    def write_double(self, value: float):
+        """Writes a 64-bit IEEE 754 double (little-endian)."""
+        self.data.extend(struct.pack("<d", value))
+
+    def write_7bit_encoded_int(self, value: int):
+        """Writes a .NET 7-bit encoded int (variable-length)."""
+        if value < 0:
+            raise ValueError("7-bit encoded int must be non-negative")
+        
+        while value >= 0x80:
+            # младшие 7 бит + флаг продолжения (1)
+            self.write_byte((value & 0x7F) | 0x80)
+            value >>= 7
+        
+        # последний байт без флага продолжения
+        self.write_byte(value & 0x7F)
+
+    def write_dotnet_string(self, text: str) -> bytes:
+        raw = text.encode("utf-8")
+        length_prefix = self.write_7bit_encoded_int(len(raw))
+        return length_prefix + raw
 
     def write_string(self, value: str):
         """Writes a Pascal string: 1-byte length (0-127) followed by UTF-8 bytes."""

@@ -212,7 +212,7 @@ def forward(
                     # Log to shared both-traffic file
                     if config.both_traffic_txt is not None:
                         config.both_traffic_txt.write(
-                            f"[{timestamp}] {direction} ---0x{packet.id:02X} {pkt_name} ---\n"
+                            f"{direction} ---0x{packet.id:02X} {pkt_name} ---\n"
                         )
                         config.both_traffic_txt.write(f"{log_payload}\n\n")
                         if config.flush_both_txt:

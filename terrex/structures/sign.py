@@ -14,14 +14,14 @@ class Sign:
     @classmethod
     def read(cls, reader: Reader) -> 'Sign':
         return cls(
-            reader.read_ushort(),
             reader.read_short(),
             reader.read_short(),
-            reader.read_string(),
+            reader.read_short(),
+            reader.read_terraria_string(),
         )
 
     def write(self, writer: Writer) -> None:
-        writer.write_ushort(self.index)
+        writer.write_short(self.index)
         writer.write_short(self.x)
         writer.write_short(self.y)
         writer.write_string(self.text)

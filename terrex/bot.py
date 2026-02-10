@@ -49,7 +49,7 @@ class Terrex(object):
             self.client.send(
                 packets.LoadNetModule(
                     variant=1,
-                    body=structures.LoadNetModuleServerText(
+                    body=structures.NetTextModule(
                         author=self.player.id,
                         text=text,
                         color=color,

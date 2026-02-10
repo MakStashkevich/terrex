@@ -1,62 +1,71 @@
 from typing import Dict, Type
 from terrex.events.events import Event
-from terrex.structures.load_net_packet import LoadNetPacket
+from terrex.structures.game_content.net_modules.base import NetModule
 from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
-from terrex.structures.load_net_module import (
-    LoadNetModuleLiquid,
-    LoadNetModuleServerText,
-    LoadNetModulePing,
-    LoadNetModuleAmbience,
-    LoadNetModuleBestiary,
-    LoadNetModuleCreativeUnlocks,
-    LoadNetModuleCreativePowers,
-    LoadNetModuleCreativeUnlocksPlayerReport,
-    LoadNetModuleTeleportPylon,
-    LoadNetModuleParticles,
-    LoadNetModuleCreativePowerPermissions,
+from terrex.structures.game_content.net_modules.net_modules import (
+    NetLiquidModule,
+    NetTextModule,
+    NetPingModule,
+    NetAmbienceModule,
+    NetBestiaryModule,
+    NetCreativePowersModule,
+    NetCreativeUnlocksPlayerReportModule,
+    NetTeleportPylonModule,
+    NetParticlesModule,
+    NetCreativePowerPermissionsModule,
+    NetBannersModule,
+    NetCraftingRequestModule,
+    NetTagEffectModule,
+    NetLeashedEntityModule,
+    NetUnbreakableWallScanModule,
 )
 
-BODY_CLASSES: Dict[int, Type["LoadNetPacket"]] = {
-    0: LoadNetModuleLiquid,
-    1: LoadNetModuleServerText,
-    2: LoadNetModulePing,
-    3: LoadNetModuleAmbience,
-    4: LoadNetModuleBestiary,
-    5: LoadNetModuleCreativeUnlocks,
-    6: LoadNetModuleCreativePowers,
-    7: LoadNetModuleCreativeUnlocksPlayerReport,
-    8: LoadNetModuleTeleportPylon,
-    9: LoadNetModuleParticles,
-    10: LoadNetModuleCreativePowerPermissions,
+# NetworkInitializer.Load()
+NET_MODULES: Dict[int, Type["NetModule"]] = {
+    0: NetLiquidModule,
+    1: NetTextModule,
+    2: NetPingModule,
+    3: NetAmbienceModule,
+    4: NetBestiaryModule,
+    5: NetCreativePowersModule,
+    6: NetCreativeUnlocksPlayerReportModule,
+    7: NetTeleportPylonModule,
+    8: NetParticlesModule,
+    9: NetCreativePowerPermissionsModule,
+    10: NetBannersModule,
+    11: NetCraftingRequestModule,
+    12: NetTagEffectModule,
+    13: NetLeashedEntityModule,
+    14: NetUnbreakableWallScanModule,
 }
 
 
 class LoadNetModule(SyncPacket):
     id = PacketIds.LOAD_NET_MODULE.value
 
-    def __init__(self, variant: int = 0, body: LoadNetPacket = None):
+    def __init__(self, variant: int = 0, net_module: NetModule = None):
         self.variant = variant
-        self.body = body
+        self.net_module = net_module
 
     def read(self, reader: Reader) -> None:
         self.variant = reader.read_ushort()
-        body_cls = BODY_CLASSES.get(self.variant)
-        if body_cls is None:
+        net_module = NET_MODULES.get(self.variant)
+        if net_module is None:
             raise ValueError(f"Unknown variant LoadNetModule: {self.variant}")
-        self.body = body_cls.read(reader)
+        self.net_module = net_module.read(reader)
 
     def write(self, writer: Writer) -> None:
         writer.write_ushort(self.variant)
-        self.body.write(writer)
+        self.net_module.write(writer)
 
     def handle(self, world, player, evman):
         if self.variant == 1 and isinstance(
-            self.body, LoadNetModuleServerText
+            self.net_module, NetTextModule
         ):  # server text
-            evman.raise_event(Event.Chat, self.body)
+            evman.raise_event(Event.Chat, self.net_module)
 
 
 LoadNetModule.register()
