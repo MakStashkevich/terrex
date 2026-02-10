@@ -1,11 +1,11 @@
 import time
 from terrex import Terrex
 from terrex.events import Event
-from terrex.structures.net_modules import NetTextModule
+from terrex.structures.game_content.net_modules import NetTextModule
 
 # Create a Terrex object
 # used with proxy on port 8888
-bot = Terrex('127.0.0.1', 8888)
+bot = Terrex('127.0.0.1', 8888, server_password="4444")
 event = bot.get_event_manager()
 
 
