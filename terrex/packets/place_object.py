@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class PlaceObject(SyncPacket):
-    id = PacketIds.PLACE_OBJECT.value
+    id = PacketIds.PLACE_OBJECT
 
     def __init__(self, x: int = 0, y: int = 0, ty: int = 0, style: int = 0, alternate: int = 0, random: int = 0, direction: bool = False):
         self.x = x

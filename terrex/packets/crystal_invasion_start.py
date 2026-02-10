@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class CrystalInvasionStart(ClientPacket):
-    id = PacketIds.CRYSTAL_INVASION_START.value
+    id = PacketIds.CRYSTAL_INVASION_START
 
     def __init__(self, x: int = 0, y: int = 0):
         self.x = x

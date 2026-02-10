@@ -3,7 +3,7 @@ from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
 class PlayerTeleportPortal(SyncPacket):
-    id = PacketIds.PLAYER_TELEPORT_PORTAL.value
+    id = PacketIds.PLAYER_TELEPORT_PORTAL
 
     def __init__(self, player_id: int = 0, portal_color_index: int = 0, new_pos_x: float = 0.0, new_pos_y: float = 0.0, vel_x: float = 0.0, vel_y: float = 0.0):
         self.player_id = player_id

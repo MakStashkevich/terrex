@@ -5,7 +5,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class SyncExtraValue(SyncPacket):
-    id = PacketIds.SYNC_EXTRA_VALUE.value
+    id = PacketIds.SYNC_EXTRA_VALUE
 
     def __init__(self, npc_index: int = 0, extra_value: int = 0, pos: Vec2 | None = None):
         self.npc_index = npc_index

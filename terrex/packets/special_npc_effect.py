@@ -4,7 +4,7 @@ from ..util.streamer import Reader, Writer
 
 
 class SpecialNpcEffect(SyncPacket):
-    id = PacketIds.SPECIAL_NPC_EFFECT.value
+    id = PacketIds.SPECIAL_NPC_EFFECT
 
     def __init__(self) -> None:
         self.player_id: int = 0

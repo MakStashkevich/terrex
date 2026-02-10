@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader
 
 
 class CreateTemporaryAnimation(ServerPacket):
-    id = PacketIds.CREATE_TEMPORARY_ANIMATION.value
+    id = PacketIds.CREATE_TEMPORARY_ANIMATION
 
     def __init__(self, animation_type: int = 0, tile_type: int = 0, x: int = 0, y: int = 0):
         self.animation_type = animation_type

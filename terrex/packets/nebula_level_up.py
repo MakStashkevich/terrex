@@ -5,7 +5,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class NebulaLevelUp(SyncPacket):
-    id = PacketIds.NEBULA_LEVEL_UP.value
+    id = PacketIds.NEBULA_LEVEL_UP
 
     def __init__(self, player_id: int = 0, level_up_type: int = 0, origin: Vec2 | None = None):
         self.player_id = player_id

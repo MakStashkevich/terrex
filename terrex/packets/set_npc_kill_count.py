@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader
 
 
 class SetNpcKillCount(ServerPacket):
-    id = PacketIds.SET_NPC_KILL_COUNT.value
+    id = PacketIds.SET_NPC_KILL_COUNT
 
     def __init__(self, npc_type: int = 0, kill_count: int = 0):
         self.npc_type = npc_type

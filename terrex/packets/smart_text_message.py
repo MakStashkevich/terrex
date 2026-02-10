@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader
 from terrex.structures.net_string import NetworkText
 
 class SmartTextMessage(ServerPacket):
-    id = PacketIds.SMART_TEXT_MESSAGE.value
+    id = PacketIds.SMART_TEXT_MESSAGE
 
     def __init__(self, color_r: int = 255, color_g: int = 255, color_b: int = 255, message: NetworkText = NetworkText(), message_length: int = 0):
         self.color_r = color_r

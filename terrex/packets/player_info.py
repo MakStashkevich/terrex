@@ -5,7 +5,7 @@ from terrex.structures.rgb import Rgb
 from terrex.util.streamer import Reader, Writer
 
 class PlayerInfo(SyncPacket):
-    id = PacketIds.PLAYER_INFO.value
+    id = PacketIds.PLAYER_INFO
 
     def __init__(
         self,

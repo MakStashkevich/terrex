@@ -3,7 +3,7 @@ from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
 class SpawnPlayer(ClientPacket):
-    id = PacketIds.SPAWN_PLAYER.value
+    id = PacketIds.SPAWN_PLAYER
 
     def __init__(self, player_id: int = 0, spawn_x: float = -1.0, spawn_y: float = -1.0,
                  respawn_time_remaining: int = 0, player_spawn_context: int = 0):

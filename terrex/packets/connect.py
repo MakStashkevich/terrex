@@ -3,7 +3,7 @@ from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
 class Connect(ClientPacket):
-    id = PacketIds.CONNECT_REQUEST.value
+    id = PacketIds.CONNECT_REQUEST
 
     def __init__(self, version: int = 0):
         self.version = version

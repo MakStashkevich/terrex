@@ -6,7 +6,7 @@ from terrex.util.streamer import Reader
 
 
 class SectionTileFrame(ServerPacket):
-    id = PacketIds.SECTION_TILE_FRAME.value
+    id = PacketIds.SECTION_TILE_FRAME
 
     def __init__(self, start_x: int = 0, start_y: int = 0, end_x: int = 0, end_y: int = 0):
         self.start_x = start_x

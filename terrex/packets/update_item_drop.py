@@ -9,7 +9,7 @@ from terrex.structures.vec2 import Vec2
 
 
 class UpdateItemDrop(SyncPacket):
-    id = PacketIds.UPDATE_ITEM_DROP.value
+    id = PacketIds.UPDATE_ITEM_DROP
 
     def __init__(self, item_id: int = 0, pos: Vec2 = Vec2(0.0, 0.0), vel: Vec2 = Vec2(0.0, 0.0),
                  stack_size: int = 0, prefix: int = 0, no_delay: int = 0, item_net_id: int = 0):

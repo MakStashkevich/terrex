@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader
 
 
 class UpdateShieldStrengths(ServerPacket):
-    id = PacketIds.UPDATE_SHIELD_STRENGTHS.value
+    id = PacketIds.UPDATE_SHIELD_STRENGTHS
 
     def __init__(self, solar_tower: int = 0, vortex_tower: int = 0, nebula_tower: int = 0, stardust_tower: int = 0):
         self.solar_tower = solar_tower

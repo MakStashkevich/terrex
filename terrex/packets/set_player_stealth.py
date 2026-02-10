@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class SetPlayerStealth(SyncPacket):
-    id = PacketIds.SET_PLAYER_STEALTH.value
+    id = PacketIds.SET_PLAYER_STEALTH
 
     def __init__(self, player: int = 0, stealth: float = 0.0):
         self.player = player

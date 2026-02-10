@@ -22,7 +22,7 @@ class ToolMode(IntFlag):
 
 
 class MassWire(ClientPacket):
-    id = PacketIds.MASS_WIRE_OPERATION.value
+    id = PacketIds.MASS_WIRE_OPERATION
 
     def __init__(self, start_x: int = 0, start_y: int = 0, end_x: int = 0, end_y: int = 0, tool_mode: ToolMode = ToolMode.RED):
         self.start_x = start_x

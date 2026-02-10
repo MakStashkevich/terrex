@@ -6,7 +6,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class TogglePvp(SyncPacket):
-    id = PacketIds.TOGGLE_PVP.value
+    id = PacketIds.TOGGLE_PVP
 
     def __init__(self, player_id: int = 0, pvp_enabled: bool = False):
         self.player_id = player_id

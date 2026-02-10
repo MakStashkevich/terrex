@@ -7,7 +7,7 @@ from terrex.structures.net_string import NetworkText
 
 
 class Status(ServerPacket):
-    id = PacketIds.STATUS.value
+    id = PacketIds.STATUS
 
     def __init__(self, status_id: int = 0, text: NetworkText = NetworkText(), flags: int = 0):
         self.status_id = status_id

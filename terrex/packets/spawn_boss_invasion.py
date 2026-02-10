@@ -4,7 +4,7 @@ from ..util.streamer import Reader, Writer
 
 
 class SpawnBossInvasion(ClientPacket):
-    id = PacketIds.SPAWN_BOSS_INVASION.value
+    id = PacketIds.SPAWN_BOSS_INVASION
 
     def __init__(self) -> None:
         self.player_id: int = 0

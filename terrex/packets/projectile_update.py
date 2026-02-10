@@ -7,7 +7,7 @@ from terrex.structures.vec2 import Vec2
 
 
 class ProjectileUpdate(SyncPacket):
-    id = PacketIds.PROJECTILE_UPDATE.value
+    id = PacketIds.PROJECTILE_UPDATE
 
     def __init__(self, projectile_id: int = 0, pos: Vec2 = Vec2(0.0, 0.0), vel: Vec2 = Vec2(0.0, 0.0),
                  owner: int = 0, ty: int = 0, flags: int = 0, ai: List[float] = None,

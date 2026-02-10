@@ -6,7 +6,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class SendPassword(ClientPacket):
-    id = PacketIds.SEND_PASSWORD.value
+    id = PacketIds.SEND_PASSWORD
 
     def __init__(self, password: str = ""):
         self.password = password

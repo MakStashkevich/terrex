@@ -6,7 +6,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class OpenChest(ClientPacket):
-    id = PacketIds.OPEN_CHEST.value
+    id = PacketIds.OPEN_CHEST
 
     def __init__(self, tile_x: int = 0, tile_y: int = 0):
         self.tile_x = tile_x

@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class UpdatePlayerLoadout(ClientPacket):
-    id = PacketIds.UPDATE_PLAYER_LOADOUT.value
+    id = PacketIds.UPDATE_PLAYER_LOADOUT
 
     def __init__(self, player_id: int = 0, loadout_index: int = 0, accessory_visibility: int = 0):
         self.player_id = player_id

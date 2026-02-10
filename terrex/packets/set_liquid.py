@@ -6,7 +6,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class SetLiquid(SyncPacket):
-    id = PacketIds.SET_LIQUID.value
+    id = PacketIds.SET_LIQUID
 
     def __init__(self, x: int = 0, y: int = 0, liquid: int = 0, liquid_type: int = 0):
         self.x = x

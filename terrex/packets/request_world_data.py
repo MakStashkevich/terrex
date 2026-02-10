@@ -3,7 +3,7 @@ from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
 class RequestWorldData(ClientPacket):
-    id = PacketIds.REQUEST_WORLD_DATA.value
+    id = PacketIds.REQUEST_WORLD_DATA
 
     def write(self, writer: Writer):
         pass

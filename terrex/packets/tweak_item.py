@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class TweakItem(ServerPacket):
-    id = PacketIds.TWEAK_ITEM.value
+    id = PacketIds.TWEAK_ITEM
 
     def __init__(self):
         self.item_index: int = 0

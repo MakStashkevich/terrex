@@ -4,7 +4,7 @@ from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
 class UpdateNpcName(SyncPacket):
-    id = PacketIds.UPDATE_NPC_NAME.value
+    id = PacketIds.UPDATE_NPC_NAME
 
     def __init__(self, npc_id: int = 0, name: Optional[str] = None, town_npc_variation_idx: Optional[int] = None):
         self.npc_id = npc_id

@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class AddNpcBuff(SyncPacket):
-    id = PacketIds.ADD_NPC_BUFF.value
+    id = PacketIds.ADD_NPC_BUFF
 
     def __init__(self, npc_id: int = 0, buff: int = 0, time: int = 0):
         self.npc_id = npc_id

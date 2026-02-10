@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class HealOtherPlayer(SyncPacket):
-    id = PacketIds.HEAL_OTHER_PLAYER.value
+    id = PacketIds.HEAL_OTHER_PLAYER
 
     def __init__(self, player_id: int = 0, heal_amount: int = 0):
         self.player_id = player_id

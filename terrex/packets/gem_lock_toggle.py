@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class GemLockToggle(ClientPacket):
-    id = PacketIds.GEM_LOCK_TOGGLE.value
+    id = PacketIds.GEM_LOCK_TOGGLE
 
     def __init__(self, x: int = 0, y: int = 0, on: bool = False):
         self.x = x

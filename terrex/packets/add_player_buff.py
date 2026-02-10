@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class AddPlayerBuff(SyncPacket):
-    id = PacketIds.ADD_PLAYER_BUFF.value
+    id = PacketIds.ADD_PLAYER_BUFF
 
     def __init__(self, player_id: int = 0, buff: int = 0, time: int = 0):
         self.player_id = player_id

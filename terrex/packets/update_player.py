@@ -11,7 +11,7 @@ PULLEY_HAS_VEL = 0x04
 PLAYER_ACTION_HAS_ORIG_AND_HOME_POS = 0x40
 
 class UpdatePlayer(SyncPacket):
-    id = PacketIds.UPDATE_PLAYER.value
+    id = PacketIds.UPDATE_PLAYER
 
     def __init__(
         self,

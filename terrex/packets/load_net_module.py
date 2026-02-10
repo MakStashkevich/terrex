@@ -11,7 +11,7 @@ from terrex.structures.game_content.net_modules import (
 
 
 class LoadNetModule(SyncPacket):
-    id = PacketIds.LOAD_NET_MODULE.value
+    id = PacketIds.LOAD_NET_MODULE
 
     module: NetModule
 

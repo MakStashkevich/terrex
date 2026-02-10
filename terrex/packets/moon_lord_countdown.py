@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader
 
 
 class MoonLordCountdown(ServerPacket):
-    id = PacketIds.MOON_LORD_COUNTDOWN.value
+    id = PacketIds.MOON_LORD_COUNTDOWN
 
     def __init__(self, countdown: int = 0):
         self.countdown = countdown

@@ -5,7 +5,7 @@ from ..util.streamer import Reader, Writer
 
 
 class UpdateNpcBuff(ServerPacket):
-    id = PacketIds.UPDATE_NPC_BUFF.value
+    id = PacketIds.UPDATE_NPC_BUFF
     MAX_BUFF = 20 # NPC.maxBuffs
 
     def __init__(self) -> None:

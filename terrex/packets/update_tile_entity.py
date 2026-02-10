@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class UpdateTileEntity(ServerPacket):
-    id = PacketIds.UPDATE_TILE_ENTITY.value
+    id = PacketIds.UPDATE_TILE_ENTITY
 
     def __init__(self):
         self.tile_entity_id: int = 0

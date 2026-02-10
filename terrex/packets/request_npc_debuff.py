@@ -4,7 +4,7 @@ from terrex.util.streamer import Writer
 
 
 class RequestNpcDebuff(ClientPacket):
-    id = PacketIds.REQUEST_NPC_BUFF_REMOVAL.value
+    id = PacketIds.REQUEST_NPC_BUFF_REMOVAL
 
     def __init__(self, npc_id: int = 0, buff_id: int = 0):
         self.npc_id = npc_id

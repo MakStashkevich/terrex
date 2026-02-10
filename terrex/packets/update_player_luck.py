@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class UpdatePlayerLuck(SyncPacket):
-    id = PacketIds.UPDATE_PLAYER_LUCK_FACTORS.value
+    id = PacketIds.UPDATE_PLAYER_LUCK_FACTORS
 
     # maximum luck: 1.0
     # minimum luck: -0.4
@@ -19,7 +19,7 @@ class UpdatePlayerLuck(SyncPacket):
                  coin_luck: float = 0.0,
                  kite_luck_level: int = 0):
         self.player_id = player_id
-        self.ladybug_luck_time_remaining = ladybug_luck_time_remaining # +0.2-0.4 (if ladubug is golden) (time 12-24 min)
+        self.ladybug_luck_time_left = ladybug_luck_time_remaining # +0.2-0.4 (if ladubug is golden) (time 12-24 min)
         self.torch_luck = torch_luck # +0.2 (+0.1 if torch primary)
         self.luck_potion = luck_potion # +0.1 - 0.2 - 0.3 (5 - 10 - 15 min)
         self.has_garden_gnome_nearby = has_garden_gnome_nearby # +0.2
@@ -33,25 +33,25 @@ class UpdatePlayerLuck(SyncPacket):
 
     def read(self, reader: Reader):
         self.player_id = reader.read_byte()
-        self.ladybug_luck_time_remaining = reader.read_int()
+        self.ladybug_luck_time_left = reader.read_int()
         self.torch_luck = reader.read_float()
-        self.luck_potion = reader.read_int()
+        self.luck_potion = reader.read_byte()
         self.has_garden_gnome_nearby = reader.read_bool()
-        self.broken_mirror_bad_luck = reader.read_int()
+        self.broken_mirror_bad_luck = reader.read_bool()
         self.equipment_based_luck_bonus = reader.read_float()
         self.coin_luck = reader.read_float()
-        self.kite_luck_level = reader.read_int()
+        self.kite_luck_level = reader.read_byte()
 
     def write(self, writer: Writer):
         writer.write_byte(self.player_id)
-        writer.write_int(self.ladybug_luck_time_remaining)
+        writer.write_int(self.ladybug_luck_time_left)
         writer.write_float(self.torch_luck)
-        writer.write_int(self.luck_potion)
+        writer.write_byte(self.luck_potion)
         writer.write_bool(self.has_garden_gnome_nearby)
-        writer.write_int(self.broken_mirror_bad_luck)
+        writer.write_bool(self.broken_mirror_bad_luck)
         writer.write_float(self.equipment_based_luck_bonus)
         writer.write_float(self.coin_luck)
-        writer.write_int(self.kite_luck_level)
+        writer.write_byte(self.kite_luck_level)
 
 
 UpdatePlayerLuck.register()

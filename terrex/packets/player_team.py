@@ -6,7 +6,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class PlayerTeam(SyncPacket):
-    id = PacketIds.PLAYER_TEAM.value
+    id = PacketIds.PLAYER_TEAM
 
     def __init__(self, player_id: int = 0, team: int = 0):
         self.player_id = player_id

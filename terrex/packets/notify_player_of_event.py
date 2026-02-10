@@ -3,7 +3,7 @@ from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader
 
 class NotifyPlayerOfEvent(ServerPacket):
-    id = PacketIds.NOTIFY_PLAYER_EVENT.value
+    id = PacketIds.NOTIFY_PLAYER_EVENT
 
     def __init__(self, event_id: int = 0):
         self.event_id = event_id

@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class PlaceWeaponRack(ClientPacket):
-    id = PacketIds.WEAPONS_RACK_TRY_PLACING.value
+    id = PacketIds.WEAPONS_RACK_TRY_PLACING
 
     def __init__(self, x: int = 0, y: int = 0, net_id: int = 0, prefix: int = 0, stack: int = 0):
         self.x = x

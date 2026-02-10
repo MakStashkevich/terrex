@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader
 
 
 class InvasionProgress(ServerPacket):
-    id = PacketIds.REPORT_INVASION_PROGRESS.value
+    id = PacketIds.REPORT_INVASION_PROGRESS
 
     def __init__(self, progress: int = 0, max_progress: int = 0, icon: int = 0, wave: int = 0):
         self.progress = progress

@@ -6,7 +6,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class PlayerItemAnimation(SyncPacket):
-    id = PacketIds.PLAYER_ITEM_ANIMATION.value
+    id = PacketIds.PLAYER_ITEM_ANIMATION
 
     def __init__(self, player_id: int = 0, item_rotation: float = 0.0, item_animation: int = 0):
         self.player_id = player_id

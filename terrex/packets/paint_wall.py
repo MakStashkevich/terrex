@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class PaintWall(SyncPacket):
-    id = PacketIds.PAINT_WALL.value
+    id = PacketIds.PAINT_WALL
 
     def __init__(self, x: int = 0, y: int = 0, color: int = 0):
         self.x = x

@@ -7,7 +7,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class CombatText(SyncPacket):
-    id = PacketIds.COMBAT_TEXT_STRING.value
+    id = PacketIds.COMBAT_TEXT_STRING
 
     def __init__(self, pos: Vec2 | None = None, color: Rgb | None = None, combat_text: NetworkText | None = None):
         self.pos = pos or Vec2(0.0, 0.0)

@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader
 
 
 class DeadPlayer(ServerPacket):
-    id = PacketIds.DEAD_PLAYER.value
+    id = PacketIds.DEAD_PLAYER
 
     def __init__(self, player_id: int = 0):
         self.player_id = player_id

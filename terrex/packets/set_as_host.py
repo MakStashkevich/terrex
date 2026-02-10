@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader
 
 
 class SetAsHost(ServerPacket):
-    id = PacketIds.SET_COUNTS_AS_HOST.value
+    id = PacketIds.SET_COUNTS_AS_HOST
 
     def __init__(self, player_id: int = 0, host: bool = False):
         self.player_id = player_id

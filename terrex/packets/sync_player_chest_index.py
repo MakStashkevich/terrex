@@ -4,7 +4,7 @@ from ..util.streamer import Reader, Writer
 
 
 class SyncPlayerChestIndex(ServerPacket):
-    id = PacketIds.SYNC_PLAYER_CHEST_INDEX.value
+    id = PacketIds.SYNC_PLAYER_CHEST_INDEX
 
     def __init__(self) -> None:
         self.player_id: int = 0

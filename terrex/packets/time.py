@@ -6,7 +6,7 @@ from terrex.util.streamer import Reader
 
 
 class Time(ServerPacket):
-    id = PacketIds.TIME.value
+    id = PacketIds.TIME
 
     def __init__(self, day_time: bool = False, time: int = 0, sun_mod_y: int = 0, moon_mod_y: int = 0):
         self.day_time = day_time

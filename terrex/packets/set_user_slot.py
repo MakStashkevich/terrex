@@ -6,7 +6,7 @@ from terrex.util.streamer import Reader
 
 
 class SetUserSlot(ServerPacket):
-    id = PacketIds.SET_USER_SLOT.value
+    id = PacketIds.SET_USER_SLOT
 
     def __init__(self, player_id: int = 0, is_server: bool = False):
         self.player_id = player_id

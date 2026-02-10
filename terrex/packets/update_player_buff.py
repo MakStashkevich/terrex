@@ -4,7 +4,7 @@ from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
 class UpdatePlayerBuff(SyncPacket):
-    id = PacketIds.UPDATE_PLAYER_BUFF.value
+    id = PacketIds.UPDATE_PLAYER_BUFF
     MAX_BUFF = 44 # Player.maxBuffs
 
     def __init__(self, player_id: int = 0, buffs: List[int] = None):

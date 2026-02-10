@@ -5,7 +5,7 @@ from ..util.streamer import Reader, Writer
 
 
 class TravellingMerchantInventory(ServerPacket):
-    id = PacketIds.TRAVELLING_MERCHANT_INVENTORY.value
+    id = PacketIds.TRAVELLING_MERCHANT_INVENTORY
 
     def __init__(self) -> None:
         self.items: List[int] = [0] * 40

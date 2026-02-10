@@ -6,7 +6,7 @@ from ..util.streamer import Reader, Writer
 
 
 class ReleaseNpc(ClientPacket):
-    id = PacketIds.RELEASE_NPC.value
+    id = PacketIds.RELEASE_NPC
 
     def __init__(self) -> None:
         self.position: Vec2 = Vec2(0, 0)

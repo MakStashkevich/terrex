@@ -3,7 +3,7 @@ from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
 class PlayMusicItem(SyncPacket):
-    id = PacketIds.PLAY_MUSIC_ITEM.value
+    id = PacketIds.PLAY_MUSIC_ITEM
 
     def __init__(self, player_id: int = 0, note: float = 0.0):
         self.player_id = player_id

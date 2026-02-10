@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class AnglerQuest(ServerPacket):
-    id = PacketIds.ANGLER_QUEST.value
+    id = PacketIds.ANGLER_QUEST
 
     def __init__(self, quest: int = 0, completed: bool = False):
         self.quest = quest

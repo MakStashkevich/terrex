@@ -6,7 +6,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class StrikeNpc(SyncPacket):
-    id = PacketIds.STRIKE_NPC_HELD_ITEM.value
+    id = PacketIds.STRIKE_NPC_HELD_ITEM
 
     def __init__(self, npc_id: int = 0, player_id: int = 0):
         self.npc_id = npc_id

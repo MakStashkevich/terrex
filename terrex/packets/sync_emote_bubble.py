@@ -3,7 +3,7 @@ from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader
 
 class SyncEmoteBubble(ServerPacket):
-    id = PacketIds.SYNC_EMOTE_BUBBLE.value
+    id = PacketIds.SYNC_EMOTE_BUBBLE
 
     def __init__(self, emote_id: int = 0, anchor_type: int = 255, player_id: int = 0, emote_lifetime: int = 0, emote: int = 0, emote_metadata: int = 0):
         self.emote_id = emote_id

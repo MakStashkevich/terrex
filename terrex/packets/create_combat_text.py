@@ -6,7 +6,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class CreateCombatText(ServerPacket):
-    id = PacketIds.CREATE_COMBAT_TEXT.value
+    id = PacketIds.CREATE_COMBAT_TEXT
 
     def __init__(self, pos: Vec2 | None = None, color: Rgb | None = None, heal_amount: int = 0):
         self.pos = pos or Vec2(0.0, 0.0)

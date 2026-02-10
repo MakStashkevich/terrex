@@ -14,7 +14,7 @@ class SoundMode(IntEnum):
 
 
 class PlayLegacySound(ServerPacket):
-    id = PacketIds.PLAY_LEGACY_SOUND.value
+    id = PacketIds.PLAY_LEGACY_SOUND
 
     def __init__(self, pos: Optional[Vec2] = None, sound_id: int = 0, mode: SoundMode = SoundMode.STYLE):
         self.pos = pos or Vec2(0.0, 0.0)

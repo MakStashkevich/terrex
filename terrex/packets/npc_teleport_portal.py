@@ -5,7 +5,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class NpcTeleportPortal(SyncPacket):
-    id = PacketIds.NPC_TELEPORT_PORTAL.value
+    id = PacketIds.NPC_TELEPORT_PORTAL
 
     def __init__(self, npc_id: int = 0, portal_color_index: int = 0, pos: Vec2 | None = None, vel: Vec2 | None = None):
         self.npc_id = npc_id

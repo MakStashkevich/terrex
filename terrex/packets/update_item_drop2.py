@@ -9,7 +9,7 @@ from terrex.structures.vec2 import Vec2
 
 
 class UpdateItemDrop2(UpdateItemDrop):
-    id = PacketIds.UPDATE_ITEM_DROP_2.value
+    id = PacketIds.UPDATE_ITEM_DROP_2
     # repeats logic UpdateItemDrop
 
 UpdateItemDrop2.register()

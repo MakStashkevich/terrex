@@ -8,7 +8,7 @@ from terrex.structures.net_string import NetworkText
 
 
 class Disconnect(ServerPacket):
-    id = PacketIds.DISCONNECT.value
+    id = PacketIds.DISCONNECT
 
     def __init__(self, reason: NetworkText = NetworkText()):
         self.reason = reason

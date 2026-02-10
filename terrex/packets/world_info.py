@@ -6,7 +6,7 @@ from terrex.util.streamer import Reader
 
 
 class WorldInfo(ServerPacket):
-    id = PacketIds.WORLD_INFO.value
+    id = PacketIds.WORLD_INFO
 
     def __init__(self, time: int = 0, day_info: int = 0, moon_phase: int = 0, max_tiles_x: int = 0, max_tiles_y: int = 0,
                  spawn_x: int = 0, spawn_y: int = 0, world_surface: int = 0, rock_layer: int = 0, world_id: int = 0,

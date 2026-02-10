@@ -8,7 +8,7 @@ from terrex.structures.tile import Tile
 
 
 class SendTileSquare(SyncPacket):
-    id = PacketIds.SEND_TILE_SQUARE.value
+    id = PacketIds.SEND_TILE_SQUARE
 
     def __init__(self, tile_y: int = 0, tile_x: int = 0, height: int = 0, width: int = 0,
                  change_type: ChangeType = ChangeType.NONE, tiles: List[Tile] = None):

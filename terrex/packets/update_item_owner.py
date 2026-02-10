@@ -7,7 +7,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class UpdateItemOwner(SyncPacket):
-    id = PacketIds.UPDATE_ITEM_OWNER.value
+    id = PacketIds.UPDATE_ITEM_OWNER
 
     def __init__(self, item_id: int = 0, player_id: int = 0):
         self.item_id = item_id

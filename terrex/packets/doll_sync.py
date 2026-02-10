@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class DollSync(SyncPacket):
-    id = PacketIds.TE_DISPLAY_DOLL_ITEM_SYNC.value
+    id = PacketIds.TE_DISPLAY_DOLL_ITEM_SYNC
 
     def __init__(self, player_id: int = 0, tile_entity_id: int = 0, item_index: int = 0, item_id: int = 0, stack: int = 0, prefix: int = 0):
         self.player_id = player_id

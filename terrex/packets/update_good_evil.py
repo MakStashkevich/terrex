@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader
 
 
 class UpdateGoodEvil(ServerPacket):
-    id = PacketIds.UPDATE_GOOD_EVIL.value
+    id = PacketIds.UPDATE_GOOD_EVIL
 
     def __init__(self, good: int = 0, evil: int = 0, crimson: int = 0):
         self.good = good

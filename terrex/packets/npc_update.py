@@ -7,7 +7,7 @@ from terrex.structures.vec2 import Vec2
 
 
 class NpcUpdate(ServerPacket):
-    id = PacketIds.NPC_UPDATE.value
+    id = PacketIds.NPC_UPDATE
 
     def __init__(self, npc_id: int = 0, pos: Vec2 = Vec2(0.0, 0.0), vel: Vec2 = Vec2(0.0, 0.0),
                  target: int = 0, ai: List[float] = None, npc_net_id: int = 0,

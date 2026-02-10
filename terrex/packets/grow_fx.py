@@ -18,7 +18,7 @@ class SoundEffect(IntFlag):
 
 
 class GrowFx(SyncPacket):
-    id = PacketIds.GROW_FX.value
+    id = PacketIds.GROW_FX
 
     def __init__(self, effect: SoundEffect = SoundEffect.TREE_GROWTH, x: int = 0, y: int = 0, height: int = 0, tree_gore: int = 0):
         self.effect = effect

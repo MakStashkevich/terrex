@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class AnglerQuests(ClientPacket):
-    id = PacketIds.NUMBER_ANGLER_QUESTS_COMPLETED.value
+    id = PacketIds.NUMBER_ANGLER_QUESTS_COMPLETED
 
     def __init__(self, player_id: int = 0, angler_quests_completed: int = 0, golfer_score: int = 0):
         self.player_id = player_id

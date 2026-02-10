@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class NpcShopItem(ServerPacket):
-    id = PacketIds.NPC_SHOP_ITEM.value
+    id = PacketIds.NPC_SHOP_ITEM
 
     def __init__(self, slot: int = 0, item_type: int = 0, stack: int = 0, prefix: int = 0, value: int = 0, buy_once: bool = False):
         self.slot = slot

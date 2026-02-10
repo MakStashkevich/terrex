@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class PlaceItemFrame(ClientPacket):
-    id = PacketIds.PLACE_ITEM_FRAME.value
+    id = PacketIds.PLACE_ITEM_FRAME
 
     def __init__(self, x: int = 0, y: int = 0, item_id: int = 0, prefix: int = 0, stack: int = 0):
         self.x = x

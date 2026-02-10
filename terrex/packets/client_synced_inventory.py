@@ -3,7 +3,7 @@ from terrex.packets.packet_ids import PacketIds
 
 
 class ClientSyncedInventory(ClientPacket):
-    id = PacketIds.CLIENT_FINISHED_INVENTORY_CHANGES.value
+    id = PacketIds.CLIENT_FINISHED_INVENTORY_CHANGES
 
     def write(self, writer):
         pass

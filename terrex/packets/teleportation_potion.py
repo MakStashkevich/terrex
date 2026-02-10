@@ -4,7 +4,7 @@ from ..util.streamer import Reader, Writer
 
 
 class TeleportationPotion(SyncPacket):
-    id = PacketIds.TELEPORTATION_POTION.value
+    id = PacketIds.TELEPORTATION_POTION
 
     def __init__(self) -> None:
         self.packet_type: int = 0  # 0=TeleportationPotion, 1=MagicConch, 2=DemonConch

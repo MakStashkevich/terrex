@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class LandGolfBall(SyncPacket):
-    id = PacketIds.LAND_GOLF_BALL_IN_CUP.value
+    id = PacketIds.LAND_GOLF_BALL_IN_CUP
 
     def __init__(self, player_id: int = 0, x: int = 0, y: int = 0, number_of_hits: int = 0, proj_id: int = 0):
         self.player_id = player_id

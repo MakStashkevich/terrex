@@ -85,7 +85,7 @@ def read_decompressed_section(reader: Reader) -> SendSection:
 
 
 class PacketSendSection(ServerPacket):
-    id = PacketIds.SEND_SECTION.value
+    id = PacketIds.SEND_SECTION
 
     def read(self, reader: Reader) -> None:
         compressed_data = reader.remaining()

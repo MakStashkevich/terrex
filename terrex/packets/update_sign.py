@@ -7,7 +7,7 @@ from terrex.util.streamer import Reader, Writer
 
 # todo: can be send from server?? maybe only ClientPacket?
 class UpdateSign(SyncPacket):
-    id = PacketIds.UPDATE_SIGN.value
+    id = PacketIds.UPDATE_SIGN
 
     def __init__(self, sign_id: int = 0, x: int = 0, y: int = 0, text: str = "", player_id: int = 0, flags: int = 0):
         self.sign_id = sign_id

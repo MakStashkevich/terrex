@@ -3,7 +3,7 @@ from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
 class PlayerInventorySlot(SyncPacket):
-    id = PacketIds.PLAYER_INVENTORY_SLOT.value
+    id = PacketIds.PLAYER_INVENTORY_SLOT
 
     # 0 - 49 = Inventory
     # 50 - 53 = Money

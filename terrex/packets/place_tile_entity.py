@@ -19,7 +19,7 @@ class TileEntityType(IntEnum):
 
 
 class PlaceTileEntity(ClientPacket):
-    id = PacketIds.PLACE_TILE_ENTITY.value
+    id = PacketIds.PLACE_TILE_ENTITY
 
     def __init__(self, x: int = 0, y: int = 0, tile_entity_type: TileEntityType = TileEntityType.TRAINING_DUMMY):
         self.x = x

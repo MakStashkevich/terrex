@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class InteractTileEntity(SyncPacket):
-    id = PacketIds.REQUEST_TILE_ENTITY_INTERACTION.value
+    id = PacketIds.REQUEST_TILE_ENTITY_INTERACTION
 
     def __init__(self, tile_entity_id: int = 0, player_id: int = 0):
         self.tile_entity_id = tile_entity_id

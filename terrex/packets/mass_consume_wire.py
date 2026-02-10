@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class MassConsumeWire(ServerPacket):
-    id = PacketIds.MASS_WIRE_OPERATION_CONSUME.value
+    id = PacketIds.MASS_WIRE_OPERATION_CONSUME
 
     def __init__(self, item_type: int = 0, quantity: int = 0, player_id: int = 0):
         self.item_type = item_type

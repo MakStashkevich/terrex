@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class Emoji(SyncPacket):
-    id = PacketIds.EMOJI.value
+    id = PacketIds.EMOJI
 
     def __init__(self, player_id: int = 0, emoticon: int = 0):
         self.player_id = player_id

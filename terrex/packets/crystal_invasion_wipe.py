@@ -3,7 +3,7 @@ from terrex.packets.packet_ids import PacketIds
 
 
 class CrystalInvasionWipe(ServerPacket):
-    id = PacketIds.CRYSTAL_INVASION_WIPE_ALL.value
+    id = PacketIds.CRYSTAL_INVASION_WIPE_ALL
 
     def read(self, reader):
         pass

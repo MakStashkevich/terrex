@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class ForceItemNearestChest(ClientPacket):
-    id = PacketIds.FORCE_ITEM_NEAREST_CHEST.value
+    id = PacketIds.FORCE_ITEM_NEAREST_CHEST
 
     def __init__(self, inventory_slot: int = 0):
         self.inventory_slot = inventory_slot

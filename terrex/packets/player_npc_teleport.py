@@ -5,7 +5,7 @@ from ..structures.vec2 import Vec2
 
 
 class PlayerNpcTeleport(SyncPacket):
-    id = PacketIds.PLAYER_NPC_TELEPORT.value
+    id = PacketIds.PLAYER_NPC_TELEPORT
 
     def __init__(self) -> None:
         self.flags: int = 0

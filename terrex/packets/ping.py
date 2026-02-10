@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class Ping(SyncPacket):
-    id = PacketIds.PING.value
+    id = PacketIds.PING
 
     def read(self, reader: Reader):
         pass

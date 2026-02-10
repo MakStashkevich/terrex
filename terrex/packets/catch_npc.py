@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class CatchNpc(ClientPacket):
-    id = PacketIds.CATCH_NPC.value
+    id = PacketIds.CATCH_NPC
 
     def __init__(self, npc_id: int = 0, player_id: int = 0):
         self.npc_id = npc_id

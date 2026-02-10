@@ -23,7 +23,7 @@ class ChestAction(IntEnum):
 
 
 class PlaceChest(SyncPacket):
-    id = PacketIds.PLACE_CHEST.value
+    id = PacketIds.PLACE_CHEST
 
     def __init__(self, action: ChestAction = ChestAction.PLACE_CHEST, tile_x: int = 0, tile_y: int = 0,
                  style: int = 0, chest_id_to_destroy: int = 0):

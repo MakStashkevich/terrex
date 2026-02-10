@@ -6,7 +6,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class RequestSign(ClientPacket):
-    id = PacketIds.REQUEST_SIGN.value
+    id = PacketIds.REQUEST_SIGN
 
     def __init__(self, x: int = 0, y: int = 0):
         self.x = x

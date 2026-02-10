@@ -6,7 +6,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class RemoveItemOwner(ServerPacket):
-    id = PacketIds.REMOVE_ITEM_OWNER.value
+    id = PacketIds.REMOVE_ITEM_OWNER
 
     def read(self, reader: Reader):
         self.item_index = reader.read_ushort()

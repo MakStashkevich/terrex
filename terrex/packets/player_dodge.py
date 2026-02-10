@@ -11,7 +11,7 @@ class DodgeType(IntEnum):
 
 
 class PlayerDodge(SyncPacket):
-    id = PacketIds.PLAYER_DODGE.value
+    id = PacketIds.PLAYER_DODGE
 
     def __init__(self, player_id: int = 0, ty: DodgeType = DodgeType.NINJA):
         self.player_id = player_id

@@ -4,7 +4,7 @@ from terrex.util.streamer import Writer
 
 
 class KillPortal(ClientPacket):
-    id = PacketIds.KILL_PORTAL.value
+    id = PacketIds.KILL_PORTAL
 
     def __init__(self, projectile_owner: int = 0, projectile_ai: int = 0):
         self.projectile_owner = projectile_owner

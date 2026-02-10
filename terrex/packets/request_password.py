@@ -3,7 +3,7 @@ from terrex.packets.packet_ids import PacketIds
 
 
 class RequestPassword(ServerPacket):
-    id = PacketIds.REQUEST_PASSWORD.value
+    id = PacketIds.REQUEST_PASSWORD
 
     def read(self, reader):
         pass

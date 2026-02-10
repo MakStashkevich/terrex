@@ -6,7 +6,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class SetActiveNpc(SyncPacket):
-    id = PacketIds.SET_ACTIVE_NPC.value
+    id = PacketIds.SET_ACTIVE_NPC
 
     def __init__(self, player_id: int = 0, npc_talk_target: int = 0):
         self.player_id = player_id

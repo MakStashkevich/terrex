@@ -11,7 +11,7 @@ class UnlockType(IntEnum):
 
 
 class Unlock(SyncPacket):
-    id = PacketIds.UNLOCK.value
+    id = PacketIds.UNLOCK
 
     def __init__(self, ty: UnlockType = UnlockType.CHEST, x: int = 0, y: int = 0):
         self.ty = ty

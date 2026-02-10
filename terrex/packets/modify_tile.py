@@ -3,7 +3,7 @@ from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
 class ModifyTile(SyncPacket):
-    id = PacketIds.MODIFY_TILE.value
+    id = PacketIds.MODIFY_TILE
 
     def __init__(
         self,

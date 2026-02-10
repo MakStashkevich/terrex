@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class GetChestName(SyncPacket):
-    id = PacketIds.GET_CHEST_NAME.value
+    id = PacketIds.GET_CHEST_NAME
 
     def __init__(self, chest_id: int = 0, x: int = 0, y: int = 0, name: str = ""):
         self.chest_id = chest_id

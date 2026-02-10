@@ -17,6 +17,8 @@
 - [x] Добавить обработчик пакетов авторизации в client.py
 - [ ] Добавить logger Terrex: с именами для каждого файла откуда логи отправляются
 - [ ] Добавить класс для методов движения для каждой клавиши:
+    - [ ] UPDATE_PLAYER packet (HIT_SWITCH packet - позиция игрока на карте??? / SYNC_EXTRA_VALUE - обновление данных о NPC?)
+    - [ ] обновление данных о игроке при долгом AFK: PLAYER_TEAM, PLAYER_ZONE, UPDATE_PLAYER_BUFF, UPDATE_PLAYER [x2], PROJECTILE_UPDATE, UPDATE_PLAYER_LUCK_FACTORS, UPDATE_NPC_NAME [x30]
     - [ ] функция отправки пакета нажатия клавиш press('W' / 'A' / 'S' / 'D' / 'Space', 'Up' / 'Down')
     - [ ] функция отправки движения (комплекса пакета клавиш с указанной задержкой, минимум по дефолту 1.5s)
         - [ ] jump() -> Space-Down, sleep(1.5s), Space-Up

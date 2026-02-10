@@ -58,7 +58,7 @@ def rewrite_packet(payload: bytes) -> bytes:
         packet = UpdatePlayerLuck()
         packet.read(reader)
         packet.has_garden_gnome_nearby = True
-        packet.ladybug_luck_time_remaining = 10
+        packet.ladybug_luck_time_left = 10
         packet.luck_potion = 10
         packet.torch_luck = 10
 

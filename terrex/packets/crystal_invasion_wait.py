@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader
 
 
 class CrystalInvasionWait(ServerPacket):
-    id = PacketIds.CRYSTAL_INVASION_SEND_WAIT_TIME.value
+    id = PacketIds.CRYSTAL_INVASION_SEND_WAIT_TIME
 
     def __init__(self, time_until_next_wave: int = 0):
         self.time_until_next_wave = time_until_next_wave

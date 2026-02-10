@@ -3,7 +3,7 @@ from terrex.packets.packet_ids import PacketIds
 
 
 class ConnectionComplete(ServerPacket):
-    id = PacketIds.FINISHED_CONNECTING_TO_SERVER.value
+    id = PacketIds.FINISHED_CONNECTING_TO_SERVER
 
     def read(self, reader):
         pass

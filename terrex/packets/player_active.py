@@ -6,7 +6,7 @@ from terrex.util.streamer import Reader
 
 
 class PlayerActive(ServerPacket):
-    id = PacketIds.PLAYER_ACTIVE.value
+    id = PacketIds.PLAYER_ACTIVE
 
     def __init__(self, player_id: int = 0, active: bool = False):
         self.player_id = player_id

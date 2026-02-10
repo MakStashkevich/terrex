@@ -23,7 +23,7 @@ class DoorAction(IntEnum):
 
 
 class DoorToggle(SyncPacket):
-    id = PacketIds.DOOR_TOGGLE.value
+    id = PacketIds.DOOR_TOGGLE
 
     def __init__(self, action: DoorAction = DoorAction.OPEN_DOOR, tile_x: int = 0, tile_y: int = 0, direction: int = 0):
         self.action = action

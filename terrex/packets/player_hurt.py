@@ -5,7 +5,7 @@ from terrex.structures.player_death_reason import PlayerDeathReason
 
 
 class PlayerHurt(ClientPacket):
-    id = PacketIds.PLAYER_HURT_V2.value
+    id = PacketIds.PLAYER_HURT_V2
 
     def __init__(
         self,

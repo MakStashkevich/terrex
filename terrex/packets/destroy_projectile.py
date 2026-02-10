@@ -6,7 +6,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class DestroyProjectile(SyncPacket):
-    id = PacketIds.DESTROY_PROJECTILE.value
+    id = PacketIds.DESTROY_PROJECTILE
 
     def __init__(self, projectile_id: int = 0, owner: int = 0):
         self.projectile_id = projectile_id
