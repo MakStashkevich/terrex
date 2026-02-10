@@ -6,38 +6,9 @@ from terrex.data.player import Player
 from terrex.data.world import World
 from terrex.events.eventmanager import EventManager
 from terrex.util.streamer import Reader, Writer
+from terrex.util.stringify import stringify_value
 
 registry: Dict[int, Type['Packet']] = {}
-
-def stringify_netstring(value: 'NetString') -> dict[str, Any]: # type: ignore
-    from terrex.structures.net_string import NetworkText
-    from terrex.util.localization import get_translation
-    
-    if not isinstance(value, NetworkText):
-        return {}
-
-    return {
-        "mode": value.mode.name,
-        "key": value.text,
-        "translated": get_translation(value),
-        "substitutions": [stringify_value(sub) for sub in value.substitutions],
-    }
-
-
-def stringify_value(value: Any) -> Any:
-    from terrex.structures.net_string import NetworkText
-
-    if isinstance(value, NetworkText):
-        return stringify_netstring(value)
-    if isinstance(value, dict):
-        return {key: stringify_value(item) for key, item in value.items()}
-    if isinstance(value, (bytes, bytearray)):
-        return value.hex()
-    if isinstance(value, list):
-        return [stringify_value(item) for item in value]
-    if is_dataclass(value):
-        return {key: stringify_value(item) for key, item in vars(value).items()}
-    return value
 
 
 class Packet(ABC):

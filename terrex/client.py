@@ -13,7 +13,7 @@ from terrex.data.player import Player
 from terrex.events.eventmanager import EventManager
 from terrex.packets.packet_ids import PacketIds
 from terrex.structures.game_content.creative.creative_power import CreativePower
-from terrex.structures.game_content.net_modules.net_modules import NetCreativePowersModule
+from terrex.structures.game_content.net_modules import NetCreativePowersModule
 from terrex.util.streamer import Reader, Writer
 from terrex.util.localization import get_translation
 
@@ -286,7 +286,7 @@ class Client:
                         player_id=self.player.id,
                         spawn_x=0.0,
                         spawn_y=0.0,
-                        respawn_time_remaining=114,
+                        respawn_time_remaining=128,
                         player_spawn_context=2,
                     )
                 )
@@ -294,7 +294,7 @@ class Client:
                     packets.LoadNetModule(
                         variant=5,
                         body=NetCreativePowersModule(
-                            power=CreativePower(power_id=0, enabled=False)
+                            power=CreativePower(power_id=14, slider_current_value_cache=0.0)
                         ),
                     )
                 )

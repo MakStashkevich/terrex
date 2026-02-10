@@ -1,9 +1,19 @@
-from typing import Union
+from typing import Any, Union
 from abc import ABC, abstractmethod
+from dataclasses import is_dataclass
 from terrex.util.streamer import Reader, Writer
+from terrex.util.stringify import stringify_value
 
 
-class NetServerModule(ABC):
+class NetModule(ABC):
+    def __to_log_dict(self) -> dict[str, Any]:
+        return {name: stringify_value(value) for name, value in vars(self).items()}
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.__to_log_dict()})"
+
+
+class NetServerModule(NetModule, ABC):
     """
     Server -> Client
     """
@@ -12,22 +22,22 @@ class NetServerModule(ABC):
         pass
 
     def write(self, writer: Writer) -> None:
-        raise NotImplementedError("LoadNetServerPacket does not implement write")
+        raise NotImplementedError("NetServerModule does not implement write")
 
 
-class NetClientModule(ABC):
+class NetClientModule(NetModule, ABC):
     """
     Client -> Server
     """
     def read(self, reader: Reader) -> None:
-        raise NotImplementedError("LoadNetClientPacket does not implement read")
+        raise NotImplementedError("NetClientModule does not implement read")
 
     @abstractmethod
     def write(self, writer: Writer) -> None:
         pass
 
 
-class NetSyncModule(ABC):
+class NetSyncModule(NetModule, ABC):
     """
     Server <-> Client (Sync)
     """
@@ -40,4 +50,4 @@ class NetSyncModule(ABC):
         pass
 
 
-NetModule = Union[NetServerModule, NetClientModule, NetSyncModule]
+NetModuleType = Union[NetServerModule, NetClientModule, NetSyncModule]

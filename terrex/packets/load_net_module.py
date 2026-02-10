@@ -5,7 +5,7 @@ from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader, Writer
 
-from terrex.structures.game_content.net_modules.net_modules import (
+from terrex.structures.game_content.net_modules import (
     NetLiquidModule,
     NetTextModule,
     NetPingModule,
