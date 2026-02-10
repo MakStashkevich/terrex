@@ -24,7 +24,7 @@ from .modify_tile import ModifyTile
 from .time import Time
 from .door_toggle import DoorToggle
 from .send_tile_square import SendTileSquare
-# update item drop 21 (deprecated)
+from .update_item_drop import UpdateItemDrop
 from .update_item_owner import UpdateItemOwner
 from .npc_update import NpcUpdate
 from .strike_npc import StrikeNpc

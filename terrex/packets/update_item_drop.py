@@ -4,7 +4,6 @@ from terrex.data.item import Item
 from terrex.events.events import Event
 from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
-from terrex.packets.update_item_drop2 import UpdateItemDrop2
 from terrex.util.streamer import Reader, Writer
 from terrex.structures.vec2 import Vec2
 
