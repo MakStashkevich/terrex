@@ -8,6 +8,8 @@ from terrex.packets.packet_ids import PacketIds
 from terrex.packets.base import stringify_value
 from proxy.parser import IncrementalParser
 
+IGNORED_PACKET_IDS = [PacketIds.SEND_SECTION]
+
 BUFFER_SIZE = 4096
 
 
@@ -195,6 +197,10 @@ def forward(
 
                     timestamp = current_timestamp()
                     log_payload = stringify_value(vars(packet))
+
+                    if packet.id in IGNORED_PACKET_IDS:
+                        continue
+
                     if tags[packet.id]:
                         print(
                             f"{direction}{'<' if direction == 'STC' else '>'} {packet.id} {pkt_name} {log_payload}"
