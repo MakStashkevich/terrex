@@ -13,12 +13,20 @@ class UpdatePlayerLuck(SyncPacket):
                  ladybug_luck_time_remaining: int = 0,
                  torch_luck: float = 0.0,
                  luck_potion: int = 0,
-                 has_garden_gnome_nearby: bool = False):
+                 has_garden_gnome_nearby: bool = False,
+                 broken_mirror_bad_luck: int = 0,
+                 equipment_based_luck_bonus: float = 0.0,
+                 coin_luck: float = 0.0,
+                 kite_luck_level: int = 0):
         self.player_id = player_id
         self.ladybug_luck_time_remaining = ladybug_luck_time_remaining # +0.2-0.4 (if ladubug is golden) (time 12-24 min)
         self.torch_luck = torch_luck # +0.2 (+0.1 if torch primary)
         self.luck_potion = luck_potion # +0.1 - 0.2 - 0.3 (5 - 10 - 15 min)
         self.has_garden_gnome_nearby = has_garden_gnome_nearby # +0.2
+        self.broken_mirror_bad_luck = broken_mirror_bad_luck
+        self.equipment_based_luck_bonus = equipment_based_luck_bonus
+        self.coin_luck = coin_luck
+        self.kite_luck_level = kite_luck_level
         
         # счастливая монета +0.05
         # подкова +0.05
@@ -27,15 +35,23 @@ class UpdatePlayerLuck(SyncPacket):
         self.player_id = reader.read_byte()
         self.ladybug_luck_time_remaining = reader.read_int()
         self.torch_luck = reader.read_float()
-        self.luck_potion = reader.read_byte()
+        self.luck_potion = reader.read_int()
         self.has_garden_gnome_nearby = reader.read_bool()
+        self.broken_mirror_bad_luck = reader.read_int()
+        self.equipment_based_luck_bonus = reader.read_float()
+        self.coin_luck = reader.read_float()
+        self.kite_luck_level = reader.read_int()
 
     def write(self, writer: Writer):
         writer.write_byte(self.player_id)
         writer.write_int(self.ladybug_luck_time_remaining)
         writer.write_float(self.torch_luck)
-        writer.write_byte(self.luck_potion)
+        writer.write_int(self.luck_potion)
         writer.write_bool(self.has_garden_gnome_nearby)
+        writer.write_int(self.broken_mirror_bad_luck)
+        writer.write_float(self.equipment_based_luck_bonus)
+        writer.write_float(self.coin_luck)
+        writer.write_int(self.kite_luck_level)
 
 
 UpdatePlayerLuck.register()
