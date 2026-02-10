@@ -431,9 +431,10 @@ class Client:
         self.running = False
         if self.sock:
             self.sock.close()
-        if self.reader_thread:
+        current_thread = threading.current_thread()
+        if self.reader_thread and self.reader_thread != current_thread and self.reader_thread.is_alive():
             self.reader_thread.join(timeout=1.0)
-        if self.writer_thread:
+        if self.writer_thread and self.writer_thread != current_thread and self.writer_thread.is_alive():
             self.writer_thread.join(timeout=1.0)
-        if self.ping_thread:
+        if self.ping_thread and self.ping_thread != current_thread and self.ping_thread.is_alive():
             self.ping_thread.join(timeout=1.0)
