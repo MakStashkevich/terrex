@@ -2,9 +2,9 @@ from enum import IntEnum
 
 
 class PacketIds(IntEnum):
-    """Enum с ID всех пакетов Terraria в hex формате."""
+    """Enum with the ID of all Terraria packets in hex format."""
 
-    # Основные пакеты
+    # primary packets
     CONNECT_REQUEST = 0x01
     DISCONNECT = 0x02
     SET_USER_SLOT = 0x03
@@ -25,7 +25,7 @@ class PacketIds(IntEnum):
     TIME = 0x12
     DOOR_TOGGLE = 0x13
     SEND_TILE_SQUARE = 0x14
-    UPDATE_ITEM_DROP = 0x15  # Deprecated, see 0x5A
+    UPDATE_ITEM_DROP = 0x15
     UPDATE_ITEM_OWNER = 0x16
     NPC_UPDATE = 0x17
     STRIKE_NPC_HELD_ITEM = 0x18
@@ -152,11 +152,11 @@ class PacketIds(IntEnum):
 
     @classmethod
     def from_id(cls, packet_id: int) -> "PacketIds":
-        """Получить enum по ID пакета."""
+        """Get the enum by packet ID."""
         try:
             return cls(packet_id)
         except ValueError:
-            raise ValueError(f"Неизвестный ID пакета: 0x{packet_id:02X}")
+            raise ValueError(f"Unknown ID for packet: 0x{packet_id:02X}")
 
     def __str__(self) -> str:
         return f"{self.name} (0x{self:02X})"
