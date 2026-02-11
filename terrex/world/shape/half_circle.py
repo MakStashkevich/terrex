@@ -14,7 +14,7 @@ class HalfCircle(GenShape):
         self._radius = radius
         self._bottomHalf = bottom_half
 
-    def Perform(self, origin: Point, action: GenAction) -> bool:
+    def perform(self, origin: Point, action: GenAction) -> bool:
         num = (self._radius + 1) ** 2
 
         # Fast bulk path
@@ -54,7 +54,7 @@ class HalfCircle(GenShape):
                 continue
             num2 = min(self._radius, int(sqrt(v)))
             for j in range(origin.X - num2, origin.X + num2 + 1):
-                if not self.UnitApply(action, origin, j, i) and self._quitOnFail:
+                if not self.unit_apply(action, origin, j, i) and self._quitOnFail:
                     return False
 
         return True

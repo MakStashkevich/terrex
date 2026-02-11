@@ -17,7 +17,7 @@ class Slime(GenShape):
         self._xScale = x_scale
         self._yScale = y_scale
 
-    def Perform(self, origin: Point, action: GenAction) -> bool:
+    def perform(self, origin: Point, action: GenAction) -> bool:
         num = float(self._radius)
         num1 = (self._radius + 1) ** 2
         use_bulk = isinstance(action, GenActionBulk) and not self._quitOnFail
@@ -34,7 +34,7 @@ class Slime(GenShape):
                 ys_all.append(np.full(2 * width + 1, i))
             else:
                 for j in range(origin.X - width, origin.X + width + 1):
-                    if not self.UnitApply(action, origin, j, i) and self._quitOnFail:
+                    if not self.unit_apply(action, origin, j, i) and self._quitOnFail:
                         return False
 
         # Lower part (tapered, half height)
@@ -46,7 +46,7 @@ class Slime(GenShape):
                 ys_all.append(np.full(2 * width + 1, k))
             else:
                 for l in range(origin.X - width, origin.X + width + 1):
-                    if not self.UnitApply(action, origin, l, k) and self._quitOnFail:
+                    if not self.unit_apply(action, origin, l, k) and self._quitOnFail:
                         return False
 
         if use_bulk and xs_all:

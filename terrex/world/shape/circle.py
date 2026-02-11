@@ -21,7 +21,7 @@ class Circle(GenShape):
         self._horizontalRadius = radius
         self._verticalRadius = radius
 
-    def Perform(self, origin: Point, action: GenAction) -> bool:
+    def perform(self, origin: Point, action: GenAction) -> bool:
         num = (self._horizontalRadius + 1) ** 2
 
         # Fast bulk path for GenActionBulk
@@ -50,6 +50,6 @@ class Circle(GenShape):
                 continue
             num1 = min(self._horizontalRadius, int(sqrt(v)))
             for j in range(origin.X - num1, origin.X + num1 + 1):
-                if not self.UnitApply(action, origin, j, i) and self._quitOnFail:
+                if not self.unit_apply(action, origin, j, i) and self._quitOnFail:
                     return False
         return True

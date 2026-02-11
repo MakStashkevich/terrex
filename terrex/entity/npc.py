@@ -1,4 +1,4 @@
-from xml.dom.minidom import Entity
+from terrex.entity.entity import Entity
 
 
 class NPC(Entity):

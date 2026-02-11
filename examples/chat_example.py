@@ -5,8 +5,8 @@ from terrex.structures.game_content.net_modules import NetTextModule
 
 # Create a Terrex object
 # used with proxy on port 8888
-bot = Terrex('127.0.0.1', 8888, server_password="4444")
-event = bot.get_event_manager()
+terrex = Terrex('127.0.0.1', 8888, server_password="4444")
+event = terrex.get_event_manager()
 
 
 # Connect a function to an event using a decorator
@@ -17,16 +17,16 @@ def chat(module: NetTextModule):
     # In this case, stop the bot if the word "Stop" occurs
     print(msg)
     if "stop" in msg:
-        bot.stop()
+        terrex.stop()
 
 
 # Start the bot
-bot.start()
+terrex.start()
 
 # And wait
 try:
-    while bot.client.running:
+    while terrex.client.running:
         time.sleep(0.1)
 except KeyboardInterrupt:
     print("Stopping bot...")
-    bot.stop()
+    terrex.stop()

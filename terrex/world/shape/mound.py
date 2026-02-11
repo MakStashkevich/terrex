@@ -15,7 +15,7 @@ class Mound(GenShape):
         self._halfWidth = half_width
         self._height = height
 
-    def Perform(self, origin: Point, action: GenAction) -> bool:
+    def perform(self, origin: Point, action: GenAction) -> bool:
         half_w = float(self._halfWidth)
         xs_all = []
         ys_all = []
@@ -36,7 +36,7 @@ class Mound(GenShape):
                 ys_all.append(ys)
             else:
                 for j in range(num2):
-                    if not self.UnitApply(action, origin, origin.X + i, origin.Y - j) and self._quitOnFail:
+                    if not self.unit_apply(action, origin, origin.X + i, origin.Y - j) and self._quitOnFail:
                         return False
 
         if use_bulk and xs_all:

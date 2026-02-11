@@ -38,7 +38,7 @@ class Tail(GenShape):
         self._width = width  # in tiles
         self._endOffset = end_offset
 
-    def Perform(self, origin: Point, action: GenAction) -> bool:
+    def perform(self, origin: Point, action: GenAction) -> bool:
         # Compute tile coordinates (offsets are in world units? but scaled to tiles)
         start_tile = origin
         end_tile_x = int(origin.X + self._endOffset.X)
@@ -56,7 +56,7 @@ class Tail(GenShape):
 
         # Standard loop
         for x, y in points:
-            if not self.UnitApply(action, origin, x, y) and self._quitOnFail:
+            if not self.unit_apply(action, origin, x, y) and self._quitOnFail:
                 return False
         return True
 

@@ -1,34 +1,45 @@
-from xml.dom.minidom import Entity
+from terrex.entity.entity import Entity
 from terrex.entity.npc import NPC
 from terrex.structures.rgb import Rgb
+from terrex.structures.variable.bool_var import BoolVar
+from terrex.structures.variable.const_var import ConstVar
+from terrex.structures.variable.float_var import FloatVar
+from terrex.structures.variable.int_var import IntVar
+from terrex.structures.variable.str_var import StrVar
+from terrex.world.shape.base import RectangleArea
+from terrex.world.shape.rectangle import Rectangle
 
 
 class Player(Entity):
-    name: str = ""
+    name: str = StrVar("", max_len=20)
 
     # const
-    DEFAULT_WIDTH: int = 20
-    DEFAULT_HEIGHT: int = 42
+    DEFAULT_WIDTH: int = ConstVar(20)
+    DEFAULT_HEIGHT: int = ConstVar(42)
 
     # size
-    width: int = DEFAULT_WIDTH
-    height: int = DEFAULT_HEIGHT
+    width: int = IntVar(int(DEFAULT_WIDTH))
+    height: int = IntVar(int(DEFAULT_HEIGHT))
+
+    # frame
+    body_frame: Rectangle = Rectangle()
+    leg_frame: Rectangle = Rectangle()
 
     # connection flags
-    initialized: bool = False
-    logged_in: bool = False
+    initialized: bool = BoolVar(False)
+    logged_in: bool = BoolVar(False)
 
     # inventory
     inventory: list = []
 
     # skin
-    skin_variant: int = 0
-    voice_variant: int = 1
-    voice_pitch_offset: float = 0.0
-    hair: int = 0
-    hair_dye: int = 255
-    accessory_visibility: int = 0
-    hide_misc: bool = False
+    skin_variant: int = IntVar(0)
+    voice_variant: int = IntVar(1)
+    voice_pitch_offset: float = FloatVar(0.0)
+    hair: int = IntVar(0)
+    hair_dye: int = IntVar(255)
+    accessory_visibility: int = IntVar(0)
+    hide_misc: bool = BoolVar(False)
 
     # skin colors
     hair_color: Rgb = Rgb(255, 255, 255)
@@ -40,47 +51,53 @@ class Player(Entity):
     shoe_color: Rgb = Rgb(255, 255, 255)
 
     # difficulty flag
-    difficulty: int = 1
+    difficulty: int = IntVar(1)
 
     # biome torch flags
-    using_biome_torches: bool = True
-    happy_fun_torch_time: bool = False
-    unlocked_biome_torches: bool = True
-    unlocked_super_cart: bool = False
-    enabled_super_cart: bool = False
+    using_biome_torches: bool = BoolVar(False)
+    happy_fun_torch_time: bool = BoolVar(False)
+    unlocked_biome_torches: bool = BoolVar(False)
+    unlocked_super_cart: bool = BoolVar(False)
+    enabled_super_cart: bool = BoolVar(False)
 
     # consumables flags
-    used_aegis_crystal: bool = True
-    used_aegis_fruit: bool = True
-    used_arcane_crystal: bool = True
-    used_galaxy_pearl: bool = True
-    used_gummy_worm: bool = True
-    used_ambrosia: bool = True
-    ate_artisan_bread: bool = True
+    used_aegis_crystal: bool = BoolVar(False)
+    used_aegis_fruit: bool = BoolVar(False)
+    used_arcane_crystal: bool = BoolVar(False)
+    used_galaxy_pearl: bool = BoolVar(False)
+    used_gummy_worm: bool = BoolVar(False)
+    used_ambrosia: bool = BoolVar(False)
+    ate_artisan_bread: bool = BoolVar(False)
 
     # health
-    maxHP: int = 400
-    currHP: int = 400
+    maxHP: int = IntVar(100, min=0, max=500)
+    currHP: int = IntVar(100, min=0, max=500)
 
     # mana
-    maxMana: int = 50
-    currMana: int = 10
+    maxMana: int = IntVar(20, min=0, max=200)
+    currMana: int = IntVar(20, min=0, max=400)
 
     # luck factors
-    ladybug_luck_time_left: int = 0
-    torch_luck: float = 0.0
-    luck_potion: int = 0
-    has_garden_gnome_nearby: bool = False
-    broken_mirror_bad_luck: bool = False
-    equipment_based_luck_bonus: float = 0.0
-    coin_luck: float = 0.0
-    kite_luck_level: int = 0
+    ladybug_luck_time_left: int = IntVar(0)
+    torch_luck: float = FloatVar(0.0)
+    luck_potion: int = IntVar(0)
+    has_garden_gnome_nearby: bool = BoolVar(False)
+    broken_mirror_bad_luck: bool = BoolVar(False)
+    equipment_based_luck_bonus: float = FloatVar(0.0)
+    coin_luck: float = FloatVar(0.0)
+    kite_luck_level: int = IntVar(0)
 
     # effects
-    stinky: bool = False
+    stinky: bool = BoolVar(False)
 
     def __init__(self, name: str = "terrex"):
-        self.name = name  # max 20 chars
+        self.name = name
+
+        # frame
+        self.body_frame.width = 40
+        self.body_frame.height = 56
+        self.leg_frame.width = 40
+        self.leg_frame.height = 56
 
         # todo: create inventory logic
         self.inventory = []

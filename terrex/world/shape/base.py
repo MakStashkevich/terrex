@@ -16,10 +16,10 @@ class Point:
 @dataclass
 class RectangleArea:
     """Equivalent to Microsoft.Xna.Framework.Rectangle (using left/top instead of X/Y)"""
-    left: int
-    top: int
-    width: int
-    height: int
+    left: int = 0
+    top: int = 0
+    width: int = 0
+    height: int = 0
 
     @property
     def right(self) -> int:
@@ -45,11 +45,11 @@ class GenShape:
     def __init__(self, quit_on_fail: bool = False):
         self._quitOnFail = quit_on_fail
 
-    def UnitApply(self, action: GenAction, origin: Point, x: int, y: int) -> bool:
+    def unit_apply(self, action: GenAction, origin: Point, x: int, y: int) -> bool:
         """Internal UnitApply from C#."""
         return action.apply(x, y)
 
-    def Perform(self, origin: Point, action: GenAction) -> bool:
+    def perform(self, origin: Point, action: GenAction) -> bool:
         """
         Execute shape: iterate over all points and apply action.
         Returns False if quit_on_fail and error.
