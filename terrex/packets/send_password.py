@@ -12,9 +12,9 @@ class SendPassword(ClientPacket):
         self.password = password
 
     def write(self, writer: Writer):
-        writer.write_string(self.password)
+        writer.write_dotnet_string(self.password)
 
     def read(self, reader: Reader) -> None:
-        self.password = reader.read_string()
+        self.password = reader.read_dotnet_string()
 
 SendPassword.register()

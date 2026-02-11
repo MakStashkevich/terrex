@@ -1,12 +1,19 @@
 import struct
 
+from terrex.structures.net_mode import NetMode
+
+
 class Reader:
     """Reading data from Terraria protocol byte buffer."""
-    def __init__(self, data: bytes, protocol_version: int = 0):
+
+    def __init__(
+        self, data: bytes, protocol_version: int = 0, net_mode: NetMode = NetMode.SERVER
+    ):
         """Initializes the reader with byte data."""
         self.data = data
         self.index = 0
         self.version = protocol_version
+        self.net_mode = net_mode
 
     def read_byte(self) -> int:
         """Reads an unsigned 8-bit integer (byte, uint8)."""
@@ -19,67 +26,83 @@ class Reader:
     def read_sbyte(self) -> int:
         """Reads a signed 8-bit integer (sbyte, int8, little-endian)."""
         if self.index + 1 > len(self.data):
-            raise ValueError(f"Cannot read sbyte: only {len(self.data) - self.index} bytes remaining")
-        res = struct.unpack("<b", self.data[self.index:self.index+1])[0]
+            raise ValueError(
+                f"Cannot read sbyte: only {len(self.data) - self.index} bytes remaining"
+            )
+        res = struct.unpack("<b", self.data[self.index : self.index + 1])[0]
         self.index += 1
         return res
 
     def read_short(self) -> int:
         """Reads a signed 16-bit integer (short, int16, little-endian)."""
         if self.index + 2 > len(self.data):
-            raise ValueError(f"Cannot read short: only {len(self.data) - self.index} bytes remaining")
-        res = struct.unpack("<h", self.data[self.index:self.index+2])[0]
+            raise ValueError(
+                f"Cannot read short: only {len(self.data) - self.index} bytes remaining"
+            )
+        res = struct.unpack("<h", self.data[self.index : self.index + 2])[0]
         self.index += 2
         return res
 
     def read_ushort(self) -> int:
         """Reads an unsigned 16-bit integer (ushort, uint16, little-endian)."""
         if self.index + 2 > len(self.data):
-            raise ValueError(f"Cannot read ushort: only {len(self.data) - self.index} bytes remaining")
-        res = struct.unpack("<H", self.data[self.index:self.index+2])[0]
+            raise ValueError(
+                f"Cannot read ushort: only {len(self.data) - self.index} bytes remaining"
+            )
+        res = struct.unpack("<H", self.data[self.index : self.index + 2])[0]
         self.index += 2
         return res
 
     def read_int(self) -> int:
         """Reads a signed 32-bit integer (int, int32, little-endian)."""
         if self.index + 4 > len(self.data):
-            raise ValueError(f"Cannot read int: only {len(self.data) - self.index} bytes remaining")
-        res = struct.unpack("<i", self.data[self.index:self.index+4])[0]
+            raise ValueError(
+                f"Cannot read int: only {len(self.data) - self.index} bytes remaining"
+            )
+        res = struct.unpack("<i", self.data[self.index : self.index + 4])[0]
         self.index += 4
         return res
 
     def read_ulong(self) -> int:
         """Reads an unsigned 64-bit integer (ulong, uint64, little-endian)."""
         if self.index + 8 > len(self.data):
-            raise ValueError(f"Cannot read ulong: only {len(self.data) - self.index} bytes remaining")
-        res = struct.unpack("<Q", self.data[self.index:self.index+8])[0]
+            raise ValueError(
+                f"Cannot read ulong: only {len(self.data) - self.index} bytes remaining"
+            )
+        res = struct.unpack("<Q", self.data[self.index : self.index + 8])[0]
         self.index += 8
         return res
 
     def read_float(self) -> float:
         """Reads a 32-bit IEEE 754 float (little-endian)."""
         if self.index + 4 > len(self.data):
-            raise ValueError(f"Cannot read float: only {len(self.data) - self.index} bytes remaining")
-        res = struct.unpack("<f", self.data[self.index:self.index+4])[0]
+            raise ValueError(
+                f"Cannot read float: only {len(self.data) - self.index} bytes remaining"
+            )
+        res = struct.unpack("<f", self.data[self.index : self.index + 4])[0]
         self.index += 4
         return res
-    
+
     def read_single(self) -> float:
         """Reads a 32-bit IEEE 754 float (Single, little-endian)."""
         if self.index + 4 > len(self.data):
-            raise ValueError(f"Cannot read single: only {len(self.data) - self.index} bytes remaining")
+            raise ValueError(
+                f"Cannot read single: only {len(self.data) - self.index} bytes remaining"
+            )
         res = struct.unpack_from("<f", self.data, self.index)[0]
         self.index += 4
         return res
-    
+
     def read_double(self) -> float:
         """Reads a 64-bit IEEE 754 double (little-endian)."""
         if self.index + 8 > len(self.data):
-            raise ValueError(f"Cannot read double: only {len(self.data) - self.index} bytes remaining")
-        res = struct.unpack("<d", self.data[self.index:self.index + 8])[0]
+            raise ValueError(
+                f"Cannot read double: only {len(self.data) - self.index} bytes remaining"
+            )
+        res = struct.unpack("<d", self.data[self.index : self.index + 8])[0]
         self.index += 8
         return res
-    
+
     def read_7bit_encoded_int(reader) -> int:
         """Reads a .NET 7-bit encoded int (variable-length)."""
         value = 0
@@ -94,37 +117,26 @@ class Reader:
         return value
 
     # BinaryReader.ReadString()
-    def read_string(self) -> str:
-        """Reads a Pascal string: 1-byte length (0-127) followed by UTF-8 bytes."""
-        length = self.read_byte()
-        if length == 0:
-            return ""
-        res = self.data[self.index:self.index + length].decode("utf-8")
-        self.index += length
-        return res
-
     def read_dotnet_string(self) -> str:
         """Reads a Terraria string: 7-bit varint length."""
-        length = self.read_7bit_int()
-        print("STRING LEN:", length, "AT", self.index)
+        length = self.read_7bit_encoded_int()
         data = self.read_bytes(length)
-        print("RAW STRING", data.hex(), "AT", self.index - length)
         try:
             return data.decode("utf-8")
         except UnicodeDecodeError:
             return repr(data)
-    
+
     def read_bytes(self, length: int) -> bytes:
         """Reads the specified number of raw bytes."""
         if self.index + length > len(self.data):
             raise ValueError("Not enough bytes remaining")
-        res = self.data[self.index:self.index + length]
+        res = self.data[self.index : self.index + length]
         self.index += length
         return res
 
     def remaining(self) -> bytes:
         """Returns the remaining unread bytes."""
-        return self.data[self.index:]
+        return self.data[self.index :]
 
     def eof(self) -> bool:
         """Checks if the end of data has been reached."""
@@ -133,12 +145,16 @@ class Reader:
     def read_bool(self) -> bool:
         """Reads a byte interpreted as boolean (non-zero = true)."""
         return bool(self.read_byte())
-    
+
+
 class Writer:
     """Writing data to Terraria protocol byte buffer."""
-    def __init__(self):
+
+    def __init__(self, protocol_version: int = 0, net_mode: NetMode = NetMode.CLIENT):
         """Initializes the writer with an empty bytearray."""
         self.data = bytearray()
+        self.version = protocol_version
+        self.net_mode = net_mode
 
     def write_byte(self, value: int):
         """Writes an unsigned 8-bit integer (byte, uint8)."""
@@ -167,7 +183,7 @@ class Writer:
     def write_float(self, value: float):
         """Writes a 32-bit IEEE 754 float (little-endian)."""
         self.data.extend(struct.pack("<f", value))
-        
+
     def write_single(self, value: float):
         """Writes a 32-bit IEEE 754 float (Single, little-endian)."""
         self.data.extend(struct.pack("<f", value))
@@ -180,27 +196,17 @@ class Writer:
         """Writes a .NET 7-bit encoded int (variable-length)."""
         if value < 0:
             raise ValueError("7-bit encoded int must be non-negative")
-        
         while value >= 0x80:
-            # младшие 7 бит + флаг продолжения (1)
             self.write_byte((value & 0x7F) | 0x80)
             value >>= 7
-        
-        # последний байт без флага продолжения
         self.write_byte(value & 0x7F)
 
     def write_dotnet_string(self, text: str) -> bytes:
+        """Writes a Terraria string: 7-bit varint length."""
         raw = text.encode("utf-8")
-        length_prefix = self.write_7bit_encoded_int(len(raw))
-        return length_prefix + raw
-
-    def write_string(self, value: str):
-        """Writes a Pascal string: 1-byte length (0-127) followed by UTF-8 bytes."""
-        b = value.encode("utf-8")
-        if len(b) > 127:
-            raise ValueError("Pascal string too long (max 127 bytes)")
-        self.write_byte(len(b))
-        self.data.extend(b)
+        self.write_7bit_encoded_int(len(raw))
+        for b in raw:
+            self.write_byte(b)
 
     def write_bytes(self, value: bytes):
         """Writes raw bytes."""

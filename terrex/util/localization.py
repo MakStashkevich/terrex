@@ -17,7 +17,7 @@ class LocaleType(Enum):
 
 def get_translation(
     netstring: NetworkText,
-    lang: str = "ru-RU",
+    lang: str = "en-US",
     locale_type: LocaleType = LocaleType.LEGACY
 ) -> str:
     """

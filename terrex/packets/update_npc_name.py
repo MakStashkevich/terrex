@@ -14,7 +14,7 @@ class UpdateNpcName(SyncPacket):
     def read(self, reader: Reader) -> None:
         self.npc_id = reader.read_short()
         if not reader.eof():
-            self.name = reader.read_string()
+            self.name = reader.read_dotnet_string()
             self.town_npc_variation_idx = reader.read_int()
         else:
             self.name = None
@@ -23,7 +23,7 @@ class UpdateNpcName(SyncPacket):
     def write(self, writer: Writer) -> None:
         writer.write_short(self.npc_id)
         if self.name is not None and self.town_npc_variation_idx is not None:
-            writer.write_string(self.name)
+            writer.write_dotnet_string(self.name)
             writer.write_int(self.town_npc_variation_idx)
 
 UpdateNpcName.register()

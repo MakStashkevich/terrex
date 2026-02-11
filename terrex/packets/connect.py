@@ -9,10 +9,10 @@ class Connect(ClientPacket):
         self.version = version
 
     def read(self, reader: Reader) -> None:
-        version_str = reader.read_string()
+        version_str = reader.read_dotnet_string()
         self.version = int(version_str.replace("Terraria", ""))
 
     def write(self, writer: Writer):
-        writer.write_string("Terraria" + str(self.version))
+        writer.write_dotnet_string("Terraria" + str(self.version))
 
 Connect.register()

@@ -7,6 +7,7 @@ from proxy.config import config
 from terrex.packets.packet_ids import PacketIds
 from terrex.packets.base import stringify_value
 from proxy.parser import IncrementalParser
+from terrex.structures.net_mode import NetMode
 
 IGNORED_PACKET_IDS = [PacketIds.SEND_SECTION]
 
@@ -185,7 +186,7 @@ def forward(
         with config.lock:
             parser.feed(data)
             while True:
-                packet = parser.next()
+                packet = parser.next(NetMode.SERVER if direction == "STC" else NetMode.CLIENT)
                 if packet is None:
                     break
                 try:
@@ -196,7 +197,10 @@ def forward(
                         pkt_name = f"Unknown(0x{packet.id:02X})"
 
                     timestamp = current_timestamp()
-                    log_payload = stringify_value(vars(packet))
+                    try:
+                        log_payload = stringify_value(vars(packet))
+                    except RecursionError:
+                        log_payload = f"**recursion depth exceeded in logging** id=0x{packet.id:02X} ({pkt_name})"
 
                     if packet.id in IGNORED_PACKET_IDS:
                         continue

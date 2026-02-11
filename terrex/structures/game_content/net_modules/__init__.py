@@ -1,7 +1,6 @@
 from .net_liquid_module import NetLiquidModule
 from .net_text_module import NetTextModule
 
-# from .deprecate_net_module_client_text import LoadNetModuleClientText
 from .net_ping_module import NetPingModule
 from .net_ambience_module import NetAmbienceModule
 from .net_bestiary_module import NetBestiaryModule

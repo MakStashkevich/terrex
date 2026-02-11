@@ -17,11 +17,11 @@ class Sign:
             reader.read_short(),
             reader.read_short(),
             reader.read_short(),
-            reader.read_terraria_string(),
+            reader.read_dotnet_string(),
         )
 
     def write(self, writer: Writer) -> None:
         writer.write_short(self.index)
         writer.write_short(self.x)
         writer.write_short(self.y)
-        writer.write_string(self.text)
+        writer.write_dotnet_string(self.text)

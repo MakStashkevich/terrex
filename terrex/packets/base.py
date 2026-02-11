@@ -3,19 +3,20 @@ from dataclasses import is_dataclass
 from typing import Any, Type, Dict
 from enum import Enum
 from terrex.entity.player import Player
+from terrex.structures.net_mode import NetMode
 from terrex.world.world import World
 from terrex.events.eventmanager import EventManager
 from terrex.util.streamer import Reader, Writer
 from terrex.util.stringify import stringify_value
 
-registry: Dict[int, Type['Packet']] = {}
+registry: Dict[int, Type["Packet"]] = {}
 
 
 class Packet(ABC):
     id: int
 
     @classmethod
-    def register(cls: Type['Packet']) -> Type['Packet']:
+    def register(cls: Type["Packet"]) -> Type["Packet"]:
         registry[cls.id] = cls
         return cls
 
@@ -27,7 +28,7 @@ class Packet(ABC):
 
     def handle(self, world: World, player: Player, evman: EventManager) -> None:
         pass
-    
+
     def __to_log_dict(self) -> dict[str, Any]:
         return {name: stringify_value(value) for name, value in vars(self).items()}
 
@@ -35,37 +36,40 @@ class Packet(ABC):
         return f"{self.__class__.__name__}({self.__to_log_dict()})"
 
 
-class PacketDirection(Enum):
-    CLIENT = "client"
-    SERVER = "server"
-    SYNC = "sync"
-
-
 class ServerPacket(Packet):
     """Server -> Client packets. Client only reads (read)."""
-    _direction: PacketDirection = PacketDirection.SERVER
+
+    _net_mode: NetMode = NetMode.SERVER
 
     @abstractmethod
     def read(self, reader: Reader) -> None:
         pass
 
     def write(self, writer: Writer) -> None:
-        raise NotImplementedError(f"Client does not send {self.__class__.__name__} (server-only packet)")
+        raise NotImplementedError(
+            f"Client does not send {self.__class__.__name__} (server-only packet)"
+        )
+
 
 class ClientPacket(Packet):
     """Client -> Server packets. Client only writes (write)."""
-    _direction: PacketDirection = PacketDirection.CLIENT
+
+    _net_mode: NetMode = NetMode.CLIENT
 
     @abstractmethod
     def write(self, writer: Writer) -> None:
         pass
 
     def read(self, reader: Reader) -> None:
-        raise NotImplementedError(f"Client does not read {self.__class__.__name__} (server-bound packet only)")
+        raise NotImplementedError(
+            f"Client does not read {self.__class__.__name__} (server-bound packet only)"
+        )
+
 
 class SyncPacket(Packet):
     """Server <-> Client (Sync) packets. Both methods required."""
-    _direction: PacketDirection = PacketDirection.SYNC
+
+    _net_mode: NetMode = NetMode.SYNC
 
     @abstractmethod
     def read(self, reader: Reader) -> None:

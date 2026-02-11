@@ -26,7 +26,7 @@ class NetworkText:
     @classmethod
     def read(cls, reader: Reader) -> 'NetworkText':
         mode = NetworkTextMode.read(reader)
-        text = reader.read_string()
+        text = reader.read_dotnet_string()
         substitutions = []
         if mode != NetworkTextMode.LITERAL:
             count = reader.read_byte()
@@ -36,7 +36,7 @@ class NetworkText:
 
     def write(self, writer: Writer) -> None:
         self.mode.write(writer)
-        writer.write_string(self.text)
+        writer.write_dotnet_string(self.text)
         if self.mode != NetworkTextMode.LITERAL:
             writer.write_byte(len(self.substitutions))
             for sub in self.substitutions:

@@ -11,10 +11,10 @@ class Packet15(Packet):
 
     def read(self, reader: Reader) -> None:
         self.pkt_id = reader.read_short()
-        self.version = reader.read_string()
+        self.version = reader.read_dotnet_string()
 
     def write(self, writer: Writer) -> None:
         writer.write_short(self.pkt_id)
-        writer.write_string(self.version)
+        writer.write_dotnet_string(self.version)
 
 Packet15.register()

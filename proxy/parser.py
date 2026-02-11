@@ -1,8 +1,11 @@
 import struct
+import traceback
 from typing import Optional
 
 from terrex.packets.base import registry, Packet
 from terrex.packets.base import Packet
+from terrex.packets.packet_ids import PacketIds
+from terrex.structures.net_mode import NetMode
 from terrex.util.streamer import Reader
 
 class UnknownPacket(Packet):
@@ -24,7 +27,7 @@ class IncrementalParser:
         """Append raw data to the internal buffer for incremental parsing."""
         self.buffer.extend(data)
 
-    def next(self) -> Optional[Packet]:
+    def next(self, net_mode: NetMode) -> Optional[Packet]:
         """Extract the next complete packet from the buffer.
 
         Protocol format:
@@ -43,7 +46,7 @@ class IncrementalParser:
             if len(payload) == 0:
                 continue  # Skip empty payloads
 
-            reader = Reader(payload)
+            reader = Reader(payload, protocol_version=999, net_mode=net_mode)
             try:
                 packet_id = reader.read_byte()  # First byte of payload is packet ID
             except IndexError:
@@ -58,7 +61,12 @@ class IncrementalParser:
             try:
                 packet.read(reader)
             except Exception as e:
-                print(f"Error reading packet {packet_id:02X}: {e}")
+                print(traceback.format_exc())
+                try:
+                    name = PacketIds(packet_id).name
+                except ValueError:
+                    name = "UNKNOWN"
+                print(f"Error reading packet {packet_id:02X}, name: {name}: {e}")
                 # Fallback already handled by UnknownPacket.read if applicable
 
             return packet

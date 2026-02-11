@@ -85,7 +85,7 @@ class WorldInfo(ServerPacket):
         self.world_surface = reader.read_short()
         self.rock_layer = reader.read_short()
         self.world_id = reader.read_int()
-        self.world_name = reader.read_string()
+        self.world_name = reader.read_dotnet_string()
         self.game_mode = reader.read_byte()
         self.world_unique_id = [reader.read_byte() for _ in range(16)]
         self.world_generator_version = [reader.read_int(), reader.read_int()]

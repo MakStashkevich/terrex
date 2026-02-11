@@ -8,6 +8,7 @@ from typing import Optional
 
 from terrex import packets
 from terrex.packets.base import registry, Packet
+from terrex.structures.net_mode import NetMode
 from terrex.world.world import World
 from terrex.entity.player import Player
 from terrex.events.eventmanager import EventManager
@@ -55,7 +56,7 @@ class Client:
         self._ping_start_time = 0.0
 
     def connect(self) -> None:
-        """Подключиться к серверу и выполнить handshake."""
+        """Connect to the server and perform a handshake."""
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((self.host, self.port))
         self.running = True
@@ -65,41 +66,41 @@ class Client:
         self.reader_thread.start()
         self.writer_thread.start()
 
-        time.sleep(0.1)  # Дать потокам запуститься
+        time.sleep(0.1)  # Allow the threads to start
 
         # Send connect packet
         self.send(packets.Connect(self.protocol))
 
     def send(self, packet: Packet) -> None:
-        """Отправить пакет в очередь."""
+        """Send the package to the queue."""
         self.send_queue.put(packet)
 
     def recv(self) -> Optional[Packet]:
-        """Получить пакет (блокирующий)."""
+        """Get a (blocking) package."""
         try:
             return self.recv_queue.get(timeout=0.1)
         except queue.Empty:
             return None
 
     def try_recv(self) -> Optional[Packet]:
-        """Получить пакет неблокирующий."""
+        """Get a non-blocking package."""
         try:
             return self.recv_queue.get_nowait()
         except queue.Empty:
             return None
 
     def _recv_exact(self, n: int) -> bytes:
-        """Прочитать точно n байт."""
+        """Read exactly n bytes."""
         data = b""
         while len(data) < n:
             chunk = self.sock.recv(n - len(data))
             if len(chunk) == 0:
-                raise ConnectionError("Соединение закрыто")
+                raise ConnectionError("The connection is closed")
             data += chunk
         return data
 
     def _reader_loop(self) -> None:
-        """Поток чтения пакетов."""
+        """The packet reading stream."""
         while self.running:
             try:
                 len_bytes = self._recv_exact(2)
@@ -112,7 +113,7 @@ class Client:
                 packet_cls = registry.get(packet_id)
                 if packet_cls:
                     packet = packet_cls()
-                    reader = Reader(payload)
+                    reader = Reader(payload, protocol_version=self.protocol, net_mode=NetMode.SERVER)
                     packet.read(reader)
                     packet.handle(self.world, self.player, self._evman)
 
@@ -125,7 +126,7 @@ class Client:
                         name = PacketIds(packet_id).name
                     except ValueError:
                         name = "UNKNOWN"
-                    print(f"Неизвестный ID пакета: 0x{packet_id:02X}, name: {name}")
+                    print(f"Unknown ID packet: 0x{packet_id:02X}, name: {name}")
                     continue
             except (ConnectionError, Exception) as e:
                 print(traceback.format_exc())
@@ -142,9 +143,7 @@ class Client:
         if packet.id == PacketIds.DISCONNECT.value and isinstance(
             packet, packets.Disconnect
         ):
-            print(
-                f"[READ] Packet ID: 0x{packet.id:02X}. Disconnect with reason: {get_translation(packet.reason)}"
-            )
+            print(f"Disconnect with reason: {get_translation(packet.reason)}")
             self.stop()
             return False
 
@@ -377,12 +376,12 @@ class Client:
         return True
 
     def _writer_loop(self) -> None:
-        """Поток отправки пакетов."""
+        """The packet sending stream."""
         while self.running:
             try:
                 packet: Packet = self.send_queue.get(timeout=1.0)
                 # print(f"[WRITE] ID пакета: 0x{packet.id:02X}")
-                writer = Writer()
+                writer = Writer(protocol_version=self.protocol, net_mode=NetMode.CLIENT)
                 writer.write_byte(packet.id)
                 packet.write(writer)
                 payload = writer.bytes()
@@ -392,23 +391,24 @@ class Client:
             except queue.Empty:
                 continue
             except Exception as e:
-                print(f"Ошибка отправки: {e}")
+                print(traceback.format_exc())
+                print(f"Error send packet by client: {e}")
                 break
 
         self.running = False
 
     def send_ping(self) -> None:
-        """Отправить пинг-пакет."""
+        """Send a ping packet."""
         self.send(packets.Ping())
 
     def on_ping_received(self) -> None:
-        """Обработать полученный пинг."""
+        """Process the received ping."""
         now = time.time() * 1000
         self.current_ping = int(now - self._ping_start_time)
         self._waiting_ping = False
 
     def update_ping(self) -> None:
-        """Обновить пинг-логику."""
+        """Update the ping logic."""
         now = time.time() * 1000
         if self._waiting_ping:
             self.current_ping = max(self.current_ping, int(now - self._ping_start_time))
@@ -420,20 +420,20 @@ class Client:
             self._ping_last_sent = now
 
     def _ping_loop(self) -> None:
-        """Поток пинга."""
+        """Ping stream."""
         while self.running:
             self.update_ping()
             time.sleep(0.05)
 
     def reset_ping(self) -> None:
-        """Сбросить пинг."""
+        """Reset the ping."""
         self.current_ping = 0
         self._waiting_ping = False
         self._ping_last_sent = 0.0
         self._ping_start_time = 0.0
 
     def stop(self) -> None:
-        """Остановить клиент."""
+        """Stop the client."""
         self.running = False
         if self.sock:
             self.sock.close()

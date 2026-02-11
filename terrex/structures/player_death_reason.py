@@ -63,7 +63,7 @@ class PlayerDeathReason:
             item_prefix = reader.read_byte()
         custom_reason = None
         if reason_flags & cls.HAS_CUSTOM_REASON:
-            custom_reason = reader.read_string()
+            custom_reason = reader.read_dotnet_string()
 
         return cls(
             reason_flags,
@@ -113,4 +113,4 @@ class PlayerDeathReason:
         if self.item_prefix is not None:
             writer.write_byte(self.item_prefix)
         if self.custom_reason is not None:
-            writer.write_string(self.custom_reason)
+            writer.write_dotnet_string(self.custom_reason)

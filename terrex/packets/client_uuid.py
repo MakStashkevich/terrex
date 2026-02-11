@@ -9,9 +9,9 @@ class ClientUuid(ClientPacket):
         self.uuid4 = uuid4
 
     def write(self, writer: Writer):
-        writer.write_string(self.uuid4)
+        writer.write_dotnet_string(self.uuid4)
 
     def read(self, reader: Reader) -> None:
-        self.uuid4 = reader.read_string()
+        self.uuid4 = reader.read_dotnet_string()
 
 ClientUuid.register()

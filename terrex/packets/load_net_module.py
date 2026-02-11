@@ -36,7 +36,13 @@ class LoadNetModule(SyncPacket):
         self.module.write(writer)
 
     def handle(self, world, player, evman):
-        if isinstance(self.module, NetTextModule):
+        if (
+            isinstance(self.module, NetTextModule)
+            and self.module.author_id is not None
+            and self.module.text is not None
+            # ignore client chat commands
+            and self.module.chat_command_id is None
+        ):
             evman.raise_event(Event.Chat, self.module)
 
 

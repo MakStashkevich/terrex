@@ -18,12 +18,12 @@ class SyncActiveChest(SyncPacket):
         self.chest_id = reader.read_short()
         self.x = reader.read_short()
         self.y = reader.read_short()
-        self.name = reader.read_string()
+        self.name = reader.read_dotnet_string()
 
     def write(self, writer: Writer):
         writer.write_short(self.chest_id)
         writer.write_short(self.x)
         writer.write_short(self.y)
-        writer.write_string(self.name)
+        writer.write_dotnet_string(self.name)
 
 SyncActiveChest.register()

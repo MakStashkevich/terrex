@@ -21,7 +21,7 @@ class UpdateSign(SyncPacket):
         self.sign_id = reader.read_short()
         self.x = reader.read_short()
         self.y = reader.read_short()
-        self.text = reader.read_string()
+        self.text = reader.read_dotnet_string()
         self.player_id = reader.read_byte()
         self.flags = reader.read_byte()
 
@@ -29,7 +29,7 @@ class UpdateSign(SyncPacket):
         writer.write_short(self.sign_id)
         writer.write_short(self.x)
         writer.write_short(self.y)
-        writer.write_string(self.text)
+        writer.write_dotnet_string(self.text)
         writer.write_byte(self.player_id)
         writer.write_byte(self.flags)
 

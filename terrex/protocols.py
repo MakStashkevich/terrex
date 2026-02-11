@@ -11,4 +11,4 @@ PROTOCOLS: Dict[Tuple[int, ...], int] = {
     (1, 4, 5, 4): 317,
     (1, 4, 5, 5): 318,
 }
-"""Протоколы Terraria по версиям. Ключ - tuple версии (major, minor, build, revision), значение - номер протокола."""
+"""Terraria protocols by version. The key is the version tuple (major, minor, build, revision), the value is the protocol number."""

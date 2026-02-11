@@ -1,5 +1,7 @@
 from terrex import structures
 from terrex.protocols import PROTOCOLS
+from terrex.structures.chat.chat_command import ChatCommand
+from terrex.structures.net_string import NetworkText
 from . import packets
 from . import client
 
@@ -44,15 +46,13 @@ class Terrex(object):
     def start(self):
         self.client.connect()
 
-    def send_message(self, text, color: structures.Rgb = structures.Rgb(255, 255, 255)):
+    def send_message(self, text: str):
         if self.player.logged_in:
             self.client.send(
                 packets.LoadNetModule(
-                    variant=1,
-                    body=structures.NetTextModule(
-                        author=self.player.id,
+                    module=structures.NetTextModule(
+                        chat_command_id=ChatCommand.SayChat,
                         text=text,
-                        color=color,
                     ),
                 )
             )
