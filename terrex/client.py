@@ -8,8 +8,8 @@ from typing import Optional
 
 from terrex import packets
 from terrex.packets.base import registry, Packet
-from terrex.data.world import World
-from terrex.data.player import Player
+from terrex.world.world import World
+from terrex.world.player import Player
 from terrex.events.eventmanager import EventManager
 from terrex.packets.packet_ids import PacketIds
 from terrex.structures.game_content.creative.creative_power.spawn_rate_slider_per_player_power import (

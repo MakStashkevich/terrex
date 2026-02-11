@@ -1,6 +1,6 @@
 from typing import Any
 
-from terrex.data.item import Item
+from terrex.item.item import Item
 from terrex.events.events import Event
 from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds

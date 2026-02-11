@@ -1,7 +1,7 @@
 from typing import Optional
 from dataclasses import dataclass, field
 from terrex.util.streamer import Reader, Writer
-from terrex.data.item import Item
+from terrex.item.item import Item
 
 
 @dataclass

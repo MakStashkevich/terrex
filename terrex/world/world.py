@@ -1,5 +1,5 @@
-from .tile import Tile
-from .item import Item
+from ..entity.tile.tile import Tile
+from ..item.item import Item
 
 
 class World:

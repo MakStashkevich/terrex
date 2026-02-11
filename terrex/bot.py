@@ -3,8 +3,8 @@ from terrex.protocols import PROTOCOLS
 from . import packets
 from . import client
 
-from terrex.data.player import Player
-from terrex.data.world import World
+from terrex.world.player import Player
+from terrex.world.world import World
 from .events import EventManager
 
 # The latest supported version of Terraria
