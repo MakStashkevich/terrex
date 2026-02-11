@@ -8,7 +8,7 @@ from terrex.world.world import World
 from .events import EventManager
 
 # The latest supported version of Terraria
-TERRARIA_VERSION = (1, 4, 5, 4)
+TERRARIA_VERSION = (1, 4, 5, 5)
 
 
 class Terrex(object):
