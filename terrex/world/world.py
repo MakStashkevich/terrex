@@ -1,4 +1,4 @@
-from ..entity.tile.tile import Tile
+from ..tile.tile import Tile
 from ..item.item import Item
 
 

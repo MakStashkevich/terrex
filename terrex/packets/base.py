@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import is_dataclass
 from typing import Any, Type, Dict
 from enum import Enum
-from terrex.world.player import Player
+from terrex.entity.player import Player
 from terrex.world.world import World
 from terrex.events.eventmanager import EventManager
 from terrex.util.streamer import Reader, Writer

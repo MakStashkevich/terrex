@@ -1,5 +1,5 @@
 from xml.dom.minidom import Entity
-from terrex.world.npc import NPC
+from terrex.entity.npc import NPC
 from terrex.structures.rgb import Rgb
 
 

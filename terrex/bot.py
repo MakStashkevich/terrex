@@ -3,7 +3,7 @@ from terrex.protocols import PROTOCOLS
 from . import packets
 from . import client
 
-from terrex.world.player import Player
+from terrex.entity.player import Player
 from terrex.world.world import World
 from .events import EventManager
 
