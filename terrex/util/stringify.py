@@ -4,7 +4,9 @@ from enum import Enum
 from terrex.structures.net_string import NetworkText
 
 
-def stringify_network_text(value: Any, depth: int = 0, max_depth: int = 20, seen: set = None) -> dict[str, Any]:
+def stringify_network_text(
+    value: Any, depth: int = 0, max_depth: int = 20, seen: set = None
+) -> dict[str, Any]:
     if seen is None:
         seen = set()
 
@@ -15,21 +17,32 @@ def stringify_network_text(value: Any, depth: int = 0, max_depth: int = 20, seen
         return repr(value)
 
     if depth > max_depth:
-        return {"mode": "<truncated>", "key": "<truncated>", "translated": "<truncated>", "substitutions": []}
+        return {
+            "mode": "<truncated>",
+            "key": "<truncated>",
+            "translated": "<truncated>",
+            "substitutions": [],
+        }
 
-    seen.add(id(value))
+    obj_id = id(value)
+    seen.add(obj_id)
     try:
         return {
             "mode": value.mode.name,
             "key": value.text,
             "translated": get_translation(value),
-            "substitutions": [stringify_value(sub, depth + 1, max_depth, seen) for sub in value.substitutions],
+            "substitutions": [
+                stringify_value(sub, depth + 1, max_depth, seen)
+                for sub in value.substitutions
+            ],
         }
     finally:
         seen.remove(obj_id)
 
 
-def stringify_value(value: Any, depth: int = 0, max_depth: int = 20, seen: set = None) -> Any:
+def stringify_value(
+    value: Any, depth: int = 0, max_depth: int = 20, seen: set = None
+) -> Any:
     """
     Recursive stringify for logging/repr: NetworkText -> dict, bytes -> hex, list/dict/dataclass recursive.
     Shared for Packet/NetModule. Supports cycle detection and max depth truncation.
@@ -48,13 +61,21 @@ def stringify_value(value: Any, depth: int = 0, max_depth: int = 20, seen: set =
         if isinstance(value, Enum):
             return f"{value.name}({value.value})"
         if isinstance(value, dict):
-            return {str(key): stringify_value(item, depth + 1, max_depth, seen) for key, item in value.items()}
+            return {
+                str(key): stringify_value(item, depth + 1, max_depth, seen)
+                for key, item in value.items()
+            }
         if isinstance(value, (bytes, bytearray)):
             return value.hex()
         if isinstance(value, list):
             return [stringify_value(item, depth + 1, max_depth, seen) for item in value]
         if is_dataclass(value) or hasattr(value, "__dict__"):
-            return {str(key): stringify_value(getattr(value, key), depth + 1, max_depth, seen) for key in vars(value).keys()}
+            return {
+                str(key): stringify_value(
+                    getattr(value, key), depth + 1, max_depth, seen
+                )
+                for key in vars(value).keys()
+            }
         return repr(value)
     finally:
         seen.remove(obj_id)
