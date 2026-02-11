@@ -67,3 +67,4 @@ terraria-protocol/
 *.bin
 *.txt
 !LICENSE.txt
+!requirements.txt

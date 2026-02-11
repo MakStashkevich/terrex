@@ -6,9 +6,13 @@ from terrex.structures.rgb import Rgb
 class Player(Entity):
     name: str = ""
 
+    # const
+    DEFAULT_WIDTH: int = 20
+    DEFAULT_HEIGHT: int = 42
+
     # size
-    width = 20
-    height = 42
+    width: int = DEFAULT_WIDTH
+    height: int = DEFAULT_HEIGHT
 
     # connection flags
     initialized: bool = False
