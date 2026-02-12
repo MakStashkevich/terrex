@@ -2,7 +2,7 @@ from terrex.packets.base import SyncPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.structures.rgb import Rgb
 from terrex.structures.vec2 import Vec2
-from terrex.structures.net_string import NetworkText
+from terrex.structures.localization.network_text import NetworkText
 from terrex.util.streamer import Reader, Writer
 
 

@@ -23,20 +23,20 @@ pip install dnfile
 ## Running the Script
 
 ```bash
-python locales/terraria_localization.py /path/to/Terraria.exe locales/ false ru-RU en-US
+python locale/terraria_localization.py /path/to/Terraria.exe locale/ false ru-RU en-US
 ```
 
 Dumps only the specified languages (`ru-RU`, `en-US`).
 
 ```bash
-python locales/terraria_localization.py /path/to/Terraria.exe locales/ true
+python locale/terraria_localization.py /path/to/Terraria.exe locale/ true
 ```
 
 Dumps **all** available languages.
 
 **Arguments:**
 - `<exe_path>`: Full path to `Terraria.exe`
-- `<output_dir>`: Output directory (e.g., `locales/`)
+- `<output_dir>`: Output directory (e.g., `locale/`)
 - `<dump_all>`: `true` (dump all langs) or `false` (only listed langs)
 - `[lang1 lang2 ...]`: Optional specific languages (e.g., `ru-RU en-US zh-CN`)
 
@@ -51,8 +51,8 @@ Dumps **all** available languages.
 
 ## Generated Files
 
-The script creates language-specific directories under `locales/`, such as:
-- `locales/en-US/`
+The script creates language-specific directories under `locale/`, such as:
+- `locale/en-US/`
   - [`en-US.Game.json`](en-US/en-US.Game.json)
   - [`en-US.Items.json`](en-US/en-US.Items.json)
   - [`en-US.NPCs.json`](en-US/en-US.NPCs.json)

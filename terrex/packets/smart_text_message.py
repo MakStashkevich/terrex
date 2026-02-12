@@ -1,7 +1,7 @@
 from terrex.packets.base import ServerPacket
 from terrex.packets.packet_ids import PacketIds
 from terrex.util.streamer import Reader
-from terrex.structures.net_string import NetworkText
+from terrex.structures.localization.network_text import NetworkText
 
 class SmartTextMessage(ServerPacket):
     id = PacketIds.SMART_TEXT_MESSAGE

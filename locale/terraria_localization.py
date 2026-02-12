@@ -7,8 +7,8 @@ Usage:
 python terraria_localization.py <exe_path> <output_dir> <dump_all> [lang1 lang2 ...]
 
 Examples:
-- python terraria_localization.py /path/to/Terraria.exe locales/ false ru-RU en-US  # only specified
-- python terraria_localization.py /path/to/Terraria.exe locales/ true               # all languages
+- python terraria_localization.py /path/to/Terraria.exe locale/ false ru-RU en-US  # only specified
+- python terraria_localization.py /path/to/Terraria.exe locale/ true               # all languages
 """
 
 import json

@@ -1,7 +1,7 @@
 from terrex import structures
 from terrex.protocols import PROTOCOLS
 from terrex.structures.chat.chat_command import ChatCommand
-from terrex.structures.net_string import NetworkText
+from terrex.structures.localization.network_text import NetworkText
 from . import packets
 from . import client
 

@@ -1,7 +1,7 @@
 from typing import Any
 from dataclasses import is_dataclass
 from enum import Enum
-from terrex.structures.net_string import NetworkText
+from terrex.structures.localization.network_text import NetworkText
 
 
 def stringify_network_text(
@@ -10,7 +10,7 @@ def stringify_network_text(
     if seen is None:
         seen = set()
 
-    from terrex.structures.net_string import NetworkText
+    from terrex.structures.localization.network_text import NetworkText
     from terrex.util.localization import get_translation
 
     if not isinstance(value, NetworkText):

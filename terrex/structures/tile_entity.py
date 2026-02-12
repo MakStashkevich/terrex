@@ -137,17 +137,16 @@ def read_tile_entity(reader: Reader) -> TileEntity:
             type=typ, id=id_, x=x, y=y, logic_check_type=logic_check_type, on=on
         )
     elif typ == 3:
-        game_version = 317
         bits_byte = reader.read_byte()
         bits_byte1 = reader.read_byte()
         pose = 0
-        if game_version >= 307:
+        if reader.version >= 307:
             pose = reader.read_byte()
         bits_byte2 = 0
-        if game_version >= 308:
+        if reader.version >= 308:
             bits_byte2 = reader.read_byte()
         has_item = False
-        if game_version == 311:
+        if reader.version == 311:
             has_item = bool(bits_byte2 & 2)
             bits_byte2 &= ~2
         num_equip = bits_byte | (256 if (bits_byte2 & 2) else 0)
