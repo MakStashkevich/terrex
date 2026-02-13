@@ -34,6 +34,7 @@ class CsToPyParser:
         self.pending_old_comment: Optional[str] = None
         self.current_old_comments: Dict[str, str] = {}
         self.old_comments_classes: Dict[str, Dict[str, str]] = {}
+        self.is_enum = False
 
     def parse(self, content: str) -> str:
         self.lines = content.splitlines()
@@ -51,6 +52,15 @@ class CsToPyParser:
                 if m:
                     self.namespace = m.group(1)
 
+            m_enum = re.match(r"(?:public|internal)\s+enum\s+(\S+)", stripped)
+            if m_enum:
+                class_name = m_enum.group(1).rstrip("{").strip()
+                if self.top_class is None:
+                    self.top_class = class_name
+                self.is_enum = True
+                i += 1
+                continue
+
             m_class = re.match(r"(?:public|internal)(?:\s+static)?\s+class\s+(\S+)", stripped)
             if m_class:
                 class_name = m_class.group(1).rstrip("{").strip()
@@ -60,6 +70,15 @@ class CsToPyParser:
                     self.class_stack.append((class_name, indent))
                 i += 1
                 continue
+
+            if self.is_enum:
+                m_member = re.match(r"^(\w+)\s*(=\s*(\d+))?\s*,?\s*$", stripped)
+                if m_member:
+                    name = m_member.group(1)
+                    val = str(len(self.current_constants))
+                    self.current_constants[name] = val
+                    i += 1
+                    continue
 
             if re.match(r"^\[Obsolete\(\"Removed\",\s*true\)\]$", stripped):
                 self.pending_obsolete = True
@@ -119,6 +138,14 @@ class CsToPyParser:
                 continue
 
             if stripped == "}":
+                if self.is_enum and not self.class_stack:
+                    self.classes[self.top_class] = self.current_constants.copy()
+                    self.is_enum = False
+                    self.current_constants.clear()
+                    self.current_removed_constants.clear()
+                    self.current_old_comments.clear()
+                    i += 1
+                    continue
                 if self.class_stack and indent == self.class_stack[-1][1]:
                     popped_name, _ = self.class_stack.pop()
                     current_path = '.'.join(name for name, _ in self.class_stack) + ('.' + popped_name if self.class_stack else popped_name)
@@ -230,6 +257,7 @@ class CsToPyParser:
         self.pending_old_comment = None
         self.current_old_comments = {}
         self.old_comments_classes = {}
+        self.is_enum = False
 
     def _convert_set_call(self, set_type: str, args_str: str) -> Optional[str]:
         # Удаляем new int[] {} если есть
