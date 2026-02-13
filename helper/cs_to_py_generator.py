@@ -31,6 +31,9 @@ class CsToPyParser:
         self.pending_obsolete = False
         self.current_removed_constants: Dict[str, str] = {}
         self.removed_classes: Dict[str, Dict[str, str]] = {}
+        self.pending_old_comment: Optional[str] = None
+        self.current_old_comments: Dict[str, str] = {}
+        self.old_comments_classes: Dict[str, Dict[str, str]] = {}
 
     def parse(self, content: str) -> str:
         self.lines = content.splitlines()
@@ -63,6 +66,12 @@ class CsToPyParser:
                 i += 1
                 continue
 
+            m_old = re.match(r"^\[Old\(\"([^\"]+)\"\)\]$", stripped)
+            if m_old:
+                self.pending_old_comment = m_old.group(1)
+                i += 1
+                continue
+
             # константы
             m_const = re.match(r"public const (?:int|ushort|byte|short|sbyte) (\w+)\s*=\s*([^;]+);", line)
             if m_const:
@@ -73,6 +82,9 @@ class CsToPyParser:
                     self.pending_obsolete = False
                 else:
                     self.current_constants[name] = val
+                    if self.pending_old_comment:
+                        self.current_old_comments[name] = self.pending_old_comment
+                        self.pending_old_comment = None
                 if name == "Count":
                     self.count_value = int(val)
                 i += 1
@@ -95,12 +107,25 @@ class CsToPyParser:
                 i += 1
                 continue
 
+            # static ctor assignments
+            m_assign = re.match(r"(\w+)\.(\w+)\s*=\s*(\d+);", stripped)
+            if m_assign:
+                class_ref, name, val = m_assign.groups()
+                if class_ref == self.top_class:
+                    self.current_constants[name] = val
+                    if name == "Count":
+                        self.count_value = int(val)
+                i += 1
+                continue
+
             if stripped == "}":
                 if self.class_stack and indent == self.class_stack[-1][1]:
                     popped_name, _ = self.class_stack.pop()
                     current_path = '.'.join(name for name, _ in self.class_stack) + ('.' + popped_name if self.class_stack else popped_name)
                     self.classes[current_path] = self.current_constants.copy()
                     self.removed_classes[current_path] = self.current_removed_constants.copy()
+                    self.old_comments_classes[current_path] = self.current_old_comments.copy()
+                    self.current_old_comments.clear()
                     self.current_removed_constants.clear()
                     if self.count_value is not None:
                         self.class_counts[current_path] = self.count_value
@@ -202,6 +227,9 @@ class CsToPyParser:
         self.pending_obsolete = False
         self.current_removed_constants = {}
         self.removed_classes = {}
+        self.pending_old_comment = None
+        self.current_old_comments = {}
+        self.old_comments_classes = {}
 
     def _convert_set_call(self, set_type: str, args_str: str) -> Optional[str]:
         # Удаляем new int[] {} если есть
@@ -257,26 +285,38 @@ class CsToPyParser:
             out.append("")
             class_def = f"class {self.current_class}(IntEnum):" if top_is_pure else f"class {self.current_class}:"
             out.append(class_def)
+            top_old_comments = self.old_comments_classes.get(top_path, {})
             top_removed = self.removed_classes.get(top_path, {})
             const_items = [(int(val), name, val, False) for name, val in top_consts.items() if val.lstrip('-').isdigit()]
             removed_items = [(int(val), name, val, True) for name, val in top_removed.items()]
             all_items = sorted(const_items + removed_items)
             for _, name, val, is_removed in all_items:
-                prefix = "    # " if is_removed else "    "
-                out.append(f"{prefix}{name} = {val}")
+                if is_removed:
+                    out.append(f"    # {name} = {val}")
+                else:
+                    old_comment = top_old_comments.get(name)
+                    if old_comment:
+                        out.append(f"    # {old_comment}")
+                    out.append(f"    {name} = {val}")
             out.append(f"    COUNT = {max_count}")
         else:
             out.append("from enum import IntEnum, auto")
             out.append("")
             enum_type = "IntEnum" if is_pure_enum(top_consts) else "auto"
             out.append(f"class {self.current_class}({enum_type}):")
+            top_old_comments = self.old_comments_classes.get(top_path, {})
             top_removed = self.removed_classes.get(top_path, {})
             const_items = [(int(val), name, val, False) for name, val in top_consts.items() if val.lstrip('-').isdigit()]
             removed_items = [(int(val), name, val, True) for name, val in top_removed.items()]
             all_items = sorted(const_items + removed_items)
             for _, name, val, is_removed in all_items:
-                prefix = "    # " if is_removed else "    "
-                out.append(f"{prefix}{name} = {val}")
+                if is_removed:
+                    out.append(f"    # {name} = {val}")
+                else:
+                    old_comment = top_old_comments.get(name)
+                    if old_comment:
+                        out.append(f"    # {old_comment}")
+                    out.append(f"    {name} = {val}")
         out.append("")
         # sub classes
         sub_classes = [p for p in self.classes if p.startswith(self.top_class + '.')]
@@ -285,13 +325,19 @@ class CsToPyParser:
             consts = self.classes[path]
             enum_type = "IntEnum" if is_pure_enum(consts) else "auto"
             out.append(f"    class {sub_name}({enum_type}):")
+            sub_old_comments = self.old_comments_classes.get(path, {})
             sub_removed = self.removed_classes.get(path, {})
             const_items = [(int(val), name, val, False) for name, val in consts.items() if val.lstrip('-').isdigit()]
             removed_items = [(int(val), name, val, True) for name, val in sub_removed.items()]
             all_items = sorted(const_items + removed_items)
             for _, name, val, is_removed in all_items:
-                prefix = "        # " if is_removed else "        "
-                out.append(f"{prefix}{name} = {val}")
+                if is_removed:
+                    out.append(f"        # {name} = {val}")
+                else:
+                    old_comment = sub_old_comments.get(name)
+                    if old_comment:
+                        out.append(f"        # {old_comment}")
+                    out.append(f"        {name} = {val}")
             sub_count = self.class_counts.get(path)
             if sub_count is not None:
                 out.append(f"        COUNT = {sub_count}")

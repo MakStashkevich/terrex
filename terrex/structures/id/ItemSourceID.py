@@ -2,4 +2,14 @@
 
 from enum import IntEnum, auto
 
-class ItemSourceID(auto):
+class ItemSourceID(IntEnum):
+    None = 0
+    SetBonus_Nebula = 1
+    LuckyCoin = 2
+    PlayerDeath = 3
+    PlayerDrop = 4
+    GrandDesignOrMultiColorWrench = 5
+    TorchGod = 6
+    Shimmer = 8
+    Digesting = 9
+    InventoryOverflow = 10
