@@ -2,6 +2,7 @@
 
 from terrex.structures.id.set_factory import SetFactory
 from enum import IntEnum, auto
+from terrex.structures.id.ItemID import ItemID
 
 class AmmoID(IntEnum):
     None = 0
@@ -22,10 +23,10 @@ class AmmoID(IntEnum):
     JackOLantern = 1785
     Stake = 1836
     NailFriendly = 3108
-    COUNT = 0
+    Count = 0
 
 
-factory = SetFactory(AmmoID.COUNT)
+factory = SetFactory(ItemID.Count)
 
 
 class AmmoIDSets:

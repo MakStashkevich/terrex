@@ -68,8 +68,9 @@ class CsToPyParser:
                     self.top_class = class_name
                 if class_name != "Sets":
                     self.class_stack.append((class_name, indent))
-                i += 1
-                continue
+                    i += 1
+                    continue
+                # Для Sets продолжаем парсинг строк внутри без пропуска
 
             if self.is_enum:
                 m_member = re.match(r"^(\w+)\s*(=\s*(\d+))?\s*,?\s*$", stripped)
@@ -215,6 +216,8 @@ class CsToPyParser:
                                 for v in vals
                             ]
                             self.sets[set_name] = "[" + ", ".join(py_vals) + "]"
+
+                    
                 i += 1
                 continue
 
@@ -262,6 +265,7 @@ class CsToPyParser:
     def _convert_set_call(self, set_type: str, args_str: str) -> Optional[str]:
         # Удаляем new int[] {} если есть
         args_str = re.sub(r"new\s+(int|bool)\[\]\s*\{", "", args_str)
+        args_str = re.sub(r"new\s+(int|bool)\s*\[\s*0\s*\]", "", args_str)
         args_str = args_str.replace("}", "").strip()
         if not args_str:
             return None
@@ -275,7 +279,11 @@ class CsToPyParser:
                 default = ids_list[0].lower() == "true"
                 ids_list = ids_list[1:]
             if ids_list:
-                return f"factory.create_bool_set({default}, [{', '.join(ids_list)}])"
+                if all(item.isdigit() for item in ids_list):
+                    py_args = ', '.join(ids_list)
+                else:
+                    py_args = '[' + ', '.join(ids_list) + ']'
+                return f"factory.create_bool_set({default}, {py_args})"
             else:
                 return f"factory.create_bool_set({default})"
         elif set_type == "Int":
@@ -287,8 +295,18 @@ class CsToPyParser:
                 default = int(items[0])
                 pairs = items[1:]
             else:
-                pairs = items
+                pairs = []
+                for item in items:
+                    stripped_item = item.strip()
+                    if stripped_item:
+                        parts = stripped_item.split('.')
+                        # accept ItemID.Name format constants - other skipped
+                        if len(parts) == 2:
+                            pairs.append(stripped_item)
+            
             pairs_str = ", ".join(pairs)
+            if not pairs_str:
+                pairs_str = "0"
             return f"factory.create_int_set({default}, {pairs_str})"
         return None
 
@@ -304,8 +322,14 @@ class CsToPyParser:
         max_count = max(self.class_counts.values()) if self.class_counts else 0
         has_sets = bool(self.sets)
         if has_sets:
-            out.append("from terrex.structures.id.set_factory import SetFactory")
-            out.append("from enum import IntEnum, auto")
+            imports = [
+                "from terrex.structures.id.set_factory import SetFactory",
+                "from enum import IntEnum, auto"
+            ]
+            if self.factory_size_var != f"{self.current_class}.Count":
+                ext_class = self.factory_size_var.rsplit(".", 1)[0]
+                imports.append(f"from terrex.structures.id.{ext_class} import {ext_class}")
+            out.extend(imports)
             out.append("")
             class_def = f"class {self.current_class}(IntEnum):" if top_is_pure else f"class {self.current_class}:"
             out.append(class_def)
@@ -322,7 +346,7 @@ class CsToPyParser:
                     if old_comment:
                         out.append(f"    # {old_comment}")
                     out.append(f"    {name} = {val}")
-            out.append(f"    COUNT = {max_count}")
+            out.append(f"    Count = {max_count}")
         else:
             out.append("from enum import IntEnum, auto")
             out.append("")
@@ -364,11 +388,11 @@ class CsToPyParser:
                     out.append(f"        {name} = {val}")
             sub_count = self.class_counts.get(path)
             if sub_count is not None:
-                out.append(f"        COUNT = {sub_count}")
+                out.append(f"        Count = {sub_count}")
             out.append("")
         if has_sets:
             out.append("")
-            out.append(f"factory = SetFactory({self.current_class}.COUNT)")
+            out.append(f"factory = SetFactory({self.factory_size_var})")
             out.append("")
             out.append("")
             out.append(f"class {self.current_class}Sets:")
@@ -406,7 +430,7 @@ if __name__ == "__main__":
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(python_result)
         print(f"Сохранено в {output_path}")
-        print(python_result)
+        # print(python_result)
     except ValueError as e:
         print(f"Ошибка валидации C# формата: {e}")
         sys.exit(1)
