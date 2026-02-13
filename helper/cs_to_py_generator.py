@@ -269,17 +269,13 @@ class CsToPyParser:
         items = [x.strip() for x in args_str.split(",") if x.strip()]
 
         if set_type == "Bool":
-            nums = []
+            ids_list = items[:]
             default = False
-            if items and items[0].lower() in ("true", "false"):
-                default = items[0].lower() == "true"
-                nums = [int(x) for x in items[1:] if x.isdigit()]
-            else:
-                nums = [int(x) for x in items if x.isdigit()]
-            if nums:
-                return (
-                    f"factory.create_bool_set({default}, {', '.join(map(str, nums))})"
-                )
+            if ids_list and ids_list[0].lower() in ("true", "false"):
+                default = ids_list[0].lower() == "true"
+                ids_list = ids_list[1:]
+            if ids_list:
+                return f"factory.create_bool_set({default}, [{', '.join(ids_list)}])"
             else:
                 return f"factory.create_bool_set({default})"
         elif set_type == "Int":

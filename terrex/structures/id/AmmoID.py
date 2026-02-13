@@ -29,6 +29,6 @@ factory = SetFactory(AmmoID.COUNT)
 
 
 class AmmoIDSets:
-    IsArrow = factory.create_bool_set(False)
-    IsBullet = factory.create_bool_set(False)
-    IsSpecialist = factory.create_bool_set(False)
+    IsArrow = factory.create_bool_set(False, [AmmoID.Arrow, AmmoID.Stake])
+    IsBullet = factory.create_bool_set(False, [AmmoID.Bullet, AmmoID.CandyCorn])
+    IsSpecialist = factory.create_bool_set(False, [AmmoID.Rocket, AmmoID.StyngerBolt, AmmoID.JackOLantern, AmmoID.NailFriendly, AmmoID.Coin, AmmoID.Flare, AmmoID.Dart, AmmoID.Snowball, AmmoID.FallenStar, AmmoID.Gel])
