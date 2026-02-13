@@ -28,10 +28,10 @@ class TorchID(IntEnum):
     Jungle = 21
     Mushroom = 22
     Shimmer = 23
-    COUNT = 24
+    Count = 24
 
 
-factory = SetFactory(TorchID.COUNT)
+factory = SetFactory(TorchID.Count)
 
 
 class TorchIDSets:

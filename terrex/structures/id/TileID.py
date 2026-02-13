@@ -2,9 +2,10 @@
 
 from terrex.structures.id.set_factory import SetFactory
 from enum import IntEnum, auto
+from terrex.structures.id.(int import (int
 
 class TileID:
-    COUNT = 753
+    Count = 753
 
     class Conversion(IntEnum):
         Dirt = 0
@@ -760,7 +761,7 @@ class TileID:
         DamagingSpikeBlock = 750
         PalworldDigtoiseSleeping = 751
         PalworldChilletEgg = 752
-        COUNT = 753
+        Count = 753
 
     class ForAdvancedCollision(auto):
 
@@ -771,7 +772,7 @@ class TileID:
     class Wiring(auto):
 
 
-factory = SetFactory(TileID.COUNT)
+factory = SetFactory((int)
 
 
 class TileIDSets:
@@ -785,7 +786,6 @@ class TileIDSets:
     BasicChest = factory.create_bool_set(False, 21, 467)
     BasicChestFake = factory.create_bool_set(False, 441, 468)
     BasicDresser = factory.create_bool_set(False, 88)
-    BlockMergesWithMergeAllBlock = factory.create_bool_set(False)
     BlocksStairs = factory.create_bool_set(False, 386, 387, 54, 328, 459, 541)
     BlocksWaterDrawingBehindSelf = factory.create_bool_set(False, 54, 541, 328, 459, 470)
     Boulders = factory.create_bool_set(False, 138, 484, 664, 665, 711, 712, 713, 714, 715, 716)
@@ -805,21 +805,21 @@ class TileIDSets:
     ConveyorDirection = factory.create_int_set(0, 421, 1, 422, -1)
     Corrupt = factory.create_bool_set(False, 23, 661, 25, 112, 163, 398, 400, 636)
     CorruptBiomeSight = factory.create_bool_set(False, 23, 661, 25, 112, 163, 398, 400, 636, 24, 32)
-    CountsAsChair = factory.create_bool_set(False)
+    CountsAsChair = factory.create_bool_set(False, [TileID.Sets.RoomNeeds.CountsAsChairTypes])
     CountsAsChairTypes = [15, 79, 89, 102, 487, 497]
-    CountsAsDoor = factory.create_bool_set(False)
+    CountsAsDoor = factory.create_bool_set(False, [TileID.Sets.RoomNeeds.CountsAsDoorTypes])
     CountsAsDoorTypes = [10, 11, 19, 387, 386, 388, 389, 436, 435, 438, 427, 439, 437]
     CountsAsGemTree = factory.create_bool_set(False, 583, 584, 585, 586, 587, 588, 589)
-    CountsAsTable = factory.create_bool_set(False)
+    CountsAsTable = factory.create_bool_set(False, [TileID.Sets.RoomNeeds.CountsAsTableTypes])
     CountsAsTableTypes = [14, 18, 87, 88, 90, 101, 354, 355, 464, 469, 487, 699]
-    CountsAsTorch = factory.create_bool_set(False)
+    CountsAsTorch = factory.create_bool_set(False, [TileID.Sets.RoomNeeds.CountsAsTorchTypes])
     CountsAsTorchTypes = [4, 33, 34, 35, 42, 49, 93, 95, 98, 100, 149, 173, 174, 270, 271, 316, 317, 318, 92, 372, 646, 405, 592, 572, 581, 660]
     CountsAsWaterForCrafting = factory.create_bool_set(False, 172, 207)
     CrackedBricks = factory.create_bool_set(False, 481, 482, 483)
     Crimson = factory.create_bool_set(False, 199, 662, 203, 234, 200, 399, 401, 205)
     CrimsonBiomeSight = factory.create_bool_set(False, 199, 662, 203, 234, 200, 399, 401, 205, 201, 352)
     CritterCageLidStyle = factory.create_int_set(-1, 275, 0, 276, 0, 277, 0, 278, 0, 279, 0, 280, 0, 281, 0, 558, 0, 554, 0, 553, 0, 551, 0, 550, 0, 542, 0, 413, 0, 309, 0, 297, 0, 296, 0, 645, 0, 643, 0, 644, 0, 632, 0, 640, 0, 710, 0, 559, 1, 414, 1, 359, 1, 358, 1, 605, 2, 604, 2, 603, 2, 602, 2, 601, 2, 599, 2, 600, 2, 612, 2, 611, 2, 610, 2, 609, 2, 608, 2, 606, 2, 607, 2, 285, 3, 286, 3, 582, 3, 555, 3, 538, 3, 533, 3, 532, 3, 394, 3, 393, 3, 392, 3, 391, 3, 339, 3, 310, 3, 299, 3, 298, 3, 629, 3, 619, 3, 556, 4, 544, 4, 364, 4, 363, 4, 362, 4, 361, 4)
-    Dirt = factory.create_bool_set(False)
+    Dirt = factory.create_bool_set(False, [new int[1]])
     DoNotAdjustDrawPositionBasedOnTileWidth = factory.create_bool_set(False, 711)
     DoesNotOpenCraftingMenuOnInteract = factory.create_bool_set(False, 215, 207)
     DoesntGetReplacedWithTileReplacement = factory.create_bool_set(False, 58, 225, 171, 127, 481, 482, 483, 423)

@@ -796,10 +796,10 @@ class GoreID(IntEnum):
     OrcaTail = 1404
     OrcaChunk1 = 1405
     OrcaChunk2 = 1406
-    COUNT = 1407
+    Count = 1407
 
 
-factory = SetFactory(GoreID.COUNT)
+factory = SetFactory(GoreID.Count)
 
 
 class GoreIDSets:

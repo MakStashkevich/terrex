@@ -101,10 +101,10 @@ class PrefixID(IntEnum):
     Eager = 95
     Ballistic = 96
     Scraggling = 97
-    COUNT = 98
+    Count = 98
 
 
-factory = SetFactory(PrefixID.COUNT)
+factory = SetFactory(PrefixID.Count)
 
 
 class PrefixIDSets:

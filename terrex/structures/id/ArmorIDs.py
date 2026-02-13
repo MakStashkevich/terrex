@@ -2,9 +2,10 @@
 
 from terrex.structures.id.set_factory import SetFactory
 from enum import IntEnum, auto
+from terrex.structures.id.ArmorIDs.Wing import ArmorIDs.Wing
 
 class ArmorIDs:
-    COUNT = 293
+    Count = 293
 
     class Back(IntEnum):
         BeeCloak = 1
@@ -46,7 +47,7 @@ class ArmorIDs:
         ChickenBonesRobe = 37
         ChippysWings = 38
         LunasCloak = 39
-        COUNT = 40
+        Count = 40
 
     class Balloon(IntEnum):
         BlizzardinaBalloon = 1
@@ -68,14 +69,14 @@ class ArmorIDs:
         BalloonAnimal = 17
         RoyalScepter = 18
         HorseshoeBundle = 19
-        COUNT = 20
+        Count = 20
 
     class Beard(IntEnum):
         GingerBeard = 1
         WilsonBeardShort = 2
         WilsonBeardLong = 3
         WilsonBeardMagnificent = 4
-        COUNT = 5
+        Count = 5
 
     class Body(IntEnum):
         FamiliarShirt = 0
@@ -282,7 +283,7 @@ class ArmorIDs:
         KazzymodusChestpiece = 259
         PalworldPalMetalArmorBody = 260
         LunasBody = 261
-        COUNT = 262
+        Count = 262
 
     class Face(IntEnum):
         NaturesGift = 1
@@ -308,7 +309,7 @@ class ArmorIDs:
         JimsDroneVisor = 21
         WeldingMask = 22
         ChippysHeadband = 23
-        COUNT = 24
+        Count = 24
 
     class Front(IntEnum):
         CrimsonCloak = 1
@@ -327,7 +328,7 @@ class ArmorIDs:
         ChickenBonesRobe = 14
         ChippysWings = 15
         LunasCloak = 16
-        COUNT = 17
+        Count = 17
 
     class HandOff(IntEnum):
         FireGauntlet = 1
@@ -335,9 +336,9 @@ class ArmorIDs:
         MagicCuffs = 3
         MechanicalGlove = 4
         PowerGlove = 5
+        ClimbingClaws = 6
         MasterNinjaGear = 6
         TigerClimbingGear = 6
-        ClimbingClaws = 6
         Shackle = 7
         TitanGlove = 8
         FeralClaws = 9
@@ -347,7 +348,7 @@ class ArmorIDs:
         FrogWebbing = 13
         BoneGlove = 14
         HandOfCreation = 15
-        COUNT = 16
+        Count = 16
 
     class HandOn(IntEnum):
         ManaRegenerationBand = 1
@@ -360,9 +361,9 @@ class ArmorIDs:
         MagicCuffs = 8
         MechanicalGlove = 9
         PowerGlove = 10
+        ClimbingClaws = 11
         MasterNinjaGear = 11
         TigerClimbingGear = 11
-        ClimbingClaws = 11
         Shackle = 12
         SunStone = 13
         MoonStone = 14
@@ -376,7 +377,7 @@ class ArmorIDs:
         BoneGlove = 22
         HandOfCreation = 23
         LavaCharm = 24
-        COUNT = 25
+        Count = 25
 
     class Head(IntEnum):
         FamiliarWig = 0
@@ -672,7 +673,7 @@ class ArmorIDs:
         LilacDuskHead = 290
         KazzymodusHood = 291
         LunasHead = 292
-        COUNT = 293
+        Count = 293
 
     class Legs(IntEnum):
         FamiliarPants = 0
@@ -907,7 +908,7 @@ class ArmorIDs:
         KazzymodusLeggings = 251
         PalworldPalMetalArmorLegs = 252
         LunasLegs = 253
-        COUNT = 254
+        Count = 254
 
     class Neck(IntEnum):
         JellyfishNecklace = 1
@@ -922,7 +923,7 @@ class ArmorIDs:
         Stinger = 10
         Magiluminescence = 11
         MoltenCharm = 12
-        COUNT = 13
+        Count = 13
 
     class RocketBoots(IntEnum):
         None = 0
@@ -943,14 +944,14 @@ class ArmorIDs:
         Frozen = 7
         Hero = 8
         BouncingShield = 9
-        COUNT = 10
+        Count = 10
 
     class Shoe(IntEnum):
         Flipper = 1
         WaterWalkingBoots = 2
         Tabi = 3
-        TigerClimbingGear = 4
         ShoeSpikes = 4
+        TigerClimbingGear = 4
         FlurryBoots = 5
         HermesBoots = 6
         IceSkates = 7
@@ -977,7 +978,7 @@ class ArmorIDs:
         RollerSkatesGreen = 28
         RollerSkatesWhite = 29
         RollerSkatesPink = 30
-        COUNT = 31
+        Count = 31
 
     class Waist(IntEnum):
         CloudinaBottle = 1
@@ -989,15 +990,15 @@ class ArmorIDs:
         SilverWatch = 7
         TinWatch = 8
         TungstenWatch = 9
-        MasterNinjaGear = 10
         BlackBelt = 10
+        MasterNinjaGear = 10
         TsunamiinaBottle = 11
         MonkBelt = 12
         BlizzardinaBottle = 13
         FartinaJar = 14
         SandstorminaBottle = 15
         TreasureMagnet = 16
-        COUNT = 17
+        Count = 17
 
     class Wing(IntEnum):
         DemonWings = 1
@@ -1051,10 +1052,10 @@ class ArmorIDs:
         HeroicisWings = 49
         KazzymodusWings = 50
         LunasWings = 51
-        COUNT = 52
+        Count = 52
 
 
-factory = SetFactory(ArmorIDs.COUNT)
+factory = SetFactory(ArmorIDs.Wing.Count)
 
 
 class ArmorIDsSets:

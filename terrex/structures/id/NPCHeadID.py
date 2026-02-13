@@ -85,10 +85,10 @@ class NPCHeadID(IntEnum):
     WitchDoctorShimmered = 78
     TavernkeepShimmered = 79
     TravellingMerchantShimmered = 80
-    COUNT = 81
+    Count = 81
 
 
-factory = SetFactory(NPCHeadID.COUNT)
+factory = SetFactory(NPCHeadID.Count)
 
 
 class NPCHeadIDSets:

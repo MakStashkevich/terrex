@@ -2,6 +2,7 @@
 
 from terrex.structures.id.set_factory import SetFactory
 from enum import IntEnum, auto
+from terrex.structures.id.105 import 105
 
 class MusicID(IntEnum):
     None = 0
@@ -110,10 +111,10 @@ class MusicID(IntEnum):
     RainbowBoulderLoop = 103
     Skeletron = 104
     Count = 105
-    COUNT = 105
+    Count = 105
 
 
-factory = SetFactory(MusicID.COUNT)
+factory = SetFactory(105)
 
 
 class MusicIDSets:

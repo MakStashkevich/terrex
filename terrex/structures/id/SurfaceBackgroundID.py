@@ -2,6 +2,7 @@
 
 from terrex.structures.id.set_factory import SetFactory
 from enum import IntEnum, auto
+from terrex.structures.id.16 import 16
 
 class SurfaceBackgroundID(IntEnum):
     Forest1 = 0
@@ -21,10 +22,10 @@ class SurfaceBackgroundID(IntEnum):
     CrimsonDesert = 14
     Empty = 15
     Count = 16
-    COUNT = 16
+    Count = 16
 
 
-factory = SetFactory(SurfaceBackgroundID.COUNT)
+factory = SetFactory(16)
 
 
 class SurfaceBackgroundIDSets:

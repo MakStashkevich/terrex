@@ -2,6 +2,7 @@
 
 from terrex.structures.id.set_factory import SetFactory
 from enum import IntEnum, auto
+from terrex.structures.id.4 import 4
 
 class PlayerVoiceID(IntEnum):
     None = 0
@@ -9,10 +10,10 @@ class PlayerVoiceID(IntEnum):
     Female = 2
     Other = 3
     Count = 4
-    COUNT = 4
+    Count = 4
 
 
-factory = SetFactory(PlayerVoiceID.COUNT)
+factory = SetFactory(4)
 
 
 class PlayerVoiceIDSets:

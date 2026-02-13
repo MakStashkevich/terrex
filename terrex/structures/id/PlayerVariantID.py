@@ -16,10 +16,10 @@ class PlayerVariantID(IntEnum):
     FemaleDress = 9
     MaleDisplayDoll = 10
     FemaleDisplayDoll = 11
-    COUNT = 12
+    Count = 12
 
 
-factory = SetFactory(PlayerVariantID.COUNT)
+factory = SetFactory(PlayerVariantID.Count)
 
 
 class PlayerVariantIDSets:

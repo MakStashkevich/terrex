@@ -2,9 +2,10 @@
 
 from terrex.structures.id.set_factory import SetFactory
 from enum import IntEnum, auto
+from terrex.structures.id.(int import (int
 
 class WallID:
-    COUNT = 367
+    Count = 367
 
     class Conversion(IntEnum):
         None = 0
@@ -374,10 +375,10 @@ class WallID:
         ForbiddenBlockWall = 364
         WaterBlockWall = 365
         BoulderBlockWall = 366
-        COUNT = 367
+        Count = 367
 
 
-factory = SetFactory(WallID.COUNT)
+factory = SetFactory((int)
 
 
 class WallIDSets:

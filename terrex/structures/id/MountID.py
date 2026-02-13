@@ -69,10 +69,10 @@ class MountID(IntEnum):
     Pixie = 61
     Chillet = 62
     ChilletIgnis = 63
-    COUNT = 64
+    Count = 64
 
 
-factory = SetFactory(MountID.COUNT)
+factory = SetFactory(MountID.Count)
 
 
 class MountIDSets:

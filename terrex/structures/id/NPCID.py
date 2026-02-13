@@ -4,7 +4,7 @@ from terrex.structures.id.set_factory import SetFactory
 from enum import IntEnum, auto
 
 class NPCID:
-    COUNT = 697
+    Count = 697
 
     class BasicNPCPortrait(IntEnum):
         NegativeIDCount = -66
@@ -770,7 +770,7 @@ class NPCID:
         WaterBoltMimic = 694
         PalworldCattivaDistressed = 695
         PalworldFoxsparksDistressed = 696
-        COUNT = 697
+        Count = 697
 
     class NPCPortraitSelector(IntEnum):
         Poisoned = 20
@@ -795,7 +795,7 @@ class NPCID:
     class NPCVariantChecker(auto):
 
 
-factory = SetFactory(NPCID.COUNT)
+factory = SetFactory(NPCID.Count)
 
 
 class NPCIDSets:

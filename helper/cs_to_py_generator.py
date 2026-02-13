@@ -13,6 +13,61 @@ class TerrariaPath(StrEnum):
 
 PATH_MAPPING: Dict[TerrariaPath, str] = {TerrariaPath.ID: "terrex/structures/id"}
 
+ALLOWED_CLASSES: Dict[TerrariaPath, List[str]] = {
+    TerrariaPath.ID: [
+        "AchievementHelperID",
+        "AmmoID",
+        "AnimationID",
+        "ArmorIDs",
+        "BiomeConversionID",
+        "BuffID",
+        "DustID",
+        "ExtrasID",
+        "GameEventClearedID",
+        "GameModeID",
+        "GameVersionID",
+        "GlowMaskID",
+        "GoreID",
+        "HousingCategoryID",
+        "InvasionID",
+        "ItemAlternativeFunctionID",
+        "ItemHoldStyleID",
+        "ItemID",
+        "ItemSourceID",
+        "ItemUseStyleID",
+        "LiquidID",
+        "MessageID",
+        "MountID",
+        "MusicID",
+        "NPCHeadID",
+        "NPCID",
+        "PaintCoatingID",
+        "PaintID",
+        "PlayerDifficultyID",
+        "PlayerTeamID",
+        "PlayerTextureID",
+        "PlayerVariantID",
+        "PlayerVoiceID",
+        "PlayerVoiceOverrideID",
+        "PrefixID",
+        "ProjectileDrawLayerID",
+        "ProjectileID",
+        "ProjectileSourceID",
+        "StatusID",
+        "SurfaceBackgroundID",
+        "TeleportationSide",
+        "TeleportationStyleID",
+        "TileChangeType",
+        "TileID",
+        "TorchID",
+        "TreeTopID",
+        "WallID",
+        "WaterStyleID",
+    ]
+}
+
+
+
 
 class CsToPyParser:
     def __init__(self):
@@ -70,7 +125,7 @@ class CsToPyParser:
                     self.class_stack.append((class_name, indent))
                     i += 1
                     continue
-                # Для Sets продолжаем парсинг строк внутри без пропуска
+                # For Sets, continue parsing inner lines without skipping
 
             if self.is_enum:
                 m_member = re.match(r"^(\w+)\s*(=\s*(\d+))?\s*,?\s*$", stripped)
@@ -225,20 +280,20 @@ class CsToPyParser:
 
 
 
-        # Валидация
+        # Validation
         if not self.namespace:
-            raise ValueError("Не найден namespace")
+            raise ValueError("Namespace not found")
         supported = [e.value for e in TerrariaPath]
         if self.namespace not in supported:
             raise ValueError(
-                f"Namespace '{self.namespace}' не поддерживается. Поддерживаемые: {', '.join(supported)}"
+                f"Namespace '{self.namespace}' not supported. Supported: {', '.join(supported)}"
             )
         if not self.top_class:
-            raise ValueError("Не найден class")
+            raise ValueError("Class not found")
         self.current_class = self.top_class
         if self.sets:
             if self.factory_size_var is None:
-                raise ValueError("Не найдена инициализация SetFactory")
+                raise ValueError("SetFactory initialization not found")
 
         return self._generate_python_code()
 
@@ -263,7 +318,7 @@ class CsToPyParser:
         self.is_enum = False
 
     def _convert_set_call(self, set_type: str, args_str: str) -> Optional[str]:
-        # Удаляем new int[] {} если есть
+        # Remove new int[] {} if present
         args_str = re.sub(r"new\s+(int|bool)\[\]\s*\{", "", args_str)
         args_str = re.sub(r"new\s+(int|bool)\s*\[\s*0\s*\]", "", args_str)
         args_str = args_str.replace("}", "").strip()
@@ -402,38 +457,75 @@ class CsToPyParser:
         return "\n".join(out)
 
 
+def find_cs_files(folder: Path, max_depth: int = 3) -> list[Path]:
+    cs_paths = []
+    def walk(p: Path, depth: int):
+        if depth > max_depth:
+            return
+        try:
+            for child in p.iterdir():
+                if child.is_file() and child.suffix == ".cs":
+                    cs_paths.append(child)
+                elif child.is_dir():
+                    walk(child, depth + 1)
+        except PermissionError:
+            pass
+    walk(folder, 0)
+    return cs_paths
+
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Использование: python helper/cs_to_py_generator.py <путь_к_файлу.cs>")
-        sys.exit(1)
+    import argparse
+    parser = argparse.ArgumentParser(description="Terraria C# to Python classes generator")
+    parser.add_argument("path", help="Path to CS file or folder")
+    parser.add_argument("-r", "--recursive", action="store_true", help="Recursively find and generate all .cs files up to depth 3")
+    args = parser.parse_args()
 
-    cs_path = Path(sys.argv[1])
-    if not cs_path.exists():
-        print(f"Файл не найден: {cs_path}")
-        sys.exit(1)
-    if not str(cs_path).endswith(".cs"):
-        print("Файл должен иметь расширение .cs")
-        sys.exit(1)
+    cs_paths = []
+    if args.recursive:
+        folder = Path(args.path)
+        if not folder.is_dir():
+            print(f"Error: {args.path} is not a directory")
+            sys.exit(1)
+        cs_paths = find_cs_files(folder)
+        if not cs_paths:
+            print(f"No .cs files found in {args.path} up to depth 3")
+            sys.exit(0)
+    else:
+        cs_path = Path(args.path)
+        if not cs_path.exists():
+            print(f"File not found: {cs_path}")
+            sys.exit(1)
+        if not str(cs_path).endswith(".cs"):
+            print("Single mode requires .cs file")
+            sys.exit(1)
+        cs_paths = [cs_path]
 
-    try:
-        with open(cs_path, "r", encoding="utf-8") as f:
-            content = f.read()
-        parser = CsToPyParser()
-        python_result = parser.parse(content)
+    success_count = 0
+    total = len(cs_paths)
+    for cs_path in cs_paths:
+        try:
+            with open(cs_path, "r", encoding="utf-8") as f:
+                content = f.read()
+            parser_obj = CsToPyParser()
+            python_result = parser_obj.parse(content)
 
-        namespace_path = PATH_MAPPING[TerrariaPath(parser.namespace)]
-        class_name = parser.current_class
-        snake_name = class_name + ".py"
-        output_dir = Path(namespace_path)
-        output_path = output_dir / snake_name
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(output_path, "w", encoding="utf-8") as f:
-            f.write(python_result)
-        print(f"Сохранено в {output_path}")
-        # print(python_result)
-    except ValueError as e:
-        print(f"Ошибка валидации C# формата: {e}")
-        sys.exit(1)
-    except Exception as e:
-        print(f"Ошибка парсинга: {e}")
-        sys.exit(1)
+            namespace_path = PATH_MAPPING[TerrariaPath(parser_obj.namespace)]
+            class_name = parser_obj.current_class
+            terraria_path = TerrariaPath(parser_obj.namespace)
+            if terraria_path in ALLOWED_CLASSES and class_name not in ALLOWED_CLASSES[terraria_path]:
+                print(f"Skipping {cs_path.name} ({class_name}.py) - not in allowed list for {terraria_path.value}")
+                continue
+            snake_name = class_name + ".py"
+            output_dir = Path(namespace_path)
+            output_path = output_dir / snake_name
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(output_path, "w", encoding="utf-8") as f:
+                f.write(python_result)
+            print(f"Saved to {output_path}")
+            success_count += 1
+        except ValueError as e:
+            print(f"Validation error in {cs_path.name}: {e}")
+        except Exception as e:
+            print(f"Parsing error in {cs_path.name}: {e}")
+
+    print(f"Done: {success_count}/{total} successful")

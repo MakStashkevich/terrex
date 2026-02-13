@@ -392,17 +392,16 @@ class BuffID(IntEnum):
     PalworldMinionFoxsparks = 386
     PalworldPetChillet = 387
     PalworldPetChilletIgnis = 388
-    COUNT = 389
+    Count = 389
 
 
-factory = SetFactory(BuffID.COUNT)
+factory = SetFactory(BuffID.Count)
 
 
 class BuffIDSets:
     AddBuffTimeAdditivelyToCap = factory.create_int_set(0, 94, 600, 383, 43200)
     BuffTimeIsExtendedByDeadCellsPotionStationBuff = factory.create_bool_set(False, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 121, 122, 123, 124, 257, 343)
     BuffTimeIsExtendedWithGameDifficulty = factory.create_bool_set(False, 20, 22, 23, 24, 323, 30, 31, 32, 33, 35, 36, 39, 44, 324, 46, 47, 69, 70, 80)
-    CanBeRemovedByNetMessage = factory.create_bool_set(False)
     IsAFlaskBuff = factory.create_bool_set(False, 71, 72, 73, 74, 75, 76, 77, 78, 79)
     IsAnNPCWhipDebuff = factory.create_bool_set(False, 310, 362)
     IsFedState = factory.create_bool_set(False, 26, 206, 207, 332, 333, 334)
