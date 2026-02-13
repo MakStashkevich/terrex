@@ -25,8 +25,12 @@ class CsToPyParser:
         self.constants: Dict[str, str] = {}
         self.sets: Dict[str, str] = {}
         self.count_value: Optional[int] = None
+        self.class_counts: Dict[str, int] = {}
         self.factory_size_var = None
         self.namespace = None
+        self.pending_obsolete = False
+        self.current_removed_constants: Dict[str, str] = {}
+        self.removed_classes: Dict[str, Dict[str, str]] = {}
 
     def parse(self, content: str) -> str:
         self.lines = content.splitlines()
@@ -44,23 +48,31 @@ class CsToPyParser:
                 if m:
                     self.namespace = m.group(1)
 
-            if stripped.startswith("public class "):
-                class_name = stripped.split()[2].rstrip("{").strip()
-                current_path = '.'.join(name for name, _ in self.class_stack)
-                self.classes[current_path] = self.current_constants.copy()
-                self.current_constants.clear()
+            m_class = re.match(r"(?:public|internal)(?:\s+static)?\s+class\s+(\S+)", stripped)
+            if m_class:
+                class_name = m_class.group(1).rstrip("{").strip()
                 if self.top_class is None:
                     self.top_class = class_name
-                self.class_stack.append((class_name, indent))
+                if class_name != "Sets":
+                    self.class_stack.append((class_name, indent))
+                i += 1
+                continue
+
+            if re.match(r"^\[Obsolete\(\"Removed\",\s*true\)\]$", stripped):
+                self.pending_obsolete = True
                 i += 1
                 continue
 
             # константы
-            m_const = re.match(r"public const (?:int|ushort|byte|short) (\w+)\s*=\s*([^;]+);", line)
+            m_const = re.match(r"public const (?:int|ushort|byte|short|sbyte) (\w+)\s*=\s*([^;]+);", line)
             if m_const:
                 name, val = m_const.groups()
                 val = val.strip()
-                self.current_constants[name] = val
+                if self.pending_obsolete:
+                    self.current_removed_constants[name] = val
+                    self.pending_obsolete = False
+                else:
+                    self.current_constants[name] = val
                 if name == "Count":
                     self.count_value = int(val)
                 i += 1
@@ -85,10 +97,15 @@ class CsToPyParser:
 
             if stripped == "}":
                 if self.class_stack and indent == self.class_stack[-1][1]:
-                    current_path = '.'.join(name for name, _ in self.class_stack)
+                    popped_name, _ = self.class_stack.pop()
+                    current_path = '.'.join(name for name, _ in self.class_stack) + ('.' + popped_name if self.class_stack else popped_name)
                     self.classes[current_path] = self.current_constants.copy()
+                    self.removed_classes[current_path] = self.current_removed_constants.copy()
+                    self.current_removed_constants.clear()
+                    if self.count_value is not None:
+                        self.class_counts[current_path] = self.count_value
                     self.current_constants.clear()
-                    self.class_stack.pop()
+                    self.count_value = None
                 i += 1
                 continue
 
@@ -151,8 +168,7 @@ class CsToPyParser:
 
             i += 1
 
-            current_path = '.'.join(name for name, _ in self.class_stack)
-            self.classes[current_path] = self.current_constants.copy()
+
 
         # Валидация
         if not self.namespace:
@@ -163,11 +179,9 @@ class CsToPyParser:
                 f"Namespace '{self.namespace}' не поддерживается. Поддерживаемые: {', '.join(supported)}"
             )
         if not self.top_class:
-            raise ValueError("Не найден public class")
+            raise ValueError("Не найден class")
         self.current_class = self.top_class
         if self.sets:
-            if self.count_value is None:
-                raise ValueError("Не найдено значение Count")
             if self.factory_size_var is None:
                 raise ValueError("Не найдена инициализация SetFactory")
 
@@ -182,8 +196,12 @@ class CsToPyParser:
         self.constants = {}
         self.sets = {}
         self.count_value = None
+        self.class_counts = {}
         self.factory_size_var = None
         self.namespace = None
+        self.pending_obsolete = False
+        self.current_removed_constants = {}
+        self.removed_classes = {}
 
     def _convert_set_call(self, set_type: str, args_str: str) -> Optional[str]:
         # Удаляем new int[] {} если есть
@@ -231,25 +249,34 @@ class CsToPyParser:
         top_path = self.top_class
         top_consts = self.classes.get(top_path, {})
         top_is_pure = is_pure_enum(top_consts)
+        max_count = max(self.class_counts.values()) if self.class_counts else 0
         has_sets = bool(self.sets)
         if has_sets:
             out.append("from terrex.structures.id.set_factory import SetFactory")
-            if top_is_pure:
-                out.append("from enum import IntEnum")
+            out.append("from enum import IntEnum, auto")
             out.append("")
             class_def = f"class {self.current_class}(IntEnum):" if top_is_pure else f"class {self.current_class}:"
             out.append(class_def)
-            for name, val in sorted(top_consts.items(), key=lambda kv: int(kv[1]) if kv[1].isdigit() else 0):
-                out.append(f"    {name} = {val}")
-            if self.count_value:
-                out.append(f"    COUNT = {self.count_value}")
+            top_removed = self.removed_classes.get(top_path, {})
+            const_items = [(int(val), name, val, False) for name, val in top_consts.items() if val.lstrip('-').isdigit()]
+            removed_items = [(int(val), name, val, True) for name, val in top_removed.items()]
+            all_items = sorted(const_items + removed_items)
+            for _, name, val, is_removed in all_items:
+                prefix = "    # " if is_removed else "    "
+                out.append(f"{prefix}{name} = {val}")
+            out.append(f"    COUNT = {max_count}")
         else:
             out.append("from enum import IntEnum, auto")
             out.append("")
             enum_type = "IntEnum" if is_pure_enum(top_consts) else "auto"
             out.append(f"class {self.current_class}({enum_type}):")
-            for name, val in sorted(top_consts.items(), key=lambda kv: int(kv[1]) if kv[1].isdigit() else 0):
-                out.append(f"    {name} = {val}")
+            top_removed = self.removed_classes.get(top_path, {})
+            const_items = [(int(val), name, val, False) for name, val in top_consts.items() if val.lstrip('-').isdigit()]
+            removed_items = [(int(val), name, val, True) for name, val in top_removed.items()]
+            all_items = sorted(const_items + removed_items)
+            for _, name, val, is_removed in all_items:
+                prefix = "    # " if is_removed else "    "
+                out.append(f"{prefix}{name} = {val}")
         out.append("")
         # sub classes
         sub_classes = [p for p in self.classes if p.startswith(self.top_class + '.')]
@@ -258,8 +285,16 @@ class CsToPyParser:
             consts = self.classes[path]
             enum_type = "IntEnum" if is_pure_enum(consts) else "auto"
             out.append(f"    class {sub_name}({enum_type}):")
-            for name, val in sorted(consts.items(), key=lambda kv: int(kv[1]) if kv[1].isdigit() else 0):
-                out.append(f"        {name} = {val}")
+            sub_removed = self.removed_classes.get(path, {})
+            const_items = [(int(val), name, val, False) for name, val in consts.items() if val.lstrip('-').isdigit()]
+            removed_items = [(int(val), name, val, True) for name, val in sub_removed.items()]
+            all_items = sorted(const_items + removed_items)
+            for _, name, val, is_removed in all_items:
+                prefix = "        # " if is_removed else "        "
+                out.append(f"{prefix}{name} = {val}")
+            sub_count = self.class_counts.get(path)
+            if sub_count is not None:
+                out.append(f"        COUNT = {sub_count}")
             out.append("")
         if has_sets:
             out.append("")
