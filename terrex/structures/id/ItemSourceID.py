@@ -13,3 +13,4 @@ class ItemSourceID(IntEnum):
     Shimmer = 8
     Digesting = 9
     InventoryOverflow = 10
+

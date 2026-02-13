@@ -8,3 +8,4 @@ class GameModeID(IntEnum):
     Master = 2
     Creative = 3
     Count = 4
+

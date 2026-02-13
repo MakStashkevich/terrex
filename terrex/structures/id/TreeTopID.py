@@ -4,3 +4,4 @@ from enum import IntEnum, auto
 
 class TreeTopID(IntEnum):
     GemRuby = 26
+

@@ -16,3 +16,4 @@ class WaterStyleID(IntEnum):
     Crimson = 10
     Honey = 11
     UndergroundDesert = 12
+

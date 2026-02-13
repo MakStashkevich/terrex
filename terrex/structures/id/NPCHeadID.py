@@ -88,9 +88,7 @@ class NPCHeadID(IntEnum):
     Count = 81
 
 
-factory = SetFactory(NPCHeadID.Count)
-
-
 class NPCHeadIDSets:
-    CannotBeDrawnInHousingUI = factory.create_bool_set(False, 21, 80)
-    HeadListOrder = [0, 1, 72, 2, 63, 4, 59, 3, 64, 6, 74, 20, 69, 5, 73, 22, 55, 14, 60, 17, 65, 25, 61, 26, 56, 18, 78, 15, 77, 24, 79, 7, 57, 8, 62, 9, 75, 23, 70, 10, 71, 12, 76, 19, 66, 13, 68, 16, 58, 11, 67, 21, 80, 45, 54, 39, 40, 41, 42, 43, 44, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 46, 49, 51, 48, 53, 52, 47, 50]
+    class NPCHeadID:
+        factory = SetFactory(NPCHeadID.Count)
+        CannotBeDrawnInHousingUI = factory.create_bool_set(False, 21, 80)

@@ -384,3 +384,4 @@ class GlowMaskID(IntEnum):
     KazzymodusChestpiece = 376
     PalworldDigtoise = 377
     LunasHead = 378
+

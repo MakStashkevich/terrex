@@ -7,3 +7,4 @@ class PlayerDifficultyID(IntEnum):
     MediumCore = 1
     Hardcore = 2
     Creative = 3
+

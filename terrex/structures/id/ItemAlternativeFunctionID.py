@@ -6,3 +6,4 @@ class ItemAlternativeFunctionID(IntEnum):
     None = 0
     ShouldBeActivated = 1
     ActivatedAndUsed = 2
+

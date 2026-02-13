@@ -12,3 +12,4 @@ class ItemHoldStyleID(IntEnum):
     HoldLamp = 6
     HoldRadio = 7
     HoldOrb = 8
+

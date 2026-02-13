@@ -25,3 +25,4 @@ class BiomeConversionID(IntEnum):
     ForcedJungle = 19
     ForcedTemple = 20
     ForcedDungeon = 21
+

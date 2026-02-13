@@ -5,3 +5,4 @@ from enum import IntEnum, auto
 class TeleportationSide(IntEnum):
     Entry = 0
     Exit = 1
+

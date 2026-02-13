@@ -31,9 +31,7 @@ class TorchID(IntEnum):
     Count = 24
 
 
-factory = SetFactory(TorchID.Count)
-
-
 class TorchIDSets:
-    Dust = [6, 59, 60, 61, 62, 63, 64, 65, 75, 135, 158, 169, 156, 234, 66, 242, 293, 294, 295, 296, 297, 298, 307, 310]
-    IsABiomeTorch = factory.create_bool_set(False, 0, 18, 19, 20, 21, 23, 13, 7, 9, 22, 16)
+    class TorchID:
+        factory = SetFactory(TorchID.Count)
+        IsABiomeTorch = factory.create_bool_set(False, 0, 18, 19, 20, 21, 23, 13, 7, 9, 22, 16)

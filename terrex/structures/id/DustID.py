@@ -206,3 +206,4 @@ class DustID(IntEnum):
     RainbowCloud = 328
     BirdDroppings = 329
     PrettyMirror = 330
+

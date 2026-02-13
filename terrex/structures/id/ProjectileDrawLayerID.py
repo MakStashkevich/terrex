@@ -12,3 +12,4 @@ class ProjectileDrawLayerID(IntEnum):
     FirstFractals = 6
     HeldProj = 7
     HeldProjOverHand = 8
+

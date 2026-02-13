@@ -2,7 +2,6 @@
 
 from terrex.structures.id.set_factory import SetFactory
 from enum import IntEnum, auto
-from terrex.structures.id.ArmorIDs.Wing import ArmorIDs.Wing
 
 class ArmorIDs:
     Count = 293
@@ -1055,48 +1054,91 @@ class ArmorIDs:
         Count = 52
 
 
-factory = SetFactory(ArmorIDs.Wing.Count)
-
-
 class ArmorIDsSets:
-    AltFaceHead = factory.create_int_set(-1, 12, 17, 10, 15, 13, 18, 11, 16)
-    AlwaysAnimated = factory.create_bool_set(False, 22, 28, 45, 34, 48, 39, 40, 44)
-    CanDrawOnVelociraptorMount = factory.create_bool_set(False, 212, 241, 274, 277, 5, 278, 34, 205, 41, 42, 30, 8, 84, 79, 33, 91, 90, 99, 35, 4, 256, 257, 36, 85, 80, 1, 112, 2, 215, 201, 202, 199, 194, 206, 262, 259, 234, 226, 238, 250, 280, 232, 225, 223, 224, 219, 220, 216, 263, 273, 264, 267, 18, 19, 24, 21, 26, 25, 16, 14, 12, 275, 65, 51, 56, 40, 29, 81, 94, 95, 62, 67, 44, 68, 121, 114, 116, 113, 92, 106, 100, 96, 97, 141, 143, 145, 139, 140, 144, 126, 130, 133, 159, 158, 161, 166, 183, 181, 178, 184, 182, 13, 64, 60, 59, 73, 63, 117, 138, 160, 10, 235, 197, 195, 203, 191, 228, 233, 227, 217, 218, 245, 243, 244, 242, 231, 229, 222, 265, 272, 279, 15, 163, 288, 289, 290)
-    DisableBeltAccDraw = factory.create_bool_set(False, 83, 82)
-    DisableHandOnAndOffAccDraw = factory.create_bool_set(False, 83)
-    DontDrawIfWearingAScarfOrCape = factory.create_bool_set(False, 13)
-    DrawInBackpackLayer = factory.create_bool_set(False, 7, 8, 9, 10, 15, 16, 32, 33)
-    DrawInFaceFlowerLayer = factory.create_bool_set(False, 1, 6, 9, 8)
-    DrawInFaceHeadLayer = factory.create_bool_set(False, 12, 10, 13, 11)
-    DrawInFaceMaskLayer = factory.create_bool_set(False, 22)
-    DrawInFaceUnderHairLayer = factory.create_bool_set(False, 5)
-    DrawInFrontOfBackArmLayer = factory.create_bool_set(False, 18)
-    DrawInTailLayer = factory.create_bool_set(False, 18, 19, 21, 25, 26, 27, 28)
-    DrawsInNeckLayer = factory.create_bool_set(False, 6)
-    DrawsInNeckLayerRegardlessOfPlayerFrame = factory.create_bool_set(False, 13)
-    FrontToBackID = factory.create_int_set(-1, 242, 246, 243, 247, 244, 248, 245, 249, 133, 252, 224, 253)
-    HidesCompositeShoulders = factory.create_bool_set(False, 8, 11, 15, 16)
-    HidesHead = factory.create_bool_set(False, 38, 135, 269, 282, 288)
-    HidesShouldersAsCoat = factory.create_bool_set(False, 251)
-    IncludedCapeBack = factory.create_int_set(-1, 207, 13, 206, 12, 205, 11, 185, 17, 96, 18, 94, 19, 80, 21, 217, 22, 24, 29, 238, 32)
-    IncludedCapeBackFemale = factory.create_int_set(-1, 207, 13, 206, 12, 205, 11, 185, 17, 96, 18, 94, 19, 80, 21, 217, 23, 24, 29, 238, 32)
-    IncludedCapeFront = factory.create_int_set(-1, 184, 6, 248, 13)
-    IncompatibleWithFrogLeg = factory.create_bool_set(False, 106, 143, 217, 222, 226, 228, 138)
-    IsABelt = factory.create_bool_set(False, 5, 10, 10, 12)
-    IsACape = factory.create_bool_set(False, 1, 2, 3, 4, 5, 8, 11, 12, 16)
-    IsARollerSkate = factory.create_bool_set(False, 27, 28, 29, 30)
-    IsAScarf = factory.create_bool_set(False, 8, 9)
-    MaleToFemaleID = factory.create_int_set(-1, 25, 26)
-    NeedsToDrawArm = factory.create_bool_set(False, 200, 202, 201, 203, 195, 205, 207, 206, 228, 242, 243, 255, 256)
-    OverrideHelmet = factory.create_bool_set(False, 2, 3, 4, 19)
-    PreventBeardDraw = factory.create_bool_set(False, 118, 119, 107, 129, 127, 125, 136, 162, 168, 210, 213, 28, 135, 31, 17, 261, 169, 186, 47, 22, 105, 102, 120, 137, 199, 207, 260, 132, 155, 179, 108, 153, 164, 172, 208, 241, 271, 48, 154, 188, 187, 209, 46, 123, 269, 185, 276)
-    PreventHairDraw = factory.create_bool_set(False, 2, 3, 4, 19)
-    TreatRobeExtensionLikeNormalLegsWhenSitting = factory.create_bool_set(False, 101, 102, 118, 99, 196)
-    UseAltFaceHeadDraw = factory.create_bool_set(False, 3, 4, 6, 7, 9, 17, 22, 27, 28, 31, 32, 37, 38, 39, 40, 42, 43, 45, 46, 47, 48, 49, 50, 57, 58, 61, 66, 69, 70, 72, 74, 75, 76, 77, 78, 82, 83, 86, 89, 93, 98, 101, 103, 104, 105, 107, 108, 109, 110, 111, 115, 118, 120, 122, 123, 124, 127, 128, 129, 131, 132, 134, 135, 136, 137, 142, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 162, 164, 165, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 185, 186, 187, 188, 189, 192, 193, 194, 200, 201, 202, 204, 207, 208, 209, 210, 211, 213, 214, 230, 236, 237, 239, 240, 241, 251, 254, 255, 258, 260, 266, 268, 269, 270, 271, 261, 8, 12, 30, 35, 36, 73, 79, 80, 84, 85, 87, 88, 90, 91, 102, 112, 141, 160, 180, 196, 205, 257, 256, 291, 292)
-    UseHairColor = factory.create_bool_set(False, 2, 3, 4)
-    UseSkinColor = factory.create_bool_set(False, 274, 277)
-    UsesNewFramingCode = factory.create_bool_set(False, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 16, 17, 18, 19, 20, 21, 22, 23, 24)
-    UsesOldFramingTexturesForWalking = factory.create_bool_set(False, 12, 8, 17)
-    UsesTorsoFraming = factory.create_bool_set(False, 5, 10, 10, 12)
-    shouldersAreAlwaysInTheBack = factory.create_bool_set(False, 190)
-    showsShouldersWhileJumping = factory.create_bool_set(False, 177, 190, 95, 46, 73, 92, 24, 54, 55, 56, 65, 66, 67, 69, 70, 71, 75, 105, 106, 175, 176, 182, 183, 187, 194, 197, 198, 201, 204, 226, 227, 229, 239, 259)
+    class Back:
+        factory = SetFactory(ArmorIDs.Back.Count)
+        DrawInBackpackLayer = factory.create_bool_set(False, 7, 8, 9, 10, 15, 16, 32, 33)
+        DrawInTailLayer = factory.create_bool_set(False, 18, 19, 21, 25, 26, 27, 28)
+        IsACape = factory.create_bool_set(False, 1, 2, 3, 4, 5, 6, 14, 24, 34, 36, 39)
+
+    class Balloon:
+        factory = SetFactory(ArmorIDs.Balloon.Count)
+        DrawInFrontOfBackArmLayer = factory.create_bool_set(False, 18)
+        UsesTorsoFraming = factory.create_bool_set(False, 18)
+
+    class Beard:
+        factory = SetFactory(ArmorIDs.Beard.Count)
+        UseHairColor = factory.create_bool_set(False, 2, 3, 4)
+
+    class Body:
+        factory = SetFactory(ArmorIDs.Body.Count)
+        DisableBeltAccDraw = factory.create_bool_set(False, 83, 82)
+        DisableHandOnAndOffAccDraw = factory.create_bool_set(False, 83)
+        HidesShouldersAsCoat = factory.create_bool_set(False, 251)
+        IncludedCapeBack = factory.create_int_set(-1, 207, 13, 206, 12, 205, 11, 185, 17, 96, 18, 94, 19, 80, 21, 217, 22, 24, 29, 238, 32)
+        IncludedCapeBackFemale = factory.create_int_set(-1, 207, 13, 206, 12, 205, 11, 185, 17, 96, 18, 94, 19, 80, 21, 217, 23, 24, 29, 238, 32)
+        IncludedCapeFront = factory.create_int_set(-1, 184, 6, 248, 13)
+        NeedsToDrawArm = factory.create_bool_set(False, 200, 202, 201, 203, 195, 205, 207, 206, 228, 242, 243, 255, 256)
+        UsesNewFramingCode = factory.create_bool_set(False, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261)
+        shouldersAreAlwaysInTheBack = factory.create_bool_set(False, 190)
+        showsShouldersWhileJumping = factory.create_bool_set(False, 177, 190, 95, 46, 73, 92, 24, 54, 55, 56, 65, 66, 67, 69, 70, 71, 75, 105, 106, 175, 176, 182, 183, 187, 194, 197, 198, 201, 204, 226, 227, 229, 239, 259)
+
+    class Face:
+        factory = SetFactory(ArmorIDs.Face.Count)
+        AltFaceHead = factory.create_int_set(-1, 12, 17, 10, 15, 13, 18, 11, 16)
+        CanDrawOnVelociraptorMount = factory.create_bool_set(False, 1, 6, 9, 8, 19, 7, 20, 21, 23)
+        DrawInFaceFlowerLayer = factory.create_bool_set(False, 1, 6, 9, 8)
+        DrawInFaceHeadLayer = factory.create_bool_set(False, 12, 10, 13, 11)
+        DrawInFaceMaskLayer = factory.create_bool_set(False, 22)
+        DrawInFaceUnderHairLayer = factory.create_bool_set(False, 5)
+        OverrideHelmet = factory.create_bool_set(False, 2, 3, 4, 19)
+        PreventHairDraw = factory.create_bool_set(False, 2, 3, 4, 19)
+
+    class Front:
+        factory = SetFactory(ArmorIDs.Front.Count)
+        DontDrawIfWearingAScarfOrCape = factory.create_bool_set(False, 13)
+        DrawsInNeckLayer = factory.create_bool_set(False, 6)
+        DrawsInNeckLayerRegardlessOfPlayerFrame = factory.create_bool_set(False, 13)
+        HidesCompositeShoulders = factory.create_bool_set(False, 8, 11, 15, 16)
+        IsACape = factory.create_bool_set(False, 1, 2, 3, 4, 5, 8, 11, 12, 16)
+
+    class HandOff:
+        factory = SetFactory(ArmorIDs.HandOff.Count)
+        UsesNewFramingCode = factory.create_bool_set(False, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+
+    class HandOn:
+        factory = SetFactory(ArmorIDs.HandOn.Count)
+        UsesNewFramingCode = factory.create_bool_set(False, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 16, 17, 18, 19, 20, 21, 22, 23, 24)
+        UsesOldFramingTexturesForWalking = factory.create_bool_set(False, 12, 8, 17)
+
+    class Head:
+        factory = SetFactory(ArmorIDs.Head.Count)
+        CanDrawOnVelociraptorMount = factory.create_bool_set(False, 212, 241, 274, 277, 5, 278, 34, 205, 41, 42, 30, 8, 84, 79, 33, 91, 90, 99, 35, 4, 256, 257, 36, 85, 80, 1, 112, 2, 215, 201, 202, 199, 194, 206, 262, 259, 234, 226, 238, 250, 280, 232, 225, 223, 224, 219, 220, 216, 263, 273, 264, 267, 18, 19, 24, 21, 26, 25, 16, 14, 12, 275, 65, 51, 56, 40, 29, 81, 94, 95, 62, 67, 44, 68, 121, 114, 116, 113, 92, 106, 100, 96, 97, 141, 143, 145, 139, 140, 144, 126, 130, 133, 159, 158, 161, 166, 183, 181, 178, 184, 182, 13, 64, 60, 59, 73, 63, 117, 138, 160, 10, 235, 197, 195, 203, 191, 228, 233, 227, 217, 218, 245, 243, 244, 242, 231, 229, 222, 265, 272, 279, 15, 163, 288, 289, 290)
+        FrontToBackID = factory.create_int_set(-1, 242, 246, 243, 247, 244, 248, 245, 249, 133, 252, 224, 253)
+        HidesHead = factory.create_bool_set(False, 38, 135, 269, 282, 288)
+        PreventBeardDraw = factory.create_bool_set(False, 118, 119, 107, 129, 127, 125, 136, 162, 168, 210, 213, 28, 135, 31, 17, 261, 169, 186, 47, 22, 105, 102, 120, 137, 199, 207, 260, 132, 155, 179, 108, 153, 164, 172, 208, 241, 271, 48, 154, 188, 187, 209, 46, 123, 269, 185, 276)
+        UseAltFaceHeadDraw = factory.create_bool_set(False, 3, 4, 6, 7, 9, 17, 22, 27, 28, 31, 32, 37, 38, 39, 40, 42, 43, 45, 46, 47, 48, 49, 50, 57, 58, 61, 66, 69, 70, 72, 74, 75, 76, 77, 78, 82, 83, 86, 89, 93, 98, 101, 103, 104, 105, 107, 108, 109, 110, 111, 115, 118, 120, 122, 123, 124, 127, 128, 129, 131, 132, 134, 135, 136, 137, 142, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 162, 164, 165, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 185, 186, 187, 188, 189, 192, 193, 194, 200, 201, 202, 204, 207, 208, 209, 210, 211, 213, 214, 230, 236, 237, 239, 240, 241, 251, 254, 255, 258, 260, 266, 268, 269, 270, 271, 261, 8, 12, 30, 35, 36, 73, 79, 80, 84, 85, 87, 88, 90, 91, 102, 112, 141, 160, 180, 196, 205, 257, 256, 291, 292)
+        UseSkinColor = factory.create_bool_set(False, 274, 277)
+
+    class Legs:
+        factory = SetFactory(ArmorIDs.Legs.Count)
+        IncompatibleWithFrogLeg = factory.create_bool_set(False, 106, 143, 217, 222, 226, 228, 138)
+        TreatRobeExtensionLikeNormalLegsWhenSitting = factory.create_bool_set(False, 101, 102, 118, 99, 196)
+
+    class Neck:
+        factory = SetFactory(ArmorIDs.Neck.Count)
+        IsAScarf = factory.create_bool_set(False, 8, 9)
+
+    class Shoe:
+        factory = SetFactory(ArmorIDs.Shoe.Count)
+        IsARollerSkate = factory.create_bool_set(False, 27, 28, 29, 30)
+        MaleToFemaleID = factory.create_int_set(-1, 25, 26)
+
+    class Waist:
+        factory = SetFactory(ArmorIDs.Waist.Count)
+        IsABelt = factory.create_bool_set(False, 5, 10, 10, 12)
+        UsesTorsoFraming = factory.create_bool_set(False, 5, 10, 10, 12)
+
+    class Wing:
+        factory = SetFactory(ArmorIDs.Wing.Count)
+        AlwaysAnimated = factory.create_bool_set(False, 22, 28, 45, 34, 48, 39, 40, 44)

@@ -172,3 +172,4 @@ class MessageID(IntEnum):
     RequestSection = 159
     ItemPosition = 160
     HostToken = 161
+

@@ -20,3 +20,4 @@ class ItemUseStyleID(IntEnum):
     RaiseLamp = 14
     HoldOrb = 15
     PlaySound = 16
+

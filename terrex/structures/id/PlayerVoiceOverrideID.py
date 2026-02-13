@@ -24,3 +24,4 @@ class PlayerVoiceOverrideID(IntEnum):
     Fairy = 18
     WhoopieCushion = 19
     Other = 20
+

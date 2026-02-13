@@ -36,3 +36,4 @@ class PaintID(IntEnum):
     NegativePaint = 30
     IlluminantPaint = 31
     Old_IlluminantPaint = 31
+

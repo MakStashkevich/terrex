@@ -104,8 +104,7 @@ class PrefixID(IntEnum):
     Count = 98
 
 
-factory = SetFactory(PrefixID.Count)
-
-
 class PrefixIDSets:
-    ReducedNaturalChance = factory.create_bool_set(False, 7, 8, 9, 10, 11, 22, 23, 24, 29, 30, 31, 39, 40, 56, 41, 47, 48, 49)
+    class PrefixID:
+        factory = SetFactory(PrefixID.Count)
+        ReducedNaturalChance = factory.create_bool_set(False, 7, 8, 9, 10, 11, 22, 23, 24, 29, 30, 31, 39, 40, 56, 41, 47, 48, 49)

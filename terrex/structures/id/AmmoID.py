@@ -2,7 +2,6 @@
 
 from terrex.structures.id.set_factory import SetFactory
 from enum import IntEnum, auto
-from terrex.structures.id.ItemID import ItemID
 
 class AmmoID(IntEnum):
     None = 0
@@ -26,10 +25,9 @@ class AmmoID(IntEnum):
     Count = 0
 
 
-factory = SetFactory(ItemID.Count)
-
-
 class AmmoIDSets:
-    IsArrow = factory.create_bool_set(False, [AmmoID.Arrow, AmmoID.Stake])
-    IsBullet = factory.create_bool_set(False, [AmmoID.Bullet, AmmoID.CandyCorn])
-    IsSpecialist = factory.create_bool_set(False, [AmmoID.Rocket, AmmoID.StyngerBolt, AmmoID.JackOLantern, AmmoID.NailFriendly, AmmoID.Coin, AmmoID.Flare, AmmoID.Dart, AmmoID.Snowball, AmmoID.FallenStar, AmmoID.Gel])
+    class AmmoID:
+        factory = SetFactory(AmmoID.Count)
+        IsArrow = factory.create_bool_set(False, [AmmoID.Arrow, AmmoID.Stake])
+        IsBullet = factory.create_bool_set(False, [AmmoID.Bullet, AmmoID.CandyCorn])
+        IsSpecialist = factory.create_bool_set(False, [AmmoID.Rocket, AmmoID.StyngerBolt, AmmoID.JackOLantern, AmmoID.NailFriendly, AmmoID.Coin, AmmoID.Flare, AmmoID.Dart, AmmoID.Snowball, AmmoID.FallenStar, AmmoID.Gel])

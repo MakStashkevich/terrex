@@ -18,3 +18,4 @@ class TeleportationStyleID(IntEnum):
     ShimmerTownNPCTransform = 12
     MysticFrog = 13
     NoEffect = 14
+

@@ -12,3 +12,4 @@ class InvasionID(IntEnum):
     CachedOldOnesArmy = 3
     PirateInvasion = 3
     MartianMadness = 4
+

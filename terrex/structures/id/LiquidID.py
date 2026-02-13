@@ -7,3 +7,4 @@ class LiquidID(IntEnum):
     Lava = 1
     Honey = 2
     Shimmer = 3
+

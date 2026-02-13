@@ -10,3 +10,4 @@ class StatusID(IntEnum):
     DecryptionError = 4
     BadSectionPointer = 5
     BadFooter = 6
+

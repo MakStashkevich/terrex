@@ -82,3 +82,4 @@ class AchievementHelperID(auto):
         DrinkBottledWaterWhileDrowning = 25
         PlayOnASpecialSeed = 26
         PurifyEntireWorld = 27
+

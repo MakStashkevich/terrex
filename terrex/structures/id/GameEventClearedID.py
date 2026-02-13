@@ -29,3 +29,4 @@ class GameEventClearedID(IntEnum):
     DefeatedEmpressOfLight = 23
     DefeatedQueenSlime = 24
     DefeatedDeerclops = 25
+

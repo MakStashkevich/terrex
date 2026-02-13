@@ -6,3 +6,4 @@ class PaintCoatingID(IntEnum):
     None = 0
     Glow = 1
     Echo = 2
+

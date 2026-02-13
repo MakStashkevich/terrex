@@ -10,3 +10,4 @@ class TileChangeType(IntEnum):
     ShimmerWater = 4
     ShimmerLava = 5
     ShimmerHoney = 6
+

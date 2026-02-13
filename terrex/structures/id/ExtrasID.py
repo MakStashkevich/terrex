@@ -307,3 +307,4 @@ class ExtrasID(IntEnum):
     Chillet = 301
     ChilletIgnis = 302
     FoxsparksHeld = 303
+

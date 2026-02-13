@@ -19,11 +19,8 @@ class PlayerVariantID(IntEnum):
     Count = 12
 
 
-factory = SetFactory(PlayerVariantID.Count)
-
-
 class PlayerVariantIDSets:
-    AltGenderReference = factory.create_int_set(0, 0, 4, 4, 0, 1, 5, 5, 1, 2, 6, 6, 2, 3, 7, 7, 3, 8, 9, 9, 8, 10, 11, 11, 10)
-    Male = factory.create_bool_set(False, 0, 1, 2, 3, 8, 10)
-    VariantOrderFemale = [4, 5, 6, 7, 9, 11]
-    VariantOrderMale = [0, 1, 2, 3, 8, 10]
+    class PlayerVariantID:
+        factory = SetFactory(PlayerVariantID.Count)
+        AltGenderReference = factory.create_int_set(0, 0, 4, 4, 0, 1, 5, 5, 1, 2, 6, 6, 2, 3, 7, 7, 3, 8, 9, 9, 8, 10, 11, 11, 10)
+        Male = factory.create_bool_set(False, 0, 1, 2, 3, 8, 10)

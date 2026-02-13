@@ -8,3 +8,4 @@ class AnimationID(IntEnum):
     FakeChestOpening = 2
     VolcanosTurningOn = 3
     VolcanosTurningOff = 4
+

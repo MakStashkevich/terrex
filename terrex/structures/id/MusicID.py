@@ -2,7 +2,6 @@
 
 from terrex.structures.id.set_factory import SetFactory
 from enum import IntEnum, auto
-from terrex.structures.id.105 import 105
 
 class MusicID(IntEnum):
     None = 0
@@ -114,8 +113,7 @@ class MusicID(IntEnum):
     Count = 105
 
 
-factory = SetFactory(105)
-
-
 class MusicIDSets:
-    CanBeRecorded = factory.create_bool_set(True, 0, 28, 45, 103, 102)
+    class MusicID:
+        factory = SetFactory(MusicID.Count)
+        CanBeRecorded = factory.create_bool_set(True, 0, 28, 45, 103, 102)

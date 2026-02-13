@@ -2,7 +2,6 @@
 
 from terrex.structures.id.set_factory import SetFactory
 from enum import IntEnum, auto
-from terrex.structures.id.16 import 16
 
 class SurfaceBackgroundID(IntEnum):
     Forest1 = 0
@@ -25,9 +24,8 @@ class SurfaceBackgroundID(IntEnum):
     Count = 16
 
 
-factory = SetFactory(16)
-
-
 class SurfaceBackgroundIDSets:
-    IsDesertVariant = factory.create_bool_set(False, 2, 5, 13, 14)
-    IsForest = factory.create_bool_set(False, 0, 10, 11, 12)
+    class SurfaceBackgroundID:
+        factory = SetFactory(SurfaceBackgroundID.Count)
+        IsDesertVariant = factory.create_bool_set(False, 2, 5, 13, 14)
+        IsForest = factory.create_bool_set(False, 0, 10, 11, 12)

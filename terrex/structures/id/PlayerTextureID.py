@@ -19,3 +19,4 @@ class PlayerTextureID(IntEnum):
     ArmShirt = 13
     Extra = 14
     EyeBlink = 15
+

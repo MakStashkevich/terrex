@@ -15,3 +15,4 @@ class GameVersionID(IntEnum):
     Terraria1453Release = 316
     Latest = 317
     Terraria1454Release = 317
+

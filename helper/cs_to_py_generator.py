@@ -78,10 +78,8 @@ class CsToPyParser:
         self.class_stack: List[str] = []
         self.current_constants: Dict[str, str] = {}
         self.constants: Dict[str, str] = {}
-        self.sets: Dict[str, str] = {}
         self.count_value: Optional[int] = None
         self.class_counts: Dict[str, int] = {}
-        self.factory_size_var = None
         self.namespace = None
         self.pending_obsolete = False
         self.current_removed_constants: Dict[str, str] = {}
@@ -90,6 +88,9 @@ class CsToPyParser:
         self.current_old_comments: Dict[str, str] = {}
         self.old_comments_classes: Dict[str, Dict[str, str]] = {}
         self.is_enum = False
+        self.sets_by_class: Dict[str, Dict[str, str]] = {}
+        self.current_sets_owner: Optional[str] = None
+        self.factory_count_ref: Dict[str, str] = {}
 
     def parse(self, content: str) -> str:
         self.lines = content.splitlines()
@@ -220,57 +221,88 @@ class CsToPyParser:
 
 
             # SetFactory
-            if ".Factory = new SetFactory(" in line:
-                m = re.search(r"new SetFactory\(([^)]+)\)", line)
+            if "Sets.Factory" in stripped and "new SetFactory" in stripped:
+                m = re.search(r"(\w+(?:\.\w+)*)\.Sets\.Factory\s*=\s*new SetFactory\s*\(\s*([^)]+)\)", stripped)
                 if m:
-                    self.factory_size_var = m.group(1).strip()
+                    owner = m.group(1)
+                    self.current_sets_owner = owner
+                    m_count = re.search(r'(\w+(?:\.\w+)*)\.Count', m.group(2))
+                    sub_name_key = owner.split('.')[-1]
+                    self.factory_count_ref[sub_name_key] = m_count.group(1) if m_count else self.top_class
                 i += 1
                 continue
 
             # Factory CreateSet
-            if ".Factory.Create" in line:
+            if ".Factory.Create" in line and self.current_sets_owner:
+                # print(f"DEBUG entering Factory.Create block: line={repr(line)}, owner={repr(self.current_sets_owner)}")
                 parts = re.split(r"\s*=\s*", line.strip(), maxsplit=1)
                 if len(parts) == 2:
                     left = parts[0].strip()
-                    right = parts[1].strip()
-                    m_create = re.search(
-                        r"Factory\.Create([A-Z][a-z]+)Set\s*\(\s*([^)]+)\)\s*", right
-                    )
-                    if m_create:
-                        set_type = m_create.group(1)
-                        args_str = m_create.group(2)
-                        set_name = left.rsplit(".", 1)[-1]
-                        py_set = self._convert_set_call(set_type, args_str)
-                        if py_set:
-                            self.sets[set_name] = py_set
+                    set_name = left.rsplit('.', 1)[-1]
+                    if set_name.__len__() > 1:
+                        right = parts[1].strip()
+                        m_create = re.search(
+                            r"Factory.Create([A-Z][a-z]+)Set\s*\(\s*([^)]+)\)\s*", right
+                        )
+                        if m_create:
+                            set_type = m_create.group(1)
+                            args_str = m_create.group(2)
+                            py_set = self._convert_set_call(set_type, args_str)
+                            if py_set:
+                                if self.current_sets_owner not in self.sets_by_class:
+                                    self.sets_by_class[self.current_sets_owner] = {}
+                                self.sets_by_class[self.current_sets_owner][set_name] = py_set
+                                left_parts = [p.strip() for p in left.split(".")]
+                                if len(left_parts) >= 4 and left_parts[0] == self.top_class and left_parts[1] == "Sets":
+                                    sub_prefix = '.'.join(left_parts[2:-1])
+                                    if sub_prefix:
+                                        effective_owner = f"{self.current_sets_owner}.{sub_prefix}"
+                                        if effective_owner not in self.sets_by_class:
+                                            self.sets_by_class[effective_owner] = {}
+                                        self.sets_by_class[effective_owner][set_name] = py_set
                 i += 1
                 continue
 
             # new int[] or bool[]
-            if "new int[]" in line or "new bool[]" in line:
+            if ("new int[]" in line or "new bool[]" in line) and self.current_sets_owner:
                 parts = re.split(r"\s*=\s*", line.strip(), maxsplit=1)
                 if len(parts) == 2:
                     left = parts[0].strip()
-                    right = parts[1].strip()
-                    m_array = re.search(r"new\s+(int|bool)\[\]\s*\{([^}]+)\}", right)
-                    if m_array:
-                        arr_type = m_array.group(1)
-                        content = m_array.group(2).strip()
-                        set_name = left.rsplit(".", 1)[-1]
-                        content = re.sub(r"\s*,\s*", ",", content)
-                        vals = [v.strip() for v in content.split(",") if v.strip()]
-                        if arr_type == "int":
-                            self.sets[set_name] = "[" + ", ".join(vals) + "]"
-                        elif arr_type == "bool":
-                            py_vals = [
-                                (
-                                    "True"
-                                    if v.lower().strip() == "true"
-                                    else "False" if v.lower().strip() == "false" else v
-                                )
-                                for v in vals
-                            ]
-                            self.sets[set_name] = "[" + ", ".join(py_vals) + "]"
+                    m_set = re.search(r".*\\.Sets\\.(\\w+)\\s*$", left)
+                    if m_set:
+                        set_name = m_set.group(1)
+                        right = parts[1].strip()
+                        m_array = re.search(r"new\s+(int|bool)\s*\[.*?\]\s*\{([^}]+)\}", right)
+                        if m_array:
+                            arr_type = m_array.group(1)
+                            content = m_array.group(2).strip()
+                            set_name = left.rsplit(".", 1)[-1]
+                            content = re.sub(r"\s*,\s*", ",", content)
+                            vals = [v.strip() for v in content.split(",") if v.strip()]
+                            if self.current_sets_owner not in self.sets_by_class:
+                                self.sets_by_class[self.current_sets_owner] = {}
+                            if arr_type == "int":
+                                py_code = "[" + ", ".join(vals) + "]"
+                                self.sets_by_class[self.current_sets_owner][set_name] = py_code
+                            elif arr_type == "bool":
+                                py_vals = [
+                                    (
+                                        "True"
+                                        if v.lower().strip() == "true"
+                                        else "False" if v.lower().strip() == "false" else v
+                                    )
+                                    for v in vals
+                                ]
+                                py_code = "[" + ", ".join(py_vals) + "]"
+                                self.sets_by_class[self.current_sets_owner][set_name] = py_code
+                            left_parts = [p.strip() for p in left.split(".")]
+                            if len(left_parts) >= 4 and left_parts[0] == self.top_class and left_parts[1] == "Sets":
+                                sub_prefix = '.'.join(left_parts[2:-1])
+                                if sub_prefix:
+                                    effective_owner = f"{self.current_sets_owner}.{sub_prefix}"
+                                    if effective_owner not in self.sets_by_class:
+                                        self.sets_by_class[effective_owner] = {}
+                                    self.sets_by_class[effective_owner][set_name] = py_code
 
                     
                 i += 1
@@ -291,10 +323,11 @@ class CsToPyParser:
         if not self.top_class:
             raise ValueError("Class not found")
         self.current_class = self.top_class
-        if self.sets:
-            if self.factory_size_var is None:
-                raise ValueError("SetFactory initialization not found")
 
+
+        # print("DEBUG PARSE END: sets_by_class =", repr(self.sets_by_class))
+        # print("DEBUG PARSE END: current_sets_owner =", repr(self.current_sets_owner))
+        # print("DEBUG PARSE END: class_counts =", repr(self.class_counts))
         return self._generate_python_code()
 
     def _reset(self):
@@ -304,10 +337,8 @@ class CsToPyParser:
         self.class_stack = []
         self.current_constants = {}
         self.constants = {}
-        self.sets = {}
         self.count_value = None
         self.class_counts = {}
-        self.factory_size_var = None
         self.namespace = None
         self.pending_obsolete = False
         self.current_removed_constants = {}
@@ -316,14 +347,32 @@ class CsToPyParser:
         self.current_old_comments = {}
         self.old_comments_classes = {}
         self.is_enum = False
+        self.sets_by_class = {}
+        self.current_sets_owner = None
+        self.factory_count_ref = {}
 
     def _convert_set_call(self, set_type: str, args_str: str) -> Optional[str]:
+        # print(f"DEBUG _convert_set_call ENTER: type='{set_type}', args_in='{repr(args_str)}'")
         # Remove new int[] {} if present
-        args_str = re.sub(r"new\s+(int|bool)\[\]\s*\{", "", args_str)
+        args_str = re.sub(r"new\s+(int|bool)\s*\[.*?\]\s*\{", "", args_str)
+        # print(f"DEBUG _convert after sub: '{repr(args_str)}'")
         args_str = re.sub(r"new\s+(int|bool)\s*\[\s*0\s*\]", "", args_str)
         args_str = args_str.replace("}", "").strip()
+        # print(f"DEBUG _convert after clean: '{repr(args_str)}', items={[x.strip() for x in args_str.split(',') if x.strip()]}")
         if not args_str:
+            # print("DEBUG _convert return None (empty)")
             return None
+        # args_str = re.sub(r"new\s+(int|bool)\s*\[\s*0\s*\]", "", args_str)
+        # args_str = args_str.replace("}", "").strip()
+        # if not args_str:
+        #     return None
+
+        # Fix for new int[N] without {}
+        if re.match(r'^\s*new\s+(int|bool)\s*\[\s*\d+\s*\]\s*', args_str):
+            args_str = re.sub(r"new\s+(int|bool)\s*\[\s*0\s*\]", "", args_str)
+            args_str = args_str.replace("}", "").strip()
+            if not args_str:
+                return None
 
         items = [x.strip() for x in args_str.split(",") if x.strip()]
 
@@ -375,15 +424,13 @@ class CsToPyParser:
         top_consts = self.classes.get(top_path, {})
         top_is_pure = is_pure_enum(top_consts)
         max_count = max(self.class_counts.values()) if self.class_counts else 0
-        has_sets = bool(self.sets)
+        has_sets = bool(self.sets_by_class)
         if has_sets:
             imports = [
                 "from terrex.structures.id.set_factory import SetFactory",
                 "from enum import IntEnum, auto"
             ]
-            if self.factory_size_var != f"{self.current_class}.Count":
-                ext_class = self.factory_size_var.rsplit(".", 1)[0]
-                imports.append(f"from terrex.structures.id.{ext_class} import {ext_class}")
+
             out.extend(imports)
             out.append("")
             class_def = f"class {self.current_class}(IntEnum):" if top_is_pure else f"class {self.current_class}:"
@@ -421,15 +468,21 @@ class CsToPyParser:
                         out.append(f"    # {old_comment}")
                     out.append(f"    {name} = {val}")
         out.append("")
+
+
+
         # sub classes
         sub_classes = [p for p in self.classes if p.startswith(self.top_class + '.')]
         for path in sorted(sub_classes, key=lambda p: p.split('.')[-1]):
             sub_name = path.split('.')[-1]
             consts = self.classes[path]
-            enum_type = "IntEnum" if is_pure_enum(consts) else "auto"
-            out.append(f"    class {sub_name}({enum_type}):")
+            sub_count = self.class_counts.get(path)
             sub_old_comments = self.old_comments_classes.get(path, {})
             sub_removed = self.removed_classes.get(path, {})
+            if not consts and not sub_removed and not sub_old_comments and sub_count is None:
+                continue
+            enum_type = "IntEnum" if is_pure_enum(consts) else "auto"
+            out.append(f"    class {sub_name}({enum_type}):")
             const_items = [(int(val), name, val, False) for name, val in consts.items() if val.lstrip('-').isdigit()]
             removed_items = [(int(val), name, val, True) for name, val in sub_removed.items()]
             all_items = sorted(const_items + removed_items)
@@ -445,15 +498,23 @@ class CsToPyParser:
             if sub_count is not None:
                 out.append(f"        Count = {sub_count}")
             out.append("")
+
+        out.append("")
+
+        sets_map = {}
+        for owner_path, sets_dict in self.sets_by_class.items():
+            sub_name_key = owner_path.split('.')[-1]
+            sets_map[sub_name_key] = sets_dict
         if has_sets:
-            out.append("")
-            out.append(f"factory = SetFactory({self.factory_size_var})")
-            out.append("")
-            out.append("")
             out.append(f"class {self.current_class}Sets:")
-            for name, code in sorted(self.sets.items()):
-                out.append(f"    {name} = {code}")
-            out.append("")
+            for sub_name in sorted(sets_map):
+                parent_ref = self.factory_count_ref.get(sub_name, self.current_class)
+                out.append(f"    class {sub_name}:")
+                out.append(f"        factory = SetFactory({parent_ref}.Count)")
+                for name, code in sorted(sets_map[sub_name].items()):
+                    out.append(f"        {name} = {code}")
+                out.append("")
+
         return "\n".join(out)
 
 

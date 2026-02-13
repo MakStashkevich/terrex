@@ -72,17 +72,16 @@ class MountID(IntEnum):
     Count = 64
 
 
-factory = SetFactory(MountID.Count)
-
-
 class MountIDSets:
-    CanDash = factory.create_bool_set(False, 56, 57, 58, 59, 60, 61, 62, 63)
-    CanUseHooks = factory.create_bool_set(False, 54, 57, 58, 59, 60)
-    Cart = factory.create_bool_set(False, 6, 13, 11, 15, 16, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 38, 39, 51, 53)
-    DoesNotOverrideBackpackDraw = factory.create_bool_set(False, 57, 58, 59, 60)
-    DoesNotOverrideBodyFrames = factory.create_bool_set(False, 57, 58, 59, 60)
-    DoesNotOverrideLegFrames = factory.create_bool_set(False, 57, 58, 59, 60)
-    DontDismountWhenCCed = factory.create_bool_set(False, 55, 56, 61)
-    DontHoldItems = factory.create_bool_set(False, 55, 56, 61)
-    IsRollerSkates = factory.create_bool_set(False, 57, 58, 59, 60)
-    PlayerIsHidden = factory.create_bool_set(False, 52, 54, 55, 56, 61)
+    class MountID:
+        factory = SetFactory(MountID.Count)
+        CanDash = factory.create_bool_set(False, 56, 57, 58, 59, 60, 61, 62, 63)
+        CanUseHooks = factory.create_bool_set(False, 54, 57, 58, 59, 60)
+        Cart = factory.create_bool_set(False, 6, 13, 11, 15, 16, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 38, 39, 51, 53)
+        DoesNotOverrideBackpackDraw = factory.create_bool_set(False, 57, 58, 59, 60)
+        DoesNotOverrideBodyFrames = factory.create_bool_set(False, 57, 58, 59, 60)
+        DoesNotOverrideLegFrames = factory.create_bool_set(False, 57, 58, 59, 60)
+        DontDismountWhenCCed = factory.create_bool_set(False, 55, 56, 61)
+        DontHoldItems = factory.create_bool_set(False, 55, 56, 61)
+        IsRollerSkates = factory.create_bool_set(False, 57, 58, 59, 60)
+        PlayerIsHidden = factory.create_bool_set(False, 52, 54, 55, 56, 61)
