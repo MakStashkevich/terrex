@@ -18,6 +18,3 @@ class Unknown66(SyncPacket):
     def write(self, writer: Writer):
         writer.write_byte(self.player_id)
         writer.write_short(self.heal_amount)
-
-
-

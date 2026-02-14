@@ -1,6 +1,7 @@
 from terrex.structures.id import MessageID
-from .base import ClientPacket
+
 from ..util.streamer import Reader, Writer
+from .base import ClientPacket
 
 
 class SpawnBossUseLicenseStartEvent(ClientPacket):
@@ -17,4 +18,3 @@ class SpawnBossUseLicenseStartEvent(ClientPacket):
     def write(self, writer: Writer) -> None:
         writer.write_short(self.player_id)
         writer.write_short(self.invasion_type)
-

@@ -20,6 +20,3 @@ class MassWireOperationPay(ServerPacket):
         writer.write_short(self.item_type)
         writer.write_short(self.quantity)
         writer.write_byte(self.player_id)
-
-
-

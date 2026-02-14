@@ -1,5 +1,4 @@
 from terrex.packets.base import ServerPacket
-
 from terrex.structures.id import MessageID
 
 
@@ -8,4 +7,3 @@ class InitialSpawn(ServerPacket):
 
     def read(self, reader):
         pass
-

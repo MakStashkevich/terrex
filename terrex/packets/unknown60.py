@@ -1,12 +1,9 @@
 from dataclasses import dataclass
 
- 
-
 from terrex.packets.base import SyncPacket
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
- 
 
 @dataclass
 class SetNpcHome:
@@ -40,7 +37,3 @@ class Unknown60(SyncPacket):
 
     def write(self, writer: Writer, data: SetNpcHome) -> None:
         data.write(writer)
-
- 
-
-

@@ -11,6 +11,3 @@ class CrystalInvasionSendWaitTime(ServerPacket):
 
     def read(self, reader: Reader):
         self.time_until_next_wave = reader.read_int()
-
-
-

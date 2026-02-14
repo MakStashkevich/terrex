@@ -1,16 +1,15 @@
-from abc import ABC, abstractmethod
-from dataclasses import is_dataclass
 import inspect
-from typing import Any, Type, Dict
-from enum import Enum
+from abc import ABC, abstractmethod
+from typing import Any
+
 from terrex.entity.player import Player
-from terrex.structures.net_mode import NetMode
-from terrex.world.world import World
 from terrex.events.eventmanager import EventManager
+from terrex.structures.net_mode import NetMode
 from terrex.util.streamer import Reader, Writer
 from terrex.util.stringify import stringify_value
+from terrex.world.world import World
 
-packet_registry: Dict[int, Type["Packet"]] = {}
+packet_registry: dict[int, type["Packet"]] = {}
 
 
 class Packet(ABC):
@@ -29,7 +28,7 @@ class Packet(ABC):
 
     def handle(self, world: World, player: Player, evman: EventManager) -> None:
         pass
-    
+
     def __init_subclass__(cls):
         super().__init_subclass__()
 
@@ -43,9 +42,7 @@ class Packet(ABC):
             raise TypeError(f"{cls.__name__} must implement classmethod read()")
 
         if cls.id in packet_registry:
-            raise ValueError(
-                f"Packet id {cls.id} already registered for {packet_registry[cls.id]}"
-            )
+            raise ValueError(f"Packet id {cls.id} already registered for {packet_registry[cls.id]}")
         packet_registry[cls.id] = cls
 
     def __to_log_dict(self) -> dict[str, Any]:
@@ -65,9 +62,7 @@ class ServerPacket(Packet, ABC):
         pass
 
     def write(self, writer: Writer) -> None:
-        raise NotImplementedError(
-            f"Client does not send {self.__class__.__name__} (server-only packet)"
-        )
+        raise NotImplementedError(f"Client does not send {self.__class__.__name__} (server-only packet)")
 
 
 class ClientPacket(Packet, ABC):
@@ -80,9 +75,7 @@ class ClientPacket(Packet, ABC):
         pass
 
     def read(self, reader: Reader) -> None:
-        raise NotImplementedError(
-            f"Client does not read {self.__class__.__name__} (server-bound packet only)"
-        )
+        raise NotImplementedError(f"Client does not read {self.__class__.__name__} (server-bound packet only)")
 
 
 class SyncPacket(Packet, ABC):

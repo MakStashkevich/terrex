@@ -1,8 +1,8 @@
-from typing import Tuple
 from terrex.packets.base import SyncPacket
 from terrex.structures.id import MessageID
 from terrex.structures.rgb import Rgb
 from terrex.util.streamer import Reader, Writer
+
 
 class SyncPlayer(SyncPacket):
     id = MessageID.SyncPlayer
@@ -27,7 +27,7 @@ class SyncPlayer(SyncPacket):
         shoe_color: Rgb = Rgb(255, 255, 255),
         difficulty_flags: int = 0,
         biome_torch_flags: int = 0,
-        consumables_flags: int = 0
+        consumables_flags: int = 0,
     ):
         self.player_id = player_id
         self.skin_variant = skin_variant
@@ -278,4 +278,3 @@ class SyncPlayer(SyncPacket):
             self.consumables_flags |= mask
         else:
             self.consumables_flags &= ~mask
-

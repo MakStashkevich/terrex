@@ -2,6 +2,7 @@ from terrex.packets.base import SyncPacket
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
+
 class SyncEquipment(SyncPacket):
     id = MessageID.SyncEquipment
 
@@ -21,7 +22,7 @@ class SyncEquipment(SyncPacket):
     # 94 - 98 = MiscDyes (красители животных)
     # 99 - 138 = Piggy bank
     # 499 = Trash
-    
+
     # not tested
     # 139 - 178 = Safe
     # 180 - 219 = Defender's Forge
@@ -46,4 +47,3 @@ class SyncEquipment(SyncPacket):
         writer.write_short(self.stack)
         writer.write_byte(self.prefix)
         writer.write_ushort(self.item_netid)
-

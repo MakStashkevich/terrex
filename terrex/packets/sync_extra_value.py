@@ -21,6 +21,3 @@ class SyncExtraValue(SyncPacket):
         writer.write_ushort(self.npc_index)
         writer.write_int(self.extra_value)
         self.pos.write(writer)
-
-
-

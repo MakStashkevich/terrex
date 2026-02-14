@@ -2,6 +2,7 @@ from terrex.packets.base import SyncPacket
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
+
 class InstrumentSound(SyncPacket):
     id = MessageID.InstrumentSound
 
@@ -16,4 +17,3 @@ class InstrumentSound(SyncPacket):
     def write(self, writer: Writer) -> None:
         writer.write_byte(self.player_id)
         writer.write_float(self.note)
-

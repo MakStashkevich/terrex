@@ -1,7 +1,4 @@
-from typing import Any
-
 from terrex.packets.base import SyncPacket
-
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
@@ -23,4 +20,3 @@ class PlayerMana(SyncPacket):
         writer.write_byte(self.player_id)
         writer.write_short(self.mana)
         writer.write_short(self.max_mana)
-

@@ -2,6 +2,7 @@ from terrex.packets.base import ServerPacket
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader
 
+
 class WiredCannonShot(ServerPacket):
     id = MessageID.WiredCannonShot
 
@@ -25,4 +26,3 @@ class WiredCannonShot(ServerPacket):
 
     def handle(self, world, player, evman):
         pass
-

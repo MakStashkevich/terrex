@@ -2,11 +2,11 @@ from terrex.packets.base import ClientPacket
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
+
 class PlayerSpawn(ClientPacket):
     id = MessageID.PlayerSpawn
 
-    def __init__(self, player_id: int = 0, spawn_x: float = -1.0, spawn_y: float = -1.0,
-                 respawn_time_remaining: int = 0, player_spawn_context: int = 0):
+    def __init__(self, player_id: int = 0, spawn_x: float = -1.0, spawn_y: float = -1.0, respawn_time_remaining: int = 0, player_spawn_context: int = 0):
         self.player_id = player_id
         self.spawn_x = spawn_x
         self.spawn_y = spawn_y
@@ -26,4 +26,3 @@ class PlayerSpawn(ClientPacket):
         self.spawn_y = reader.read_float()
         self.respawn_time_remaining = reader.read_int()
         self.player_spawn_context = reader.read_byte()
-

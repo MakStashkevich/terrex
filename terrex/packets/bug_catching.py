@@ -1,6 +1,6 @@
 from terrex.packets.base import ClientPacket
 from terrex.structures.id import MessageID
-from terrex.util.streamer import Reader, Writer
+from terrex.util.streamer import Writer
 
 
 class BugCatching(ClientPacket):
@@ -13,6 +13,3 @@ class BugCatching(ClientPacket):
     def write(self, writer: Writer):
         writer.write_short(self.npc_id)
         writer.write_byte(self.player_id)
-
-
-

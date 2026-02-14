@@ -17,5 +17,3 @@ class UpdateTowerShieldStrengths(ServerPacket):
         self.vortex_tower = reader.read_ushort()
         self.nebula_tower = reader.read_ushort()
         self.stardust_tower = reader.read_ushort()
-
-

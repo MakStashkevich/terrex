@@ -1,8 +1,8 @@
-from typing import Any
 from terrex.structures.id import MessageID
+
 from ..structures.vec2 import Vec2
-from .base import ClientPacket
 from ..util.streamer import Reader, Writer
+from .base import ClientPacket
 
 
 class BugReleasing(ClientPacket):
@@ -23,4 +23,3 @@ class BugReleasing(ClientPacket):
         writer.write_int(int(self.position.y))
         writer.write_short(self.npc_type)
         writer.write_byte(self.style)
-

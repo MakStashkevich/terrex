@@ -1,7 +1,4 @@
-from typing import Any
-
 from terrex.packets.base import ClientPacket
-
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
@@ -17,4 +14,3 @@ class SendPassword(ClientPacket):
 
     def read(self, reader: Reader) -> None:
         self.password = reader.read_dotnet_string()
-

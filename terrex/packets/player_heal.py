@@ -1,5 +1,3 @@
-from typing import Any
-
 from terrex.packets.base import SyncPacket
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
@@ -19,4 +17,3 @@ class PlayerHeal(SyncPacket):
     def write(self, writer: Writer):
         writer.write_byte(self.player_id)
         writer.write_short(self.heal_amount)
-

@@ -2,6 +2,7 @@ from terrex.packets.base import ClientPacket
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
+
 class Hello(ClientPacket):
     id = MessageID.Hello
 
@@ -14,4 +15,3 @@ class Hello(ClientPacket):
 
     def write(self, writer: Writer):
         writer.write_dotnet_string("Terraria" + str(self.version))
-

@@ -1,19 +1,15 @@
-from typing import Any
-
-from terrex.item.item import Item
 from terrex.events.events import Event
+from terrex.item.item import Item
 from terrex.packets.base import SyncPacket
-
 from terrex.structures.id import MessageID
-from terrex.util.streamer import Reader, Writer
 from terrex.structures.vec2 import Vec2
+from terrex.util.streamer import Reader, Writer
 
 
 class SyncItem(SyncPacket):
     id = MessageID.SyncItem
 
-    def __init__(self, item_id: int = 0, pos: Vec2 = Vec2(0.0, 0.0), vel: Vec2 = Vec2(0.0, 0.0),
-                 stack_size: int = 0, prefix: int = 0, no_delay: int = 0, item_net_id: int = 0):
+    def __init__(self, item_id: int = 0, pos: Vec2 = Vec2(0.0, 0.0), vel: Vec2 = Vec2(0.0, 0.0), stack_size: int = 0, prefix: int = 0, no_delay: int = 0, item_net_id: int = 0):
         self.item_id = item_id
         self.pos = pos
         self.vel = vel
@@ -39,7 +35,7 @@ class SyncItem(SyncPacket):
         writer.write_byte(self.prefix)
         writer.write_byte(self.no_delay)
         writer.write_short(self.item_net_id)
-        
+
     def handle(self, world, player, evman):
         # todo: fix Item props
         item_object = Item(self.item_id, self.item_net_id, self.pos, self.vel, self.prefix, self.stack_size)
@@ -48,7 +44,6 @@ class SyncItem(SyncPacket):
             evman.raise_event(Event.ItemDropUpdate, item_object)
         else:
             world.items[self.item_id] = item_object
-            if not self.item_id in world.item_owner_index:
+            if self.item_id not in world.item_owner_index:
                 world.item_owner_index[self.item_id] = 255
             evman.raise_event(Event.ItemDropped, item_object)
-

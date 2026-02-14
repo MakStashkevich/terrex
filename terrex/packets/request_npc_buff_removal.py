@@ -13,5 +13,3 @@ class RequestNPCBuffRemoval(ClientPacket):
     def write(self, writer: Writer):
         writer.write_short(self.npc_id)
         writer.write_ushort(self.buff_id)
-
-

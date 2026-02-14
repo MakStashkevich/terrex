@@ -2,6 +2,7 @@ from terrex.packets.base import SyncPacket
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
+
 class TileManipulation(SyncPacket):
     id = MessageID.TileManipulation
 
@@ -32,4 +33,3 @@ class TileManipulation(SyncPacket):
         writer.write_short(self.tile_y)
         writer.write_short(self.extra)
         writer.write_byte(self.style)
-

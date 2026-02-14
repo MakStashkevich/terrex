@@ -20,6 +20,3 @@ class SyncWallPaintOrCoating(SyncPacket):
         writer.write_short(self.x)
         writer.write_short(self.y)
         writer.write_byte(self.color)
-
-
-

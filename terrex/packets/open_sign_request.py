@@ -1,7 +1,4 @@
-from typing import Any
-
 from terrex.packets.base import ClientPacket
-
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
@@ -20,4 +17,3 @@ class OpenSignRequest(ClientPacket):
     def read(self, reader: Reader) -> None:
         self.x = reader.read_short()
         self.y = reader.read_short()
-

@@ -20,6 +20,3 @@ class AddNPCBuff(SyncPacket):
         writer.write_short(self.npc_id)
         writer.write_ushort(self.buff)
         writer.write_short(self.time)
-
- 
-

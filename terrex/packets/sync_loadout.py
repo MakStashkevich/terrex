@@ -20,5 +20,3 @@ class SyncLoadout(ClientPacket):
         writer.write_byte(self.player_id)
         writer.write_byte(self.loadout_index)
         writer.write_ushort(self.accessory_visibility)
-
-

@@ -2,7 +2,6 @@ from terrex.packets.base import ClientPacket
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
- 
 
 class SpawnTileData(ClientPacket):
     id = MessageID.SpawnTileData
@@ -18,4 +17,3 @@ class SpawnTileData(ClientPacket):
     def read(self, reader: Reader) -> None:
         self.spawn_x = reader.read_short()
         self.spawn_y = reader.read_short()
-

@@ -1,7 +1,7 @@
 from terrex.packets.base import ClientPacket
 from terrex.structures.id import MessageID
-from terrex.util.streamer import Reader, Writer
 from terrex.structures.player_death_reason import PlayerDeathReason
+from terrex.util.streamer import Reader, Writer
 
 
 class PlayerDeathV2(ClientPacket):
@@ -34,6 +34,3 @@ class PlayerDeathV2(ClientPacket):
         writer.write_short(self.damage)
         writer.write_byte(self.hit_direction)
         writer.write_bool(self.pvp)
-
-
-

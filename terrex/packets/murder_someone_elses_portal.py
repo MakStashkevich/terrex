@@ -13,6 +13,3 @@ class MurderSomeoneElsesPortal(ClientPacket):
     def write(self, writer: Writer):
         writer.write_ushort(self.projectile_owner)
         writer.write_byte(self.projectile_ai)
-
-
-

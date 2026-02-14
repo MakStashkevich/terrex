@@ -23,6 +23,3 @@ class ChestName(SyncPacket):
         writer.write_short(self.x)
         writer.write_short(self.y)
         writer.write_dotnet_string(self.name)
-
-
-

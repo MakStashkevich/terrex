@@ -24,6 +24,3 @@ class TeleportNPCThroughPortal(SyncPacket):
         writer.write_ushort(self.portal_color_index)
         self.pos.write(writer)
         self.vel.write(writer)
-
-
-

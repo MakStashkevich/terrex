@@ -1,7 +1,4 @@
-from typing import Any
-
 from terrex.packets.base import SyncPacket
-
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
@@ -26,4 +23,3 @@ class LiquidUpdate(SyncPacket):
         writer.write_short(self.y)
         writer.write_byte(self.liquid)
         writer.write_byte(self.liquid_type)
-

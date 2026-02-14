@@ -2,7 +2,7 @@ from terrex.packets.base import ServerPacket
 from terrex.structures.id import MessageID
 from terrex.structures.rgb import Rgb
 from terrex.structures.vec2 import Vec2
-from terrex.util.streamer import Reader, Writer
+from terrex.util.streamer import Reader
 
 
 class CombatTextInt(ServerPacket):
@@ -17,6 +17,3 @@ class CombatTextInt(ServerPacket):
         self.pos = Vec2.read(reader)
         self.color = Rgb.read(reader)
         self.heal_amount = reader.read_int()
-
-
-

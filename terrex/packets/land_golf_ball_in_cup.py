@@ -26,6 +26,3 @@ class LandGolfBallInCup(SyncPacket):
         writer.write_short(self.y)
         writer.write_ushort(self.number_of_hits)
         writer.write_ushort(self.proj_id)
-
-
-

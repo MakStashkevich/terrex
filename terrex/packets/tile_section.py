@@ -1,13 +1,11 @@
-from typing import List, Union, Any
 import zlib
 from copy import deepcopy
-
 from dataclasses import dataclass
 
 from terrex.events.events import Event
 from terrex.packets.base import ServerPacket
 from terrex.structures.id import MessageID
-from terrex.util.streamer import Reader, Writer
+from terrex.util.streamer import Reader
 
 
 @dataclass
@@ -16,15 +14,13 @@ class TileSection:
     y_start: int
     width: int
     height: int
-    tiles: List["Tile"]  # pyright: ignore[reportUndefinedVariable]
-    chests: List["Chest"]  # pyright: ignore[reportUndefinedVariable]
-    signs: List["Sign"]  # pyright: ignore[reportUndefinedVariable]
-    tile_entities: List["TileEntity"]  # pyright: ignore[reportUndefinedVariable]
+    tiles: list["Tile"]  # pyright: ignore[reportUndefinedVariable]
+    chests: list["Chest"]  # pyright: ignore[reportUndefinedVariable]
+    signs: list["Sign"]  # pyright: ignore[reportUndefinedVariable]
+    tile_entities: list["TileEntity"]  # pyright: ignore[reportUndefinedVariable]
 
 
-def decompress_tile_block_inner(
-    reader: Reader, x_start: int, y_start: int, width: int, height: int
-) -> TileSection:
+def decompress_tile_block_inner(reader: Reader, x_start: int, y_start: int, width: int, height: int) -> TileSection:
     from terrex.structures import Chest, Sign, Tile
     from terrex.structures.tile_entity import read_tile_entity
 
@@ -87,9 +83,7 @@ class TileSection(ServerPacket):
         self.width = section_reader.read_short()
         self.height = section_reader.read_short()
 
-        print(
-            f"Load Section: x_start={self.x_start}, y_start={self.y_start}, width={self.width}, height={self.height}"
-        )
+        print(f"Load Section: x_start={self.x_start}, y_start={self.y_start}, width={self.width}, height={self.height}")
         # Load Section: x_start=3600, y_start=150, width=200, height=150
 
         if self.width < 0 or self.height < 0:
@@ -99,12 +93,7 @@ class TileSection(ServerPacket):
         # if dimensions > 1000 * 1000:
         #     raise ValueError(f"Section dimensions too large: {width}x{height}")
 
-        self.data = decompress_tile_block_inner(
-            section_reader, self.x_start, self.y_start, self.width, self.height
-        )
+        self.data = decompress_tile_block_inner(section_reader, self.x_start, self.y_start, self.width, self.height)
 
     def handle(self, world, player, evman):
         evman.raise_event(Event.TileUpdate, self.data)
-
-
-

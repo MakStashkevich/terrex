@@ -1,12 +1,7 @@
-from typing import Any
-
- 
-
 from terrex.packets.base import ServerPacket
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader
 
- 
 
 class TileFrameSection(ServerPacket):
     id = MessageID.TileFrameSection
@@ -22,4 +17,3 @@ class TileFrameSection(ServerPacket):
         self.start_y = reader.read_short()
         self.end_x = reader.read_short()
         self.end_y = reader.read_short()
-

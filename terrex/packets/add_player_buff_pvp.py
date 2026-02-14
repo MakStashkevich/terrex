@@ -20,6 +20,3 @@ class AddPlayerBuffPvP(SyncPacket):
         writer.write_byte(self.player_id)
         writer.write_ushort(self.buff)
         writer.write_int(self.time)
-
- 
-

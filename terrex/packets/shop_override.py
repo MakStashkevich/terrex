@@ -29,6 +29,3 @@ class ShopOverride(ServerPacket):
         writer.write_byte(self.prefix)
         writer.write_int(self.value)
         writer.write_bool(self.buy_once)
-
-
-

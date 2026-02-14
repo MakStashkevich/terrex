@@ -21,6 +21,3 @@ class NebulaLevelupRequest(SyncPacket):
         writer.write_byte(self.player_id)
         writer.write_ushort(self.level_up_type)
         self.origin.write(writer)
-
-
-

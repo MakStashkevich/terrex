@@ -17,6 +17,3 @@ class TemporaryAnimation(ServerPacket):
         self.tile_type = reader.read_ushort()
         self.x = reader.read_short()
         self.y = reader.read_short()
-
-
-

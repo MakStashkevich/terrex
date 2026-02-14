@@ -1,7 +1,4 @@
-from typing import Any
-
 from terrex.packets.base import SyncPacket
-
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
@@ -23,4 +20,3 @@ class ItemRotationAndAnimation(SyncPacket):
         writer.write_byte(self.player_id)
         writer.write_float(self.item_rotation)
         writer.write_short(self.item_animation)
-

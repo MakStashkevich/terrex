@@ -1,7 +1,4 @@
-from typing import Any
-
 from terrex.packets.base import SyncPacket
-
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
@@ -33,4 +30,3 @@ class OpenSignResponse(SyncPacket):
         writer.write_dotnet_string(self.text)
         writer.write_byte(self.player_id)
         writer.write_byte(self.flags)
-

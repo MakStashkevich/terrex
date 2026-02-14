@@ -11,6 +11,3 @@ class DeadPlayer(ServerPacket):
 
     def read(self, reader: Reader):
         self.player_id = reader.read_byte()
-
-
-

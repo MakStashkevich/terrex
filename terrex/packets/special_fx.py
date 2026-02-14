@@ -1,6 +1,7 @@
 from terrex.structures.id import MessageID
-from .base import SyncPacket
+
 from ..util.streamer import Reader, Writer
+from .base import SyncPacket
 
 
 class SpecialFX(SyncPacket):
@@ -17,4 +18,3 @@ class SpecialFX(SyncPacket):
     def write(self, writer: Writer) -> None:
         writer.write_byte(self.player_id)
         writer.write_byte(self.effect_type)
-

@@ -16,5 +16,3 @@ class Unknown57(ServerPacket):
         self.good = reader.read_byte()
         self.evil = reader.read_byte()
         self.crimson = reader.read_byte()
-
-

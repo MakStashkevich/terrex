@@ -1,5 +1,3 @@
-from typing import Any
-
 from terrex.packets.base import ServerPacket
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader
@@ -19,4 +17,3 @@ class SetTime(ServerPacket):
         self.time = reader.read_int()
         self.sun_mod_y = reader.read_short()
         self.moon_mod_y = reader.read_short()
-

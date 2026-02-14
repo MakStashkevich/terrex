@@ -1,13 +1,8 @@
-from typing import Any
-
- 
-
 from terrex.packets.base import ServerPacket
 from terrex.structures.id import MessageID
-from terrex.util.streamer import Reader
 from terrex.structures.localization.network_text import NetworkText
+from terrex.util.streamer import Reader
 
- 
 
 class StatusTextSize(ServerPacket):
     id = MessageID.StatusTextSize
@@ -21,4 +16,3 @@ class StatusTextSize(ServerPacket):
         self.status_id = reader.read_int()
         self.text = NetworkText.read(reader)
         self.flags = reader.read_byte()
-

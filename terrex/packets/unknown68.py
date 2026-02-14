@@ -2,6 +2,7 @@ from terrex.packets.base import ClientPacket
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
+
 class Unknown68(ClientPacket):
     # ClientUUID
     id = MessageID.Unknown68
@@ -14,4 +15,3 @@ class Unknown68(ClientPacket):
 
     def read(self, reader: Reader) -> None:
         self.uuid4 = reader.read_dotnet_string()
-

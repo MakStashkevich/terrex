@@ -1,14 +1,14 @@
-from typing import Optional, Tuple
 from terrex.packets.base import SyncPacket
 from terrex.structures.id import MessageID
-from terrex.util.streamer import Reader, Writer
 from terrex.structures.vec2 import Vec2
+from terrex.util.streamer import Reader, Writer
 
 # Константы для флагов PulleyMode
 PULLEY_HAS_VEL = 0x04
 
 # Константы для флагов PlayerAction
 PLAYER_ACTION_HAS_ORIG_AND_HOME_POS = 0x40
+
 
 class PlayerControls(SyncPacket):
     id = MessageID.PlayerControls
@@ -22,8 +22,8 @@ class PlayerControls(SyncPacket):
         sleep_info: int = 0,
         selected_item: int = 0,
         pos: Vec2 = None,
-        vel: Optional[Vec2] = None,
-        original_and_home_pos: Optional[Tuple[Vec2, Vec2]] = None,
+        vel: Vec2 | None = None,
+        original_and_home_pos: tuple[Vec2, Vec2] | None = None,
     ):
         self.player_id = player_id
         self.keys = keys
@@ -78,4 +78,3 @@ class PlayerControls(SyncPacket):
         if self.original_and_home_pos is not None:
             self.original_and_home_pos[0].write(writer)
             self.original_and_home_pos[1].write(writer)
-

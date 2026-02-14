@@ -11,6 +11,3 @@ class Ping(SyncPacket):
 
     def write(self, writer: Writer):
         pass
-
-
-

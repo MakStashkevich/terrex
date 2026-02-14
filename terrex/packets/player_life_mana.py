@@ -1,7 +1,7 @@
 from terrex.packets.base import SyncPacket
-
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
+
 
 class PlayerLifeMana(SyncPacket):
     id = MessageID.PlayerLifeMana
@@ -20,4 +20,3 @@ class PlayerLifeMana(SyncPacket):
         writer.write_byte(self.player_id)
         writer.write_ushort(self.hp)
         writer.write_ushort(self.max_hp)
-

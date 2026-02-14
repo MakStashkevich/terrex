@@ -13,6 +13,3 @@ class PoofOfSmoke(ServerPacket):
     def read(self, reader: Reader):
         self.x = reader.read_short()
         self.y = reader.read_short()
-
-
-

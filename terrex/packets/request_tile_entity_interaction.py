@@ -17,6 +17,3 @@ class RequestTileEntityInteraction(SyncPacket):
     def write(self, writer: Writer):
         writer.write_int(self.tile_entity_id)
         writer.write_byte(self.player_id)
-
-
-

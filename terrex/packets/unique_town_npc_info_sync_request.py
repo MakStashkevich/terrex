@@ -1,12 +1,12 @@
-from typing import Optional
 from terrex.packets.base import SyncPacket
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
+
 class UniqueTownNPCInfoSyncRequest(SyncPacket):
     id = MessageID.UniqueTownNPCInfoSyncRequest
 
-    def __init__(self, npc_id: int = 0, name: Optional[str] = None, town_npc_variation_idx: Optional[int] = None):
+    def __init__(self, npc_id: int = 0, name: str | None = None, town_npc_variation_idx: int | None = None):
         self.npc_id = npc_id
         self.name = name
         self.town_npc_variation_idx = town_npc_variation_idx
@@ -25,4 +25,3 @@ class UniqueTownNPCInfoSyncRequest(SyncPacket):
         if self.name is not None and self.town_npc_variation_idx is not None:
             writer.write_dotnet_string(self.name)
             writer.write_int(self.town_npc_variation_idx)
-

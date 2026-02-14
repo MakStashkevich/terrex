@@ -7,4 +7,3 @@ class RequestPassword(ServerPacket):
 
     def read(self, reader):
         pass
-

@@ -1,7 +1,7 @@
 from terrex.packets.base import SyncPacket
 from terrex.structures.id import MessageID
-from terrex.util.streamer import Reader, Writer
 from terrex.structures.vec2 import Vec2
+from terrex.util.streamer import Reader, Writer
 
 
 class TeleportEntity(SyncPacket):
@@ -31,4 +31,3 @@ class TeleportEntity(SyncPacket):
         writer.write_byte(self.style)
         if self.flags & 0x08:
             writer.write_int(self.extra_info)
-    

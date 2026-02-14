@@ -35,6 +35,3 @@ class TileEntityPlacement(ClientPacket):
         self.x = reader.read_short()
         self.y = reader.read_short()
         self.tile_entity_type = TileEntityType.read(reader)
-
-
-

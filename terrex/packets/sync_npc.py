@@ -1,25 +1,35 @@
-from typing import List, Optional
-
- 
-
 from terrex.packets.base import ServerPacket
 from terrex.structures.id import MessageID
-from terrex.util.streamer import Reader
 from terrex.structures.vec2 import Vec2
+from terrex.util.streamer import Reader
 
- 
 
 class SyncNPC(ServerPacket):
     id = MessageID.SyncNPC
 
-    def __init__(self, npc_id: int = 0, pos: Vec2 = Vec2(0.0, 0.0), vel: Vec2 = Vec2(0.0, 0.0),
-                 target: int = 0, ai: List[float] = None, npc_net_id: int = 0,
-                 player_count_scale: Optional[int] = None, strength_multiplier: Optional[float] = None,
-                 life: Optional[int] = None, release_owner: Optional[int] = None,
-                 direction: int = -1, direction_y_positive: bool = False, sprite_direction: int = -1,
-                 full_life: bool = True, stats_scaled_gt1: bool = False, spawned_from_statue: bool = False,
-                 difficulty_flag: bool = False, spawn_needs_syncing: bool = False, shimmer_transparency_gt0: bool = False,
-                 life_size: Optional[int] = None):
+    def __init__(
+        self,
+        npc_id: int = 0,
+        pos: Vec2 = Vec2(0.0, 0.0),
+        vel: Vec2 = Vec2(0.0, 0.0),
+        target: int = 0,
+        ai: list[float] = None,
+        npc_net_id: int = 0,
+        player_count_scale: int | None = None,
+        strength_multiplier: float | None = None,
+        life: int | None = None,
+        release_owner: int | None = None,
+        direction: int = -1,
+        direction_y_positive: bool = False,
+        sprite_direction: int = -1,
+        full_life: bool = True,
+        stats_scaled_gt1: bool = False,
+        spawned_from_statue: bool = False,
+        difficulty_flag: bool = False,
+        spawn_needs_syncing: bool = False,
+        shimmer_transparency_gt0: bool = False,
+        life_size: int | None = None,
+    ):
         self.npc_id = npc_id
         self.pos = pos
         self.vel = vel
@@ -83,4 +93,3 @@ class SyncNPC(ServerPacket):
         self.release_owner = None
         if not reader.eof():
             self.release_owner = reader.read_byte()
-

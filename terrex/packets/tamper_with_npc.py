@@ -2,6 +2,7 @@ from terrex.packets.base import ServerPacket
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader
 
+
 class TamperWithNPC(ServerPacket):
     id = MessageID.TamperWithNPC
 
@@ -20,4 +21,3 @@ class TamperWithNPC(ServerPacket):
 
     def handle(self, world, player, evman):
         pass
-

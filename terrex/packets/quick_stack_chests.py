@@ -14,4 +14,3 @@ class QuickStackChests(ClientPacket):
 
     def write(self, writer: Writer) -> None:
         writer.write_byte(self.inventory_slot)
-    

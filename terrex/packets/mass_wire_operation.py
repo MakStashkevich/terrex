@@ -44,6 +44,3 @@ class MassWireOperation(ClientPacket):
         writer.write_short(self.end_x)
         writer.write_short(self.end_y)
         self.tool_mode.write(writer)
-
-
-

@@ -20,6 +20,3 @@ class GemLockToggle(ClientPacket):
         self.x = reader.read_short()
         self.y = reader.read_short()
         self.on = reader.read_bool()
-
-
-

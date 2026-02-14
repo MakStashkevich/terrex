@@ -14,5 +14,3 @@ class Unused83(ServerPacket):
     def read(self, reader: Reader):
         self.npc_type = reader.read_short()
         self.kill_count = reader.read_int()
-
-

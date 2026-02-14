@@ -1,5 +1,3 @@
-from typing import Any
-
 from terrex.packets.base import SyncPacket
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
@@ -28,4 +26,3 @@ class SyncChestItem(SyncPacket):
         writer.write_short(self.stack)
         writer.write_byte(self.prefix)
         writer.write_short(self.item_net_id)
-

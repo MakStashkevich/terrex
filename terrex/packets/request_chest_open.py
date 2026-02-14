@@ -1,5 +1,3 @@
-from typing import Any
-
 from terrex.packets.base import ClientPacket
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
@@ -19,4 +17,3 @@ class RequestChestOpen(ClientPacket):
     def read(self, reader: Reader) -> None:
         self.tile_x = reader.read_short()
         self.tile_y = reader.read_short()
-

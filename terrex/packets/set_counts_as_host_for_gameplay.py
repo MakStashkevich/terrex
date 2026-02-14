@@ -13,5 +13,3 @@ class SetCountsAsHostForGameplay(ServerPacket):
     def read(self, reader: Reader):
         self.player_id = reader.read_byte()
         self.host = reader.read_bool()
-
-

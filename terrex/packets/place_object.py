@@ -32,6 +32,3 @@ class PlaceObject(SyncPacket):
         writer.write_byte(self.alternate)
         writer.write_sbyte(self.random)
         writer.write_bool(self.direction)
-
-
-

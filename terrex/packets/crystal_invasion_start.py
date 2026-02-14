@@ -1,6 +1,6 @@
 from terrex.packets.base import ClientPacket
 from terrex.structures.id import MessageID
-from terrex.util.streamer import Reader, Writer
+from terrex.util.streamer import Writer
 
 
 class CrystalInvasionStart(ClientPacket):
@@ -13,6 +13,3 @@ class CrystalInvasionStart(ClientPacket):
     def write(self, writer: Writer):
         writer.write_short(self.x)
         writer.write_short(self.y)
-
-
-

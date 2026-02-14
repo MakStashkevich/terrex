@@ -11,6 +11,3 @@ class MoonlordHorror(ServerPacket):
 
     def read(self, reader: Reader):
         self.countdown = reader.read_int()
-
-
-

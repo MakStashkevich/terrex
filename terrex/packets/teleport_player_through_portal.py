@@ -2,6 +2,7 @@ from terrex.packets.base import SyncPacket
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
+
 class TeleportPlayerThroughPortal(SyncPacket):
     id = MessageID.TeleportPlayerThroughPortal
 
@@ -31,4 +32,3 @@ class TeleportPlayerThroughPortal(SyncPacket):
 
     def handle(self, world, player, evman):
         pass
-

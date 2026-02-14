@@ -2,6 +2,7 @@ from terrex.packets.base import SyncPacket
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
+
 class SyncTilePicking(SyncPacket):
     id = MessageID.SyncTilePicking
 
@@ -25,4 +26,3 @@ class SyncTilePicking(SyncPacket):
 
     def handle(self, world, player, evman):
         pass
-

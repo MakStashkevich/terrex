@@ -1,12 +1,7 @@
-from typing import Any
-
- 
-
 from terrex.packets.base import ServerPacket
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader
 
- 
 
 class PlayerActive(ServerPacket):
     id = MessageID.PlayerActive
@@ -18,4 +13,3 @@ class PlayerActive(ServerPacket):
     def read(self, reader: Reader):
         self.player_id = reader.read_byte()
         self.active = reader.read_bool()
-

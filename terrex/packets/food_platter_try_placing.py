@@ -1,6 +1,6 @@
 from terrex.packets.base import ClientPacket
 from terrex.structures.id import MessageID
-from terrex.util.streamer import Reader, Writer
+from terrex.util.streamer import Writer
 
 
 class FoodPlatterTryPlacing(ClientPacket):
@@ -19,6 +19,3 @@ class FoodPlatterTryPlacing(ClientPacket):
         writer.write_short(self.item_id)
         writer.write_byte(self.prefix)
         writer.write_short(self.stack)
-
-
-

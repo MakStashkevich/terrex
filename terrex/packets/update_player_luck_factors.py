@@ -51,6 +51,3 @@ class UpdatePlayerLuckFactors(SyncPacket):
         writer.write_float(self.equipment_based_luck_bonus)
         writer.write_float(self.coin_luck)
         writer.write_byte(self.kite_luck_level)
-
-
-

@@ -1,5 +1,4 @@
 from enum import IntEnum
-from typing import Any
 
 from terrex.packets.base import SyncPacket
 from terrex.structures.id import MessageID
@@ -25,8 +24,7 @@ class ChestAction(IntEnum):
 class ChestUpdates(SyncPacket):
     id = MessageID.ChestUpdates
 
-    def __init__(self, action: ChestAction = ChestAction.PLACE_CHEST, tile_x: int = 0, tile_y: int = 0,
-                 style: int = 0, chest_id_to_destroy: int = 0):
+    def __init__(self, action: ChestAction = ChestAction.PLACE_CHEST, tile_x: int = 0, tile_y: int = 0, style: int = 0, chest_id_to_destroy: int = 0):
         self.action = action
         self.tile_x = tile_x
         self.tile_y = tile_y
@@ -46,4 +44,3 @@ class ChestUpdates(SyncPacket):
         writer.write_short(self.tile_y)
         writer.write_short(self.style)
         writer.write_short(self.chest_id_to_destroy)
-

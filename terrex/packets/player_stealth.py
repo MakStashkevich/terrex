@@ -17,5 +17,3 @@ class PlayerStealth(SyncPacket):
     def write(self, writer: Writer):
         writer.write_byte(self.player)
         writer.write_float(self.stealth)
-
-

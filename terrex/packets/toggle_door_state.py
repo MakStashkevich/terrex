@@ -1,11 +1,9 @@
 from enum import IntEnum
-from typing import Any
 
 from terrex.packets.base import SyncPacket
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
- 
 
 class DoorAction(IntEnum):
     OPEN_DOOR = 0
@@ -43,4 +41,3 @@ class ToggleDoorState(SyncPacket):
         writer.write_short(self.tile_x)
         writer.write_short(self.tile_y)
         writer.write_sbyte(self.direction)
-

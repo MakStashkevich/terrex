@@ -7,6 +7,3 @@ class FinishedConnectingToServer(ServerPacket):
 
     def read(self, reader):
         pass
-
-
-

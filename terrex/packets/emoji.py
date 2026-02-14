@@ -17,6 +17,3 @@ class Emoji(SyncPacket):
     def write(self, writer: Writer):
         writer.write_byte(self.player_id)
         writer.write_byte(self.emoticon)
-
-
-

@@ -15,6 +15,3 @@ class FishOutNpc(ClientPacket):
         writer.write_short(self.x)
         writer.write_short(self.y)
         writer.write_short(self.npc_id)
-
-
-

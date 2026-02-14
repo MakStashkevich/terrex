@@ -11,6 +11,3 @@ class Unknown67(Packet):
 
     def write(self, writer):
         pass
-
-
-

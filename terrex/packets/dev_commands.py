@@ -14,6 +14,3 @@ class DevCommands(ServerPacket):
 
     def write(self, writer: Writer):
         writer.write_bytes(self.buf)
-
-
-

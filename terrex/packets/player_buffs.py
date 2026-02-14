@@ -1,14 +1,13 @@
-from typing import List
 from terrex.packets.base import SyncPacket
-
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
+
 class PlayerBuffs(SyncPacket):
     id = MessageID.PlayerBuffs
-    MAX_BUFF = 44 # Player.maxBuffs
+    MAX_BUFF = 44  # Player.maxBuffs
 
-    def __init__(self, player_id: int = 0, buffs: List[int] = None):
+    def __init__(self, player_id: int = 0, buffs: list[int] = None):
         self.player_id = player_id
         self.buffs = buffs or []
 
@@ -17,8 +16,8 @@ class PlayerBuffs(SyncPacket):
         self.buffs = []
         while len(self.buffs) < self.MAX_BUFF:
             buff = reader.read_ushort()
-            if buff == 0: # packet every end on 0 ushort
-                break # packet ended
+            if buff == 0:  # packet every end on 0 ushort
+                break  # packet ended
             self.buffs.append(buff)
 
     def write(self, writer: Writer):
@@ -26,4 +25,3 @@ class PlayerBuffs(SyncPacket):
         for b in self.buffs:
             writer.write_ushort(b)
         writer.write_ushort(0)
-

@@ -27,6 +27,3 @@ class LockAndUnlock(SyncPacket):
         writer.write_byte(self.ty)
         writer.write_short(self.x)
         writer.write_short(self.y)
-
-
-

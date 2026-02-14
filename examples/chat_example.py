@@ -1,4 +1,5 @@
 import time
+
 from terrex import Terrex
 from terrex.events import Event
 from terrex.structures.game_content.net_modules import NetTextModule
@@ -26,7 +27,7 @@ def chat(module: NetTextModule):
 
     # Or reply with the message "hello world!" if you encounter the word "hello" :-)
     elif "hello" in msg:
-        terrex.send_message(f"hello world!")
+        terrex.send_message("hello world!")
 
 
 # Start the bot

@@ -7,6 +7,3 @@ class CrystalInvasionWipeAllTheThingsss(ServerPacket):
 
     def read(self, reader):
         pass
-
-
-

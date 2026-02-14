@@ -1,12 +1,9 @@
 from dataclasses import dataclass
 
- 
-
 from terrex.packets.base import SyncPacket
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
- 
 
 @dataclass
 class HitSwitchData:
@@ -33,7 +30,3 @@ class HitSwitch(SyncPacket):
 
     def write(self, writer: Writer, data: HitSwitchData) -> None:
         data.write(writer)
-
- 
-
-

@@ -1,6 +1,6 @@
 from terrex.packets.base import ClientPacket
 from terrex.structures.id import MessageID
-from terrex.util.streamer import Reader, Writer
+from terrex.util.streamer import Writer
 
 
 class QuestsCountSync(ClientPacket):
@@ -15,6 +15,3 @@ class QuestsCountSync(ClientPacket):
         writer.write_byte(self.player_id)
         writer.write_int(self.angler_quests_completed)
         writer.write_int(self.golfer_score)
-
- 
-

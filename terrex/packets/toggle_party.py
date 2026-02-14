@@ -2,6 +2,7 @@ from terrex.packets.base import ClientPacket
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
+
 class ToggleParty(ClientPacket):
     id = MessageID.ToggleParty
 
@@ -13,4 +14,3 @@ class ToggleParty(ClientPacket):
 
     def handle(self, world, player, evman):
         pass
-

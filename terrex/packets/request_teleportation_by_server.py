@@ -1,6 +1,7 @@
 from terrex.structures.id import MessageID
-from .base import SyncPacket
+
 from ..util.streamer import Reader, Writer
+from .base import SyncPacket
 
 
 class RequestTeleportationByServer(SyncPacket):
@@ -14,4 +15,3 @@ class RequestTeleportationByServer(SyncPacket):
 
     def write(self, writer: Writer) -> None:
         writer.write_byte(self.packet_type)
-

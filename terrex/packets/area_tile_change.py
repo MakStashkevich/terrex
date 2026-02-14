@@ -1,17 +1,14 @@
-from typing import List
-
 from terrex.packets.base import SyncPacket
-from terrex.structures.id import MessageID
-from terrex.util.streamer import Reader, Writer
 from terrex.structures.change_type import ChangeType
+from terrex.structures.id import MessageID
 from terrex.structures.tile import Tile
+from terrex.util.streamer import Reader, Writer
 
 
 class AreaTileChange(SyncPacket):
     id = MessageID.AreaTileChange
 
-    def __init__(self, tile_y: int = 0, tile_x: int = 0, height: int = 0, width: int = 0,
-                 change_type: ChangeType = ChangeType.NONE, tiles: List[Tile] = None):
+    def __init__(self, tile_y: int = 0, tile_x: int = 0, height: int = 0, width: int = 0, change_type: ChangeType = ChangeType.NONE, tiles: list[Tile] = None):
         self.tile_y = tile_y
         self.tile_x = tile_x
         self.height = height
@@ -40,4 +37,3 @@ class AreaTileChange(SyncPacket):
         self.change_type.write(writer)
         for tile in self.tiles:
             tile.write(writer)
-

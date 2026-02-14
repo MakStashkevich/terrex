@@ -1,5 +1,5 @@
-from terrex.structures.id import MessageID
 from terrex.packets.base import ServerPacket
+from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
 
@@ -58,4 +58,3 @@ class ItemTweaker(ServerPacket):
 
     def write(self, writer: Writer) -> None:
         raise NotImplementedError("Server does not send TweakItem (client-bound packet only)")
-

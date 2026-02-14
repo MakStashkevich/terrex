@@ -17,6 +17,3 @@ class InvasionProgressReport(ServerPacket):
         self.max_progress = reader.read_int()
         self.icon = reader.read_byte()
         self.wave = reader.read_byte()
-
-
-

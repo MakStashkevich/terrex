@@ -1,8 +1,8 @@
 from terrex.packets.base import SyncPacket
 from terrex.structures.id import MessageID
+from terrex.structures.localization.network_text import NetworkText
 from terrex.structures.rgb import Rgb
 from terrex.structures.vec2 import Vec2
-from terrex.structures.localization.network_text import NetworkText
 from terrex.util.streamer import Reader, Writer
 
 
@@ -23,6 +23,3 @@ class CombatTextString(SyncPacket):
         self.pos.write(writer)
         self.color.write(writer)
         self.combat_text.write(writer)
-
-
-

@@ -29,6 +29,3 @@ class TEDisplayDollDataSync(SyncPacket):
         writer.write_ushort(self.item_id)
         writer.write_ushort(self.stack)
         writer.write_byte(self.prefix)
-
-
-

@@ -1,19 +1,26 @@
-from typing import List, Optional
-
 from terrex.packets.base import SyncPacket
-
 from terrex.structures.id import MessageID
-from terrex.util.streamer import Reader, Writer
 from terrex.structures.vec2 import Vec2
+from terrex.util.streamer import Reader, Writer
 
 
 class SyncProjectile(SyncPacket):
     id = MessageID.SyncProjectile
 
-    def __init__(self, projectile_id: int = 0, pos: Vec2 = Vec2(0.0, 0.0), vel: Vec2 = Vec2(0.0, 0.0),
-                 owner: int = 0, ty: int = 0, flags: int = 0, ai: List[float] = None,
-                 damage: Optional[int] = None, knockback: Optional[float] = None,
-                 original_damage: Optional[int] = None, proj_uuid: Optional[int] = None):
+    def __init__(
+        self,
+        projectile_id: int = 0,
+        pos: Vec2 = Vec2(0.0, 0.0),
+        vel: Vec2 = Vec2(0.0, 0.0),
+        owner: int = 0,
+        ty: int = 0,
+        flags: int = 0,
+        ai: list[float] = None,
+        damage: int | None = None,
+        knockback: float | None = None,
+        original_damage: int | None = None,
+        proj_uuid: int | None = None,
+    ):
         self.projectile_id = projectile_id
         self.pos = pos
         self.vel = vel
@@ -65,4 +72,3 @@ class SyncProjectile(SyncPacket):
             writer.write_short(self.original_damage)
         if self.proj_uuid is not None:
             writer.write_short(self.proj_uuid)
-

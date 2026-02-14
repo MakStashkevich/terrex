@@ -1,7 +1,8 @@
 from terrex.packets.base import ServerPacket
 from terrex.structures.id import MessageID
-from terrex.util.streamer import Reader
 from terrex.structures.localization.network_text import NetworkText
+from terrex.util.streamer import Reader
+
 
 class SmartTextMessage(ServerPacket):
     id = MessageID.SmartTextMessage
@@ -22,4 +23,3 @@ class SmartTextMessage(ServerPacket):
 
     def handle(self, world, player, evman):
         pass
-

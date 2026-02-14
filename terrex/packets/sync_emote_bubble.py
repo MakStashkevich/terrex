@@ -2,6 +2,7 @@ from terrex.packets.base import ServerPacket
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader
 
+
 class SyncEmoteBubble(ServerPacket):
     id = MessageID.SyncEmoteBubble
 
@@ -25,4 +26,3 @@ class SyncEmoteBubble(ServerPacket):
 
     def handle(self, world, player, evman):
         pass
-
