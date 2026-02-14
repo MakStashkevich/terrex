@@ -4,18 +4,17 @@ Ported from Terraria source: Terraria.WorldBuilding.Shapes.Rectangle
 Exact port with numpy meshgrid for bulk vectorized actions.
 """
 
-from .base import GenActionBulk, GenShape, GenAction, Point, RectangleArea
 import numpy as np
+
+from .base import GenAction, GenActionBulk, GenShape, Point, RectangleArea
 
 
 class Rectangle(GenShape):
     """Rectangular area shape."""
 
-    def __init__(
-        self, area: RectangleArea = RectangleArea(), quit_on_fail: bool = False
-    ):
+    def __init__(self, area: RectangleArea | None = None, quit_on_fail: bool = False):
         super().__init__(quit_on_fail)
-        self._area = area
+        self._area = area or RectangleArea()
 
     @property
     def width(self) -> int:
@@ -24,7 +23,7 @@ class Rectangle(GenShape):
     @width.setter
     def width(self, value: int) -> None:
         self._area.width = value
-        
+
     @property
     def height(self) -> int:
         return self._area.height

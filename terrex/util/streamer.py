@@ -6,9 +6,7 @@ from terrex.structures.net_mode import NetMode
 class Reader:
     """Reading data from Terraria protocol byte buffer."""
 
-    def __init__(
-        self, data: bytes, protocol_version: int = 0, net_mode: NetMode = NetMode.SERVER
-    ):
+    def __init__(self, data: bytes, protocol_version: int = 0, net_mode: NetMode = NetMode.SERVER):
         """Initializes the reader with byte data."""
         self.data = data
         self.index = 0
@@ -26,9 +24,7 @@ class Reader:
     def read_sbyte(self) -> int:
         """Reads a signed 8-bit integer (sbyte, int8, little-endian)."""
         if self.index + 1 > len(self.data):
-            raise ValueError(
-                f"Cannot read sbyte: only {len(self.data) - self.index} bytes remaining"
-            )
+            raise ValueError(f"Cannot read sbyte: only {len(self.data) - self.index} bytes remaining")
         res = struct.unpack("<b", self.data[self.index : self.index + 1])[0]
         self.index += 1
         return res
@@ -36,9 +32,7 @@ class Reader:
     def read_short(self) -> int:
         """Reads a signed 16-bit integer (short, int16, little-endian)."""
         if self.index + 2 > len(self.data):
-            raise ValueError(
-                f"Cannot read short: only {len(self.data) - self.index} bytes remaining"
-            )
+            raise ValueError(f"Cannot read short: only {len(self.data) - self.index} bytes remaining")
         res = struct.unpack("<h", self.data[self.index : self.index + 2])[0]
         self.index += 2
         return res
@@ -46,9 +40,7 @@ class Reader:
     def read_ushort(self) -> int:
         """Reads an unsigned 16-bit integer (ushort, uint16, little-endian)."""
         if self.index + 2 > len(self.data):
-            raise ValueError(
-                f"Cannot read ushort: only {len(self.data) - self.index} bytes remaining"
-            )
+            raise ValueError(f"Cannot read ushort: only {len(self.data) - self.index} bytes remaining")
         res = struct.unpack("<H", self.data[self.index : self.index + 2])[0]
         self.index += 2
         return res
@@ -56,9 +48,7 @@ class Reader:
     def read_int(self) -> int:
         """Reads a signed 32-bit integer (int, int32, little-endian)."""
         if self.index + 4 > len(self.data):
-            raise ValueError(
-                f"Cannot read int: only {len(self.data) - self.index} bytes remaining"
-            )
+            raise ValueError(f"Cannot read int: only {len(self.data) - self.index} bytes remaining")
         res = struct.unpack("<i", self.data[self.index : self.index + 4])[0]
         self.index += 4
         return res
@@ -66,9 +56,7 @@ class Reader:
     def read_ulong(self) -> int:
         """Reads an unsigned 64-bit integer (ulong, uint64, little-endian)."""
         if self.index + 8 > len(self.data):
-            raise ValueError(
-                f"Cannot read ulong: only {len(self.data) - self.index} bytes remaining"
-            )
+            raise ValueError(f"Cannot read ulong: only {len(self.data) - self.index} bytes remaining")
         res = struct.unpack("<Q", self.data[self.index : self.index + 8])[0]
         self.index += 8
         return res
@@ -76,9 +64,7 @@ class Reader:
     def read_float(self) -> float:
         """Reads a 32-bit IEEE 754 float (little-endian)."""
         if self.index + 4 > len(self.data):
-            raise ValueError(
-                f"Cannot read float: only {len(self.data) - self.index} bytes remaining"
-            )
+            raise ValueError(f"Cannot read float: only {len(self.data) - self.index} bytes remaining")
         res = struct.unpack("<f", self.data[self.index : self.index + 4])[0]
         self.index += 4
         return res
@@ -86,9 +72,7 @@ class Reader:
     def read_single(self) -> float:
         """Reads a 32-bit IEEE 754 float (Single, little-endian)."""
         if self.index + 4 > len(self.data):
-            raise ValueError(
-                f"Cannot read single: only {len(self.data) - self.index} bytes remaining"
-            )
+            raise ValueError(f"Cannot read single: only {len(self.data) - self.index} bytes remaining")
         res = struct.unpack_from("<f", self.data, self.index)[0]
         self.index += 4
         return res
@@ -96,9 +80,7 @@ class Reader:
     def read_double(self) -> float:
         """Reads a 64-bit IEEE 754 double (little-endian)."""
         if self.index + 8 > len(self.data):
-            raise ValueError(
-                f"Cannot read double: only {len(self.data) - self.index} bytes remaining"
-            )
+            raise ValueError(f"Cannot read double: only {len(self.data) - self.index} bytes remaining")
         res = struct.unpack("<d", self.data[self.index : self.index + 8])[0]
         self.index += 8
         return res

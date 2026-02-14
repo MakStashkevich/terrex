@@ -74,7 +74,7 @@ class TileNPCData:
     # Initialize all
     def __init__(self):
         tc = self.TileID_Count
-        pc = self.ProjectileID_Count
+        # pc = self.ProjectileID_Count
         nc = self.NPCID_Count
         bc = self.BuffID_Count
         wc = self.WallID_Count
@@ -863,7 +863,7 @@ class TileNPCData:
         self.persistentBuff[77] = True
         self.persistentBuff[78] = True
         self.persistentBuff[79] = True
-        for l in range(0, self.BuffID_Count):
+        for _ in range(0, self.BuffID_Count):
             pass
             # if (BuffID.Sets.MountType[l] != -1)
             # {
@@ -2251,7 +2251,7 @@ class TileNPCData:
     # Initialize_TileAndNPCData2
     def init_tile_and_npc_data2(self) -> None:
         self.critterCage = True
-        for i in range(0, 3500):
+        for _ in range(0, 3500):
             self.AnimateTiles_CritterCages()
         self.critterCage = False
         self.tileBlockLight[549] = True
@@ -3768,7 +3768,7 @@ class TileNPCData:
         self.tileLavaDeath[494] = True
         self.tileFrameImportant[455] = True
         self.tileFrameImportant[412] = True
-        for k in range(0, self.WallID_Count):
+        for _ in range(0, self.WallID_Count):
             pass
             # blendType = WallID.Sets.BlendType[k];
             # if (blendType < 0 || blendType >= WallID.Count)
@@ -3828,11 +3828,11 @@ class TileNPCData:
         self.tileFrameImportant[389] = True
         self.tileLavaDeath[389] = True
         self.tileNoSunLight[389] = True
-        for l in range(0, self.TileID_Count):
-            if self.tileSolid[l]:
-                self.tileNoSunLight[l] = True
-            self.tileFrame[l] = 0
-            self.tileFrameCounter[l] = 0
+        for ax in range(0, self.TileID_Count):
+            if self.tileSolid[ax]:
+                self.tileNoSunLight[ax] = True
+            self.tileFrame[ax] = 0
+            self.tileFrameCounter[ax] = 0
         self.tileNoSunLight[546] = False
         self.tileNoSunLight[379] = False
         self.tileNoSunLight[54] = False
@@ -3904,9 +3904,9 @@ class TileNPCData:
         self.tileOreFinderPriority[752] = 770
         self.tileOreFinderPriority[236] = 810
         self.tileOreFinderPriority[702] = 810
-        
+
     def SetupTileMerge(self) -> None:
         pass
-    
+
     def AnimateTiles_CritterCages(self) -> None:
         pass

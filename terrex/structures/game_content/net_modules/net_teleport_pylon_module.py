@@ -1,7 +1,9 @@
-from enum import IntEnum
 from dataclasses import dataclass
+from enum import IntEnum
+
 from terrex.structures.game_content.teleport_pylon_type import TeleportPylonType
 from terrex.util.streamer import Reader, Writer
+
 from .net_module import NetSyncModule
 
 

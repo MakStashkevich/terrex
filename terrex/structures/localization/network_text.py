@@ -1,5 +1,5 @@
 from enum import IntEnum
-from typing import List, Self
+from typing import Self
 
 from terrex.util.streamer import Reader, Writer
 
@@ -18,7 +18,7 @@ class NetworkTextMode(IntEnum):
 
 
 class NetworkText:
-    def __init__(self, mode: NetworkTextMode = NetworkTextMode.LITERAL, text: str = "", substitutions: List[Self] = None):
+    def __init__(self, mode: NetworkTextMode = NetworkTextMode.LITERAL, text: str = "", substitutions: list[Self] = None):
         self.mode = mode
         self.text = text
         self.substitutions = substitutions or []

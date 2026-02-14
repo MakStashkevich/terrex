@@ -1,6 +1,8 @@
 from dataclasses import dataclass
+
 from terrex.structures.vec2 import Vec2
 from terrex.util.streamer import Reader, Writer
+
 
 @dataclass
 class ParticleOrchestraSettings:
@@ -11,12 +13,7 @@ class ParticleOrchestraSettings:
 
     @classmethod
     def read(cls, reader: Reader) -> 'ParticleOrchestraSettings':
-        return cls(
-            Vec2.read(reader),
-            Vec2.read(reader),
-            reader.read_int(),
-            reader.read_byte()
-        )
+        return cls(Vec2.read(reader), Vec2.read(reader), reader.read_int(), reader.read_byte())
 
     def write(self, writer: Writer) -> None:
         self.position_in_world.write(writer)

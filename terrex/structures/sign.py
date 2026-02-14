@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Any
 
 from terrex.util.streamer import Reader, Writer
 

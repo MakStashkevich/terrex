@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Optional
-
 from terrex.util.streamer import Reader, Writer
 
 
@@ -18,14 +16,14 @@ class PlayerDeathReason:
     def __init__(
         self,
         reason_flags: int = 0,
-        killer_player_id: Optional[int] = None,
-        killing_npc_index: Optional[int] = None,
-        projectile_index: Optional[int] = None,
-        death_type: Optional[int] = None,
-        projectile_type: Optional[int] = None,
-        item_type: Optional[int] = None,
-        item_prefix: Optional[int] = None,
-        custom_reason: Optional[str] = None,
+        killer_player_id: int | None = None,
+        killing_npc_index: int | None = None,
+        projectile_index: int | None = None,
+        death_type: int | None = None,
+        projectile_type: int | None = None,
+        item_type: int | None = None,
+        item_prefix: int | None = None,
+        custom_reason: str | None = None,
     ):
         self.reason_flags = reason_flags
         self.killer_player_id = killer_player_id
@@ -38,7 +36,7 @@ class PlayerDeathReason:
         self.custom_reason = custom_reason
 
     @classmethod
-    def read(cls, reader: Reader) -> 'PlayerDeathReason':
+    def read(cls, reader: Reader) -> PlayerDeathReason:
         reason_flags = reader.read_byte()
         killer_player_id = None
         if reason_flags & cls.HAS_KILLER:

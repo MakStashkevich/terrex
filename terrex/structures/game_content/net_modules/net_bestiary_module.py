@@ -1,6 +1,8 @@
 from dataclasses import dataclass
+
 from terrex.structures.game_content.bestiary import Bestiary
 from terrex.util.streamer import Reader, Writer
+
 from .net_module import NetServerModule
 
 
@@ -14,7 +16,7 @@ class NetBestiaryModule(NetServerModule):
         obj = cls()
         obj.bestiary = bestiary
         return obj
-    
+
     def read(self, reader: Reader) -> 'NetBestiaryModule':
         self.bestiary = Bestiary.read(reader)
 

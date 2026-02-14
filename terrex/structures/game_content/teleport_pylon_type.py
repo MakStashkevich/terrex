@@ -1,5 +1,6 @@
 from enum import IntEnum
 
+
 class TeleportPylonType(IntEnum):
     SurfacePurity = 0
     Jungle = 1

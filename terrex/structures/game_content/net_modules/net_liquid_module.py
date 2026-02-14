@@ -1,17 +1,18 @@
-from typing import List
 from dataclasses import dataclass
+
 from terrex.structures.game_content.liquid import Liquid
 from terrex.util.streamer import Reader, Writer
+
 from .net_module import NetServerModule
 
 
 @dataclass()
 class NetLiquidModule(NetServerModule):
     id: int = 0
-    liquids: List[Liquid] | None = None
+    liquids: list[Liquid] | None = None
 
     @classmethod
-    def create(cls, liquids: List[Liquid]) -> "NetLiquidModule":
+    def create(cls, liquids: list[Liquid]) -> "NetLiquidModule":
         obj = cls()
         obj.liquids = liquids
         return obj

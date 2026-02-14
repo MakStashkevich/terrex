@@ -3,8 +3,11 @@ Ported from Terraria source: Terraria.WorldBuilding.Shapes.HalfCircle
 """
 
 from math import sqrt
+
 import numpy as np
-from .base import GenActionBulk, GenShape, GenAction, Point
+
+from .base import GenAction, GenActionBulk, GenShape, Point
+
 
 class HalfCircle(GenShape):
     """Half circle shape: upper half (default) or bottom half."""
@@ -28,7 +31,7 @@ class HalfCircle(GenShape):
                 y_start, y_end = origin.Y - self._radius, origin.Y
 
             for i in range(y_start, y_end + 1):
-                v = num - (i - origin.Y)**2
+                v = num - (i - origin.Y) ** 2
                 if v < 0:
                     continue
                 num2 = min(self._radius, int(sqrt(v)))
@@ -49,7 +52,7 @@ class HalfCircle(GenShape):
             y_start, y_end = origin.Y - self._radius, origin.Y
 
         for i in range(y_start, y_end + 1):
-            v = num - (i - origin.Y)**2
+            v = num - (i - origin.Y) ** 2
             if v < 0:
                 continue
             num2 = min(self._radius, int(sqrt(v)))

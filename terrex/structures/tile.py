@@ -1,11 +1,8 @@
-from typing import Optional, Tuple, List
-import struct
+from dataclasses import dataclass
 
-from dataclasses import dataclass, field
-
+from terrex.structures.game_content.liquid_type import LiquidType
 from terrex.structures.tile_npc_data import TileNPCData
 from terrex.util.streamer import Reader, Writer
-from terrex.structures.game_content.liquid_type import LiquidType
 
 tile_data = TileNPCData()
 
@@ -36,15 +33,15 @@ class TileFlags:
 @dataclass
 class Tile:
     flags: int = 0  # u16 bitflags
-    color: Optional[int] = None  # u8
-    wall_color: Optional[int] = None  # u8
-    ty: Optional[int] = None  # u16
-    frame: Optional[Tuple[int, int]] = None  # i16, i16
-    wall: Optional[int] = None  # u16
-    liquid: Optional[Tuple[int, LiquidType]] = None  # u8, LiquidType
+    color: int | None = None  # u8
+    wall_color: int | None = None  # u8
+    ty: int | None = None  # u16
+    frame: tuple[int, int] | None = None  # i16, i16
+    wall: int | None = None  # u16
+    liquid: tuple[int, LiquidType] | None = None  # u8, LiquidType
 
     @classmethod
-    def deserialize_packed(cls, reader: Reader) -> Tuple["Tile", int]:
+    def deserialize_packed(cls, reader: Reader) -> tuple["Tile", int]:
         flags_bytes = [reader.read_byte(), 0, 0]
         if flags_bytes[0] & 0x01:
             flags_bytes[1] = reader.read_byte()
@@ -74,7 +71,7 @@ class Tile:
 
             if tile_data.tileFrameImportant[ty_val]:
                 frame = (reader.read_short(), reader.read_short())
-            else: # elif tile.active() || type_type_new != tyle_type_old
+            else:  # elif tile.active() || type_type_new != tyle_type_old
                 frame = (-1, -1)
 
             if len(flags_bytes) > 3 and flags_bytes[3] & 0x08:
@@ -295,17 +292,9 @@ class Tile:
         color = reader.read_byte() if flags & TileFlags.HAS_COLOR else None
         wall_color = reader.read_byte() if flags & TileFlags.HAS_WALL_COLOR else None
         ty = reader.read_ushort() if flags & TileFlags.ACTIVE else None
-        frame = (
-            (reader.read_short(), reader.read_short())
-            if ty and is_important(ty)
-            else None
-        )
+        frame = (reader.read_short(), reader.read_short()) if ty and tile_data.tileFrameImportant[ty] else None
         wall = reader.read_ushort() if flags & TileFlags.HAS_WALL else None
-        liquid = (
-            (reader.read_byte(), LiquidType.read(reader))
-            if flags & TileFlags.HAS_LIQUID
-            else None
-        )
+        liquid = (reader.read_byte(), LiquidType.read(reader)) if flags & TileFlags.HAS_LIQUID else None
         return cls(
             flags=flags,
             color=color,

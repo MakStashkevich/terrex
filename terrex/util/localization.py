@@ -1,7 +1,6 @@
-from enum import Enum
 import json
+from enum import Enum
 from pathlib import Path
-from typing import Optional
 
 from terrex.structures.localization.network_text import NetworkText, NetworkTextMode
 
@@ -15,11 +14,7 @@ class LocaleType(Enum):
     TOWN = "Town"
 
 
-def get_translation(
-    net_text: NetworkText,
-    lang: str = "en-US",
-    locale_type: LocaleType = LocaleType.LEGACY
-) -> str:
+def get_translation(net_text: NetworkText, lang: str = "en-US", locale_type: LocaleType = LocaleType.LEGACY) -> str:
     """
     Translates NetString.text as a localization key with substitutions support.
     Example: "LegacyMultiplayer.1" -> "Incorrect password"
@@ -39,7 +34,7 @@ def get_translation(
             path = Path(f"locale/{lang}/{lang}.{locale_type.value}.json")
             if path.exists():
                 try:
-                    with open(path, "r", encoding="utf-8") as f:
+                    with open(path, encoding="utf-8") as f:
                         data = json.load(f)
                     if category in data and subkey in data[category]:
                         base_text = data[category][subkey]

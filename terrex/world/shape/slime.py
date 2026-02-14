@@ -4,9 +4,12 @@ Ported from Terraria source: Terraria.WorldBuilding.Shapes.Slime
 Slime-like blob shape: rounded top, tapered bottom.
 """
 
-from .base import GenActionBulk, GenShape, GenAction, Point
-import numpy as np
 from math import sqrt
+
+import numpy as np
+
+from .base import GenAction, GenActionBulk, GenShape, Point
+
 
 class Slime(GenShape):
     """Slime blob shape with scalable X/Y dimensions."""
@@ -45,8 +48,8 @@ class Slime(GenShape):
                 xs_all.append(np.arange(origin.X - width, origin.X + width + 1))
                 ys_all.append(np.full(2 * width + 1, k))
             else:
-                for l in range(origin.X - width, origin.X + width + 1):
-                    if not self.unit_apply(action, origin, l, k) and self._quitOnFail:
+                for a in range(origin.X - width, origin.X + width + 1):
+                    if not self.unit_apply(action, origin, a, k) and self._quitOnFail:
                         return False
 
         if use_bulk and xs_all:

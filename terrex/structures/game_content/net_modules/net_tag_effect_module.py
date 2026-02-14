@@ -1,7 +1,8 @@
-from enum import IntEnum
-from typing import List, Tuple
 from dataclasses import dataclass
+from enum import IntEnum
+
 from terrex.util.streamer import Reader, Writer
+
 from .net_module import NetServerModule
 
 
@@ -20,8 +21,8 @@ class NetTagEffectModule(NetServerModule):
     msg_type: TagEffectMessageType | None = None
     effect_id: int | None = None
     npc_index: int | None = None
-    time_left_sparse: List[Tuple[int, int]] | None = None
-    proc_time_sparse: List[Tuple[int, int]] | None = None
+    time_left_sparse: list[tuple[int, int]] | None = None
+    proc_time_sparse: list[tuple[int, int]] | None = None
 
     @classmethod
     def create(
@@ -30,8 +31,8 @@ class NetTagEffectModule(NetServerModule):
         msg_type: TagEffectMessageType,
         effect_id: int | None = None,
         npc_index: int | None = None,
-        time_left_sparse: List[Tuple[int, int]] | None = None,
-        proc_time_sparse: List[Tuple[int, int]] | None = None,
+        time_left_sparse: list[tuple[int, int]] | None = None,
+        proc_time_sparse: list[tuple[int, int]] | None = None,
     ) -> "NetTagEffectModule":
         obj = cls()
         obj.player_id = player_id
@@ -59,7 +60,7 @@ class NetTagEffectModule(NetServerModule):
             self.npc_index = reader.read_byte()
 
     @classmethod
-    def _read_sparse(cls, reader: Reader) -> List[Tuple[int, int]]:
+    def _read_sparse(cls, reader: Reader) -> list[tuple[int, int]]:
         sparse = []
         while True:
             idx = reader.read_byte()
@@ -81,7 +82,7 @@ class NetTagEffectModule(NetServerModule):
         elif self.msg_type in (TagEffectMessageType.ApplyTagToNPC, TagEffectMessageType.EnableProcOnNPC, TagEffectMessageType.ClearProcOnNPC):
             writer.write_byte(self.npc_index)
 
-    def _write_sparse(self, writer: Writer, sparse: List[Tuple[int, int]]) -> None:
+    def _write_sparse(self, writer: Writer, sparse: list[tuple[int, int]]) -> None:
         for idx, time in sparse:
             writer.write_byte(idx)
             writer.write_int(time)

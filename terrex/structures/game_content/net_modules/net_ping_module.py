@@ -1,6 +1,8 @@
 from dataclasses import dataclass
+
 from terrex.structures.vec2 import Vec2
 from terrex.util.streamer import Reader, Writer
+
 from .net_module import NetSyncModule
 
 

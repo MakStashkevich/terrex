@@ -1,6 +1,9 @@
 from dataclasses import dataclass
+
 from terrex.util.streamer import Reader, Writer
+
 from .liquid_type import LiquidType
+
 
 @dataclass
 class Liquid:

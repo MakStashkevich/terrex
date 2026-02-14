@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 from enum import IntEnum
-from typing import List
+
 from terrex.util.streamer import Reader, Writer
+
 from .net_module import NetServerModule
+
 
 class BannersMessageType(IntEnum):
     FullState = 0
@@ -10,6 +12,7 @@ class BannersMessageType(IntEnum):
     ClaimCountUpdate = 2
     ClaimRequest = 3
     ClaimResponse = 4
+
 
 @dataclass()
 class NetBannersModule(NetServerModule):
@@ -20,8 +23,8 @@ class NetBannersModule(NetServerModule):
     claimable_count: int | None = None
     amount: int | None = None
     granted: bool | None = None
-    kill_counts: List[int] | None = None
-    claimable_banners: List[int] | None = None
+    kill_counts: list[int] | None = None
+    claimable_banners: list[int] | None = None
 
     @classmethod
     def create(
@@ -32,8 +35,8 @@ class NetBannersModule(NetServerModule):
         claimable_count: int | None = None,
         amount: int | None = None,
         granted: bool | None = None,
-        kill_counts: List[int] | None = None,
-        claimable_banners: List[int] | None = None,
+        kill_counts: list[int] | None = None,
+        claimable_banners: list[int] | None = None,
     ) -> 'NetBannersModule':
         obj = cls()
         obj.msg_type = msg_type

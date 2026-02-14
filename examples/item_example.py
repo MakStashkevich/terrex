@@ -12,14 +12,17 @@ event = terrex.get_event_manager()
 # def logged_in(data):
 #     print(data)
 
+
 @event.on_event(Event.ItemDropped)
 def item_dropped(data):
     print("New item dropped")
+
 
 @event.on_event(Event.ItemDropUpdate)
 def item_drop_update(data):
     print("Update on item")
     print("X: " + str(data.x) + " Y: " + str(data.y))
+
 
 terrex.start()
 

@@ -1,5 +1,6 @@
 from enum import IntEnum
 
+
 class SkyEntityType(IntEnum):
     BirdsV = 0
     Wyvern = 1

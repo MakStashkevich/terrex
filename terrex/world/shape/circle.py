@@ -3,8 +3,11 @@ Ported from Terraria source: Terraria.WorldBuilding.Shapes.Circle
 """
 
 from math import sqrt
+
 import numpy as np
-from .base import GenActionBulk, GenShape, GenAction, Point
+
+from .base import GenAction, GenActionBulk, GenShape, Point
+
 
 class Circle(GenShape):
     """Elliptical (oval) shape with independent horizontal and vertical radius."""

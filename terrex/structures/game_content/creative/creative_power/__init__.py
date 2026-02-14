@@ -1,5 +1,4 @@
-from .creative_power import CreativePower
-
+from .creative_power import CreativePower, creative_power_registry
 from .difficulty_slider_power import DifficultySliderPower
 from .far_placement_range_power import FarPlacementRangePower
 from .freeze_rain_power import FreezeRainPower
@@ -20,5 +19,22 @@ from .start_night_immediately_power import StartNightImmediatelyPower
 from .start_noon_immediately_power import StartNoonImmediatelyPower
 from .stop_biome_spread_power import StopBiomeSpreadPower
 
-# registry
-from .creative_power import creative_power_registry, CreativePower
+__all__ = [
+    "CreativePower",
+    "creative_power_registry",
+    "DifficultySliderPower",
+    "FarPlacementRangePower",
+    "FreezeRainPower",
+    "FreezeTimePower",
+    "FreezeWindDirectionAndStrengthPower",
+    "GodmodePower",
+    "ModifyRainPower",
+    "ModifyTimeRatePower",
+    "ModifyWindDirectionAndStrengthPower",
+    "SpawnRateSliderPerPlayerPower",
+    "StartDayImmediatelyPower",
+    "StartMidnightImmediatelyPower",
+    "StartNightImmediatelyPower",
+    "StartNoonImmediatelyPower",
+    "StopBiomeSpreadPower",
+]

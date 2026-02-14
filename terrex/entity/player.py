@@ -6,7 +6,6 @@ from terrex.structures.variable.const_var import ConstVar
 from terrex.structures.variable.float_var import FloatVar
 from terrex.structures.variable.int_var import IntVar
 from terrex.structures.variable.str_var import StrVar
-from terrex.world.shape.base import RectangleArea
 from terrex.world.shape.rectangle import Rectangle
 
 
@@ -101,7 +100,7 @@ class Player(Entity):
 
         # todo: create inventory logic
         self.inventory = []
-        for i in range(0, 72):
+        for _ in range(0, 72):
             self.inventory.append("Dummy Item")
 
     # ------------------------------

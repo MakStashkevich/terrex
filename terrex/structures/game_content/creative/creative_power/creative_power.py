@@ -1,11 +1,11 @@
-from abc import ABC, abstractmethod
 import inspect
-from typing import Any, Dict, Type
+from abc import ABC, abstractmethod
+from typing import Any
+
 from terrex.util.streamer import Reader, Writer
 from terrex.util.stringify import stringify_value
 
-
-creative_power_registry: Dict[int, Type["CreativePower"]] = {}
+creative_power_registry: dict[int, type["CreativePower"]] = {}
 
 
 class CreativePower(ABC):
@@ -24,9 +24,7 @@ class CreativePower(ABC):
             raise TypeError(f"{cls.__name__} must implement classmethod create()")
 
         if cls.id in creative_power_registry:
-            raise ValueError(
-                f"CreativePower id {cls.id} already registered for {creative_power_registry[cls.id]}"
-            )
+            raise ValueError(f"CreativePower id {cls.id} already registered for {creative_power_registry[cls.id]}")
         creative_power_registry[cls.id] = cls
 
     def __to_log_dict(self) -> dict[str, Any]:

@@ -1,13 +1,14 @@
 from dataclasses import dataclass
-from typing import Optional
+
 from terrex.structures.game_content.bestiary_unlock_type import BestiaryUnlockType
 from terrex.util.streamer import Reader, Writer
+
 
 @dataclass
 class Bestiary:
     unlock_type: BestiaryUnlockType
     npc_net_id: int
-    kill_count: Optional[int] = None
+    kill_count: int | None = None
 
     @classmethod
     def read(cls, reader: Reader) -> 'Bestiary':

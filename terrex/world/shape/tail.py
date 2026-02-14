@@ -5,15 +5,18 @@ Thick line (tail) using Bresenham algorithm with pixel/tile thickness.
 Equivalent to Terraria's Utils.PlotTileTale.
 """
 
-from .base import GenActionBulk, GenShape, GenAction, Point
-from dataclasses import dataclass
-from typing import List, Tuple
-import numpy as np
 import math
+from dataclasses import dataclass
+
+import numpy as np
+
+from .base import GenAction, GenActionBulk, GenShape, Point
+
 
 @dataclass
 class Vector2D:
     """Local port of ReLogic.Utilities.Vector2D"""
+
     X: float
     Y: float
 
@@ -44,9 +47,7 @@ class Tail(GenShape):
         end_tile_x = int(origin.X + self._endOffset.X)
         end_tile_y = int(origin.Y + self._endOffset.Y)
 
-        points = self._bresenham_thick(
-            start_tile.X, start_tile.Y, end_tile_x, end_tile_y, self._width
-        )
+        points = self._bresenham_thick(start_tile.X, start_tile.Y, end_tile_x, end_tile_y, self._width)
 
         # Fast-path for vectorized actions
         if isinstance(action, GenActionBulk) and not self._quitOnFail:
@@ -60,9 +61,7 @@ class Tail(GenShape):
                 return False
         return True
 
-    def _bresenham_thick(
-        self, x0: int, y0: int, x1: int, y1: int, width: float
-    ) -> List[Tuple[int, int]]:
+    def _bresenham_thick(self, x0: int, y0: int, x1: int, y1: int, width: float) -> list[tuple[int, int]]:
         """
         Bresenham line algorithm with thickness.
         width: thickness radius (full width ≈ 2*width + 1)

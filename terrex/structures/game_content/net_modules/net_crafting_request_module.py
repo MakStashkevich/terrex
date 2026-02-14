@@ -1,16 +1,18 @@
 from dataclasses import dataclass
-from typing import List, Tuple
+
 from terrex.util.streamer import Reader, Writer
+
 from .net_module import NetServerModule
+
 
 @dataclass()
 class NetCraftingRequestModule(NetServerModule):
     id: int = 11
-    items: List[Tuple[int, int]] | None = None
-    chests: List[int | None] | None = None
+    items: list[tuple[int, int]] | None = None
+    chests: list[int | None] | None = None
 
     @classmethod
-    def create(cls, items: List[Tuple[int, int]], chests: List[int | None]) -> 'NetCraftingRequestModule':
+    def create(cls, items: list[tuple[int, int]], chests: list[int | None]) -> 'NetCraftingRequestModule':
         obj = cls()
         obj.items = items
         obj.chests = chests

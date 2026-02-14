@@ -1,9 +1,10 @@
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from terrex.events.events import Event
 
 
-class EventManager(object):
+class EventManager:
 
     def __init__(self):
         self.event_listeners = {}
@@ -19,6 +20,7 @@ class EventManager(object):
             print(data)
 
     """
+
     def on_event(self, event_id: Event):
         def add_wrapper(f: Callable[[Any], None]):
             if event_id not in self.event_listeners:
@@ -26,6 +28,7 @@ class EventManager(object):
             if callable(f):
                 self.event_listeners[event_id].append(f)
             return f
+
         return add_wrapper
 
     def method_on_event(self, event_id: Event, listener: Callable[[Any], None]):

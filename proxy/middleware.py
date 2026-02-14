@@ -1,7 +1,6 @@
 import struct
 
 from terrex.packets.base import Packet
-from terrex.packets.damage_npc import DamageNPC
 from terrex.packets.update_player_luck_factors import UpdatePlayerLuckFactors
 from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer

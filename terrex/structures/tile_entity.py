@@ -1,7 +1,7 @@
-from typing import Optional
 from dataclasses import dataclass, field
-from terrex.util.streamer import Reader, Writer
+
 from terrex.item.item import Item
+from terrex.util.streamer import Reader, Writer
 
 
 @dataclass
@@ -36,9 +36,9 @@ class LogicSensor(TileEntityBase):
 class DisplayDoll(TileEntityBase):
     type: int = 3
     pose: int = 0
-    equip: list[Optional[Item]] = field(default_factory=lambda: [None] * 9)
-    dyes: list[Optional[Item]] = field(default_factory=lambda: [None] * 9)
-    misc: list[Optional[Item]] = field(default_factory=lambda: [None] * 8)
+    equip: list[Item | None] = field(default_factory=lambda: [None] * 9)
+    dyes: list[Item | None] = field(default_factory=lambda: [None] * 9)
+    misc: list[Item | None] = field(default_factory=lambda: [None] * 8)
 
 
 @dataclass
@@ -52,8 +52,8 @@ class WeaponRack(TileEntityBase):
 @dataclass
 class HatRack(TileEntityBase):
     type: int = 5
-    items: list[Optional[Item]] = field(default_factory=lambda: [None, None])
-    dyes: list[Optional[Item]] = field(default_factory=lambda: [None, None])
+    items: list[Item | None] = field(default_factory=lambda: [None, None])
+    dyes: list[Item | None] = field(default_factory=lambda: [None, None])
 
 
 @dataclass
@@ -94,19 +94,7 @@ class CritterAnchor(LeashedEntityAnchorWithItem):
     item_type: int = 0
 
 
-TileEntity = (
-    TrainingDummy
-    | ItemFrame
-    | LogicSensor
-    | DisplayDoll
-    | WeaponRack
-    | HatRack
-    | FoodPlatter
-    | TeleportationPylon
-    | DeadCellsDisplayJar
-    | KiteAnchor
-    | CritterAnchor
-)
+TileEntity = TrainingDummy | ItemFrame | LogicSensor | DisplayDoll | WeaponRack | HatRack | FoodPlatter | TeleportationPylon | DeadCellsDisplayJar | KiteAnchor | CritterAnchor
 
 
 def read_tile_entity(reader: Reader) -> TileEntity:
@@ -133,9 +121,7 @@ def read_tile_entity(reader: Reader) -> TileEntity:
     elif typ == 2:
         logic_check_type = reader.read_byte()
         on = reader.read_bool()
-        return LogicSensor(
-            type=typ, id=id_, x=x, y=y, logic_check_type=logic_check_type, on=on
-        )
+        return LogicSensor(type=typ, id=id_, x=x, y=y, logic_check_type=logic_check_type, on=on)
     elif typ == 3:
         bits_byte = reader.read_byte()
         bits_byte1 = reader.read_byte()

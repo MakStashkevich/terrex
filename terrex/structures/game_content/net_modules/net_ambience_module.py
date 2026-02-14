@@ -1,6 +1,8 @@
 from dataclasses import dataclass
+
 from terrex.structures.game_content.ambience.sky_entity_type import SkyEntityType
 from terrex.util.streamer import Reader, Writer
+
 from .net_module import NetServerModule
 
 
@@ -12,9 +14,7 @@ class NetAmbienceModule(NetServerModule):
     sky_entity_type: SkyEntityType | None = None
 
     @classmethod
-    def create(
-        cls, player_id: int, rand_next_num: int, sky_entity_type: SkyEntityType
-    ) -> "NetAmbienceModule":
+    def create(cls, player_id: int, rand_next_num: int, sky_entity_type: SkyEntityType) -> "NetAmbienceModule":
         obj = cls()
         obj.player_id = player_id
         obj.rand_next_num = rand_next_num

@@ -4,8 +4,10 @@ Ported from Terraria source: Terraria.WorldBuilding.Shapes.Mound
 Parabolic mound/hill shape.
 """
 
-from .base import GenActionBulk, GenShape, GenAction, Point
 import numpy as np
+
+from .base import GenAction, GenActionBulk, GenShape, Point
+
 
 class Mound(GenShape):
     """Parabolic mound/hill shape with given half-width base and max height."""
@@ -25,9 +27,7 @@ class Mound(GenShape):
 
         for i in range(-self._halfWidth, self._halfWidth + 1):
             # Parabolic height calculation (inverted parabola)
-            num2 = int(
-                -((self._height + 1) / (half_w * half_w)) * ((i + half_w) * (i - half_w))
-            )
+            num2 = int(-((self._height + 1) / (half_w * half_w)) * ((i + half_w) * (i - half_w)))
             num2 = max(0, min(self._height, num2))
             if use_bulk:
                 xs = np.full(num2, origin.X + i)

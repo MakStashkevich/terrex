@@ -1,9 +1,11 @@
 from dataclasses import dataclass
+
 from terrex.structures.game_content.creative.creative_power import (
-    creative_power_registry,
     CreativePower,
+    creative_power_registry,
 )
 from terrex.util.streamer import Reader, Writer
+
 from .net_module import NetSyncModule
 
 
@@ -24,9 +26,7 @@ class NetCreativePowersModule(NetSyncModule):
         if power_cls is None:
             raise ValueError(f"Unknown CreativePower variant: {power_id}")
         if not issubclass(power_cls, CreativePower):
-            raise ValueError(
-                f"Registry entry for {power_id} is not a subclass of CreativePower"
-            )
+            raise ValueError(f"Registry entry for {power_id} is not a subclass of CreativePower")
         self.power = power_cls()
         self.power.read(reader)
 

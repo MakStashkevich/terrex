@@ -1,6 +1,8 @@
-from terrex.structures.game_content.drawing.particle_orchestra_settings import ParticleOrchestraSettings
 from dataclasses import dataclass
+
+from terrex.structures.game_content.drawing.particle_orchestra_settings import ParticleOrchestraSettings
 from terrex.util.streamer import Reader, Writer
+
 from .net_module import NetSyncModule
 
 

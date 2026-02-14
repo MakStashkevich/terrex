@@ -1,24 +1,23 @@
+import queue
 import socket
 import struct
 import threading
-import queue
 import time
 import traceback
-from typing import Optional
 
 from terrex import packets
-from terrex.packets.base import packet_registry, Packet
-from terrex.structures.id import MessageID
-from terrex.structures.net_mode import NetMode
-from terrex.world.world import World
 from terrex.entity.player import Player
 from terrex.events.eventmanager import EventManager
+from terrex.packets.base import Packet, packet_registry
 from terrex.structures.game_content.creative.creative_power.spawn_rate_slider_per_player_power import (
     SpawnRateSliderPerPlayerPower,
 )
 from terrex.structures.game_content.net_modules import NetCreativePowersModule
-from terrex.util.streamer import Reader, Writer
+from terrex.structures.id import MessageID
+from terrex.structures.net_mode import NetMode
 from terrex.util.localization import get_translation
+from terrex.util.streamer import Reader, Writer
+from terrex.world.world import World
 
 PLAYER_UUID = "01032c81-623f-4435-85e5-e0ec816b09ca"
 
@@ -42,14 +41,14 @@ class Client:
         self.world = world
         self._evman = evman
 
-        self.sock: Optional[socket.socket] = None
+        self.sock: socket.socket | None = None
         self.send_queue = queue.Queue()
         self.recv_queue = queue.Queue()
         self.running = False
         self.connected_to_server = False
-        self.reader_thread: Optional[threading.Thread] = None
-        self.writer_thread: Optional[threading.Thread] = None
-        self.ping_thread: Optional[threading.Thread] = None
+        self.reader_thread: threading.Thread | None = None
+        self.writer_thread: threading.Thread | None = None
+        self.ping_thread: threading.Thread | None = None
         self.current_ping = 0
         self._waiting_ping = False
         self._ping_last_sent = 0.0
@@ -75,14 +74,14 @@ class Client:
         """Send the package to the queue."""
         self.send_queue.put(packet)
 
-    def recv(self) -> Optional[Packet]:
+    def recv(self) -> Packet | None:
         """Get a (blocking) package."""
         try:
             return self.recv_queue.get(timeout=0.1)
         except queue.Empty:
             return None
 
-    def try_recv(self) -> Optional[Packet]:
+    def try_recv(self) -> Packet | None:
         """Get a non-blocking package."""
         try:
             return self.recv_queue.get_nowait()
@@ -140,9 +139,7 @@ class Client:
             self.on_ping_received()
             return False
 
-        if packet.id == MessageID.Kick and isinstance(
-            packet, packets.Kick
-        ):
+        if packet.id == MessageID.Kick and isinstance(packet, packets.Kick):
             print(f"Disconnect with reason: {get_translation(packet.reason)}")
             self.stop()
             return False
@@ -154,11 +151,7 @@ class Client:
                 self.send(packet)
 
             # server accept password and receive player info
-            if (
-                packet.id == MessageID.PlayerInfo
-                and isinstance(packet, packets.SyncPlayer)
-                and not packet.is_server
-            ):
+            if packet.id == MessageID.PlayerInfo and isinstance(packet, packets.SyncPlayer) and not packet.is_server:
                 # save server player id
                 self.player.id = packet.player_id
 
@@ -214,9 +207,7 @@ class Client:
                         max_mana=self.player.maxMana,
                     )
                 )
-                self.send(
-                    packets.PlayerBuffs(player_id=self.player.id, buffs=[0] * 22)
-                )
+                self.send(packets.PlayerBuffs(player_id=self.player.id, buffs=[0] * 22))
                 self.send(
                     packets.UpdatePlayerLoadout(
                         player_id=self.player.id,
@@ -293,9 +284,7 @@ class Client:
                 )
                 self.send(
                     packets.LoadNetModule(
-                        module=NetCreativePowersModule.create(
-                            power=SpawnRateSliderPerPlayerPower.create(value=0.0)
-                        ),
+                        module=NetCreativePowersModule.create(power=SpawnRateSliderPerPlayerPower.create(value=0.0)),
                     )
                 )
                 self.player.logged_in = True
@@ -308,9 +297,7 @@ class Client:
                 self.connected_to_server = True
 
                 if self.ping_thread is None:
-                    self.ping_thread = threading.Thread(
-                        target=self._ping_loop, daemon=True
-                    )
+                    self.ping_thread = threading.Thread(target=self._ping_loop, daemon=True)
                     self.ping_thread.start()
 
                 # Set player teem if needed
@@ -328,9 +315,7 @@ class Client:
                         flags=0,  # 131072 / todo: check this
                     )
                 )
-                self.send(
-                    packets.PlayerBuffs(player_id=self.player.id, buffs=[0] * 22)
-                )  # repeat???
+                self.send(packets.PlayerBuffs(player_id=self.player.id, buffs=[0] * 22))  # repeat???
 
                 # ---0x0D UPDATE_PLAYER (0x0D) ---
                 # {'player_id': 0, 'keys': 64, 'pulley': 16, 'action': 10, 'sleep_info': 0, 'selected_item': 0, 'pos': {'x': 67166.0, 'y': 6742.0, 'TILE_TO_POS_SCALE': 16.0}, 'vel': None, 'original_and_home_pos': None}
@@ -361,11 +346,7 @@ class Client:
                 )
                 # Update npc names from 0 to 29
                 for i in range(29):
-                    self.send(
-                        packets.UniqueTownNPCInfoSyncRequest(
-                            npc_id=i, name=None, town_npc_variation_idx=None
-                        )
-                    )
+                    self.send(packets.UniqueTownNPCInfoSyncRequest(npc_id=i, name=None, town_npc_variation_idx=None))
 
                 # ---0x9A Unknown(0x9A) ---
                 # {'id': 154, 'raw': ''}
@@ -438,21 +419,9 @@ class Client:
         if self.sock:
             self.sock.close()
         current_thread = threading.current_thread()
-        if (
-            self.reader_thread
-            and self.reader_thread != current_thread
-            and self.reader_thread.is_alive()
-        ):
+        if self.reader_thread and self.reader_thread != current_thread and self.reader_thread.is_alive():
             self.reader_thread.join(timeout=1.0)
-        if (
-            self.writer_thread
-            and self.writer_thread != current_thread
-            and self.writer_thread.is_alive()
-        ):
+        if self.writer_thread and self.writer_thread != current_thread and self.writer_thread.is_alive():
             self.writer_thread.join(timeout=1.0)
-        if (
-            self.ping_thread
-            and self.ping_thread != current_thread
-            and self.ping_thread.is_alive()
-        ):
+        if self.ping_thread and self.ping_thread != current_thread and self.ping_thread.is_alive():
             self.ping_thread.join(timeout=1.0)

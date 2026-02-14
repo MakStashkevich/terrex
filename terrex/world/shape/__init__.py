@@ -1,14 +1,8 @@
-from .base import (
-    Point,
-    RectangleArea,
-    GenAction,
-    GenShape
-)
-
-from .rectangle import Rectangle
+from .base import GenAction, GenShape, Point, RectangleArea
 from .circle import Circle
 from .half_circle import HalfCircle
 from .mound import Mound
+from .rectangle import Rectangle
 from .slime import Slime
 from .tail import Tail
 

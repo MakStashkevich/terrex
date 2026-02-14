@@ -1,7 +1,3 @@
-from ..tile.tile import Tile
-from ..item.item import Item
-
-
 class World:
 
     def __init__(self):
@@ -13,5 +9,4 @@ class World:
         self.item_owner_index = {}
 
     def initialize_tiles(self, width, height):
-        self.tiles = [[None for x in range(0, width)]
-                      for y in range(0, height)]
+        self.tiles = [[None for x in range(0, width)] for y in range(0, height)]

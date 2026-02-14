@@ -1,5 +1,7 @@
 from dataclasses import dataclass
+
 from terrex.util.streamer import Reader, Writer
+
 from .net_module import NetClientModule
 
 

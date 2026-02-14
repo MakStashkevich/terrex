@@ -1,7 +1,8 @@
-from enum import IntEnum
-from typing import Tuple
 from dataclasses import dataclass
+from enum import IntEnum
+
 from terrex.util.streamer import Reader, Writer
+
 from .net_module import NetServerModule
 
 
@@ -17,7 +18,7 @@ class NetLeashedEntityModule(NetServerModule):
     msg_type: LeashedEntityMessageType | None = None
     slot: int | None = None
     leashed_type: int | None = None
-    anchor: Tuple[int, int] | None = None
+    anchor: tuple[int, int] | None = None
     extra_data: bytes | None = None
 
     @classmethod
@@ -26,7 +27,7 @@ class NetLeashedEntityModule(NetServerModule):
         msg_type: LeashedEntityMessageType,
         slot: int,
         leashed_type: int | None = None,
-        anchor: Tuple[int, int] | None = None,
+        anchor: tuple[int, int] | None = None,
         extra_data: bytes | None = None,
     ) -> "NetLeashedEntityModule":
         obj = cls()

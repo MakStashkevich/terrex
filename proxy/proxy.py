@@ -1,11 +1,12 @@
-import socket
-import threading
-import sys
 import argparse
+import socket
+import sys
+import threading
 from datetime import datetime
+
 from proxy.config import config
-from terrex.packets.base import stringify_value
 from proxy.parser import IncrementalParser
+from terrex.packets.base import stringify_value
 from terrex.structures.id import MessageID
 from terrex.structures.net_mode import NetMode
 
@@ -57,9 +58,7 @@ def toggle_cfg_tags(dir: str, tag: str, value: bool) -> str:
                     config.dbg_in_tags[t] = value
                 if out_:
                     config.dbg_out_tags[t] = value
-                print(
-                    f"Tag {t}: in={old_in}->{value if in_ else old_in}, out={old_out}->{value if out_ else old_out}"
-                )
+                print(f"Tag {t}: in={old_in}->{value if in_ else old_in}, out={old_out}->{value if out_ else old_out}")
                 return "Success"
             return "Tag out of range"
         except ValueError:
@@ -78,8 +77,7 @@ def user_input():
             continue
         cmd = argv[0]
         if cmd == "help":
-            print(
-                """
+            print("""
 * help: show this message
 * quit: stop processing stdin
 * show <in|out|both> <all|TAG>: show the dbg repr of matching messages
@@ -87,8 +85,7 @@ def user_input():
 * list: list all tags along with the name
 * flush: flush network traffic writes to disk
 * nosave: stop saving network traffic to disk
-"""
-            )
+""")
             continue
         if cmd == "quit":
             sys.exit(0)
@@ -160,7 +157,7 @@ def forward(
     while True:
         try:
             n = read_sock.recv_into(buf)
-        except:
+        except OSError:
             break
         if n == 0:
             break
@@ -206,24 +203,18 @@ def forward(
                         continue
 
                     if tags[packet.id]:
-                        print(
-                            f"{direction}{'<' if direction == 'STC' else '>'} {packet.id} {pkt_name} {log_payload}"
-                        )
+                        print(f"{direction}{'<' if direction == 'STC' else '>'} {packet.id} {pkt_name} {log_payload}")
 
                     # Log to txt if enabled (all packets)
                     if traffic_txt is not None:
-                        traffic_txt.write(
-                            f"[{timestamp}] ---0x{packet.id:02X} {pkt_name} ---\n"
-                        )
+                        traffic_txt.write(f"[{timestamp}] ---0x{packet.id:02X} {pkt_name} ---\n")
                         traffic_txt.write(f"{log_payload}\n\n")
                         if config.flush_txt[flush_txt_idx]:
                             traffic_txt.flush()
 
                     # Log to shared both-traffic file
                     if config.both_traffic_txt is not None:
-                        config.both_traffic_txt.write(
-                            f"{direction} ---0x{packet.id:02X} {pkt_name} ---\n"
-                        )
+                        config.both_traffic_txt.write(f"{direction} ---0x{packet.id:02X} {pkt_name} ---\n")
                         config.both_traffic_txt.write(f"{log_payload}\n\n")
                         if config.flush_both_txt:
                             config.both_traffic_txt.flush()
@@ -239,7 +230,7 @@ def forward(
         # Forward raw data unchanged
         try:
             write_sock.sendall(data)
-        except:
+        except OSError:
             break
 
     # Final flush to ensure all data is written before exit
@@ -285,16 +276,14 @@ def main():
     def parse_addr(addr_str: str) -> tuple[str, int]:
         parts = addr_str.rsplit(":", 1)
         if len(parts) != 2:
-            raise ValueError(
-                f"Invalid address format '{addr_str}'. Expected 'host:port'"
-            )
+            raise ValueError(f"Invalid address format '{addr_str}'. Expected 'host:port'")
         host = parts[0].strip()
         if not host:
             raise ValueError(f"Empty host in '{addr_str}'")
         try:
             port = int(parts[1].strip())
         except ValueError:
-            raise ValueError(f"Invalid port '{parts[1].strip()}' in '{addr_str}'")
+            raise ValueError(f"Invalid port '{parts[1].strip()}' in '{addr_str}'") from None
         if not (1 <= port <= 65535):
             raise ValueError(f"Port {port} out of range (1-65535) in '{addr_str}'")
         return (host, port)
@@ -312,12 +301,8 @@ def main():
             config.server_traffic_bin = open("server-traffic.bin", "wb")
             config.client_traffic_bin = open("client-traffic.bin", "wb")
         elif save_mode == "txt":
-            config.server_traffic_txt = open(
-                "server-traffic.txt", "w", encoding="utf-8"
-            )
-            config.client_traffic_txt = open(
-                "client-traffic.txt", "w", encoding="utf-8"
-            )
+            config.server_traffic_txt = open("server-traffic.txt", "w", encoding="utf-8")
+            config.client_traffic_txt = open("client-traffic.txt", "w", encoding="utf-8")
             config.both_traffic_txt = open("both-traffic.txt", "w", encoding="utf-8")
 
         # Auto-flush if requested

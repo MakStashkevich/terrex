@@ -1,11 +1,11 @@
 import inspect
-from typing import Any
 from abc import ABC, abstractmethod
+from typing import Any
+
 from terrex.util.streamer import Reader, Writer
 from terrex.util.stringify import stringify_value
-from typing import Type, Dict
 
-net_module_registry: Dict[int, Type["NetModule"]] = {}
+net_module_registry: dict[int, type["NetModule"]] = {}
 
 
 class NetModule(ABC):
@@ -24,9 +24,7 @@ class NetModule(ABC):
             raise TypeError(f"{cls.__name__} must implement classmethod create()")
 
         if cls.id in net_module_registry:
-            raise ValueError(
-                f"Module id {cls.id} already registered for {net_module_registry[cls.id]}"
-            )
+            raise ValueError(f"Module id {cls.id} already registered for {net_module_registry[cls.id]}")
         net_module_registry[cls.id] = cls
 
     def __to_log_dict(self) -> dict[str, Any]:
