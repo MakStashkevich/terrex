@@ -10,8 +10,8 @@ class SyncNPC(ServerPacket):
     def __init__(
         self,
         npc_id: int = 0,
-        pos: Vec2 = Vec2(0.0, 0.0),
-        vel: Vec2 = Vec2(0.0, 0.0),
+        pos: Vec2 | None = None,
+        vel: Vec2 | None = None,
         target: int = 0,
         ai: list[float] = None,
         npc_net_id: int = 0,
@@ -31,8 +31,8 @@ class SyncNPC(ServerPacket):
         life_size: int | None = None,
     ):
         self.npc_id = npc_id
-        self.pos = pos
-        self.vel = vel
+        self.pos = pos or Vec2(0.0, 0.0)
+        self.vel = vel or Vec2(0.0, 0.0)
         self.target = target
         self.ai = ai or [0.0] * 4
         self.npc_net_id = npc_net_id

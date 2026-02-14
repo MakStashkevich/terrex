@@ -10,14 +10,16 @@ from terrex.util.streamer import Reader
 
 @dataclass
 class TileSection:
+    from terrex.structures import Chest, Sign, Tile, TileEntity
+
     x_start: int
     y_start: int
     width: int
     height: int
-    tiles: list["Tile"]  # pyright: ignore[reportUndefinedVariable]
-    chests: list["Chest"]  # pyright: ignore[reportUndefinedVariable]
-    signs: list["Sign"]  # pyright: ignore[reportUndefinedVariable]
-    tile_entities: list["TileEntity"]  # pyright: ignore[reportUndefinedVariable]
+    tiles: list[Tile]
+    chests: list[Chest]
+    signs: list[Sign]
+    tile_entities: list[TileEntity]
 
 
 def decompress_tile_block_inner(reader: Reader, x_start: int, y_start: int, width: int, height: int) -> TileSection:

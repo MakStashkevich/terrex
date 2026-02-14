@@ -9,10 +9,10 @@ from terrex.util.streamer import Reader, Writer
 class SyncItem(SyncPacket):
     id = MessageID.SyncItem
 
-    def __init__(self, item_id: int = 0, pos: Vec2 = Vec2(0.0, 0.0), vel: Vec2 = Vec2(0.0, 0.0), stack_size: int = 0, prefix: int = 0, no_delay: int = 0, item_net_id: int = 0):
+    def __init__(self, item_id: int = 0, pos: Vec2 | None = None, vel: Vec2 | None = None, stack_size: int = 0, prefix: int = 0, no_delay: int = 0, item_net_id: int = 0):
         self.item_id = item_id
-        self.pos = pos
-        self.vel = vel
+        self.pos = pos or Vec2(0.0, 0.0)
+        self.vel = vel or Vec2(0.0, 0.0)
         self.stack_size = stack_size
         self.prefix = prefix
         self.no_delay = no_delay

@@ -8,8 +8,8 @@ from terrex.util.streamer import Reader
 class Kick(ServerPacket):
     id = MessageID.Kick
 
-    def __init__(self, reason: NetworkText = NetworkText()):
-        self.reason = reason
+    def __init__(self, reason: NetworkText | None = None):
+        self.reason = reason or NetworkText()
 
     def read(self, reader: Reader):
         self.reason = NetworkText.read(reader)

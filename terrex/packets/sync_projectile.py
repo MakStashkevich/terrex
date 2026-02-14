@@ -10,8 +10,8 @@ class SyncProjectile(SyncPacket):
     def __init__(
         self,
         projectile_id: int = 0,
-        pos: Vec2 = Vec2(0.0, 0.0),
-        vel: Vec2 = Vec2(0.0, 0.0),
+        pos: Vec2 | None = None,
+        vel: Vec2 | None = None,
         owner: int = 0,
         ty: int = 0,
         flags: int = 0,
@@ -22,8 +22,8 @@ class SyncProjectile(SyncPacket):
         proj_uuid: int | None = None,
     ):
         self.projectile_id = projectile_id
-        self.pos = pos
-        self.vel = vel
+        self.pos = pos or Vec2(0.0, 0.0)
+        self.vel = vel or Vec2(0.0, 0.0)
         self.owner = owner
         self.ty = ty
         self.flags = flags

@@ -15,17 +15,15 @@ packet_registry: dict[int, type["Packet"]] = {}
 class Packet(ABC):
     id: int
 
-    # @classmethod
-    # def register(cls: Type["Packet"]) -> Type["Packet"]:
-    #     packet_registry[cls.id] = cls
-    #     return cls
-
+    @abstractmethod
     def read(self, reader: Reader) -> None:
         raise NotImplementedError("Method read must be overridden")
 
+    @abstractmethod
     def write(self, writer: Writer) -> None:
         raise NotImplementedError("Method write must be overridden")
 
+    @abstractmethod
     def handle(self, world: World, player: Player, evman: EventManager) -> None:
         pass
 

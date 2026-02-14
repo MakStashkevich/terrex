@@ -7,9 +7,9 @@ from terrex.util.streamer import Reader
 class StatusTextSize(ServerPacket):
     id = MessageID.StatusTextSize
 
-    def __init__(self, status_id: int = 0, text: NetworkText = NetworkText(), flags: int = 0):
+    def __init__(self, status_id: int = 0, text: NetworkText | None = None, flags: int = 0):
         self.status_id = status_id
-        self.text = text
+        self.text = text or NetworkText()
         self.flags = flags
 
     def read(self, reader: Reader):
