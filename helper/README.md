@@ -1,7 +1,7 @@
 # TerrariaPyGen
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/makstashkevich/terrex/blob/main/helper/LICENSE.txt)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/makstashkevich/terrex/blob/master/helper/LICENSE.txt)
 
 **TerrariaPyGen** is a powerful auto-generator for Python classes and enums from decompiled Terraria C# sources (namespace `Terraria.ID`). It converts static ID classes (e.g., `ItemID`, `TileID`, `NPCID`) into convenient Python structures ready for use in the Terrex project.
 
