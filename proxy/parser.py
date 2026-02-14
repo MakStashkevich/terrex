@@ -2,9 +2,9 @@ import struct
 import traceback
 from typing import Optional
 
-from terrex.packets.base import registry, Packet
+from terrex.packets.base import packet_registry, Packet
 from terrex.packets.base import Packet
-from terrex.packets.packet_ids import PacketIds
+from terrex.structures.id import MessageID
 from terrex.structures.net_mode import NetMode
 from terrex.util.streamer import Reader
 
@@ -52,7 +52,7 @@ class IncrementalParser:
             except IndexError:
                 continue  # Incomplete payload
 
-            packet_cls = registry.get(packet_id)
+            packet_cls = packet_registry.get(packet_id)
             if packet_cls:
                 packet = packet_cls()
             else:
@@ -63,7 +63,7 @@ class IncrementalParser:
             except Exception as e:
                 print(traceback.format_exc())
                 try:
-                    name = PacketIds(packet_id).name
+                    name = MessageID(packet_id).name
                 except ValueError:
                     name = "UNKNOWN"
                 print(f"Error reading packet {packet_id:02X}, name: {name}: {e}")

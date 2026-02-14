@@ -1,12 +1,13 @@
 from terrex.packets.base import ClientPacket
-from terrex.packets.packet_ids import PacketIds
+from terrex.structures.id import MessageID
 
+ 
 
 class ClientSyncedInventory(ClientPacket):
-    id = PacketIds.CLIENT_FINISHED_INVENTORY_CHANGES
+    id = MessageID.ClientSyncedInventory
 
     def write(self, writer):
         pass
 
 
-ClientSyncedInventory.register()
+

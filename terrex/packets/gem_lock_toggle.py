@@ -1,10 +1,10 @@
 from terrex.packets.base import ClientPacket
-from terrex.packets.packet_ids import PacketIds
+from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
 
 class GemLockToggle(ClientPacket):
-    id = PacketIds.GEM_LOCK_TOGGLE
+    id = MessageID.GemLockToggle
 
     def __init__(self, x: int = 0, y: int = 0, on: bool = False):
         self.x = x
@@ -22,4 +22,4 @@ class GemLockToggle(ClientPacket):
         self.on = reader.read_bool()
 
 
-GemLockToggle.register()
+

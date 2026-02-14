@@ -1,9 +1,9 @@
 import struct
 
 from terrex.packets.base import Packet
-from terrex.packets.packet_ids import PacketIds
-from terrex.packets.npc_strike import NpcStrike
-from terrex.packets.update_player_luck import UpdatePlayerLuck
+from terrex.packets.damage_npc import DamageNPC
+from terrex.packets.update_player_luck_factors import UpdatePlayerLuckFactors
+from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
 
@@ -47,15 +47,15 @@ def rewrite_packet(payload: bytes) -> bytes:
     packet_id = payload[0]
     reader = Reader(payload[1:])
 
-    # if packet_id == PacketIds.NPC_STRIKE.value:
-    #     packet = NpcStrike()
+    # if packet_id == MessageID.DamageNPC:
+    #     packet = DamageNPC()
     #     packet.read(reader)
     #     packet.damage = 10000
     #     packet.knockback = 50
     #     packet.crit = True
 
-    if packet_id == PacketIds.UPDATE_PLAYER_LUCK_FACTORS.value:
-        packet = UpdatePlayerLuck()
+    if packet_id == MessageID.UpdatePlayerLuckFactors:
+        packet = UpdatePlayerLuckFactors()
         packet.read(reader)
         packet.has_garden_gnome_nearby = True
         packet.ladybug_luck_time_left = 10

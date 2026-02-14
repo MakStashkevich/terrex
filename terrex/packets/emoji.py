@@ -1,10 +1,10 @@
 from terrex.packets.base import SyncPacket
-from terrex.packets.packet_ids import PacketIds
+from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
 
 class Emoji(SyncPacket):
-    id = PacketIds.EMOJI
+    id = MessageID.Emoji
 
     def __init__(self, player_id: int = 0, emoticon: int = 0):
         self.player_id = player_id
@@ -19,4 +19,4 @@ class Emoji(SyncPacket):
         writer.write_byte(self.emoticon)
 
 
-Emoji.register()
+

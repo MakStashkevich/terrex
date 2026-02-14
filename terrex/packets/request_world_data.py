@@ -1,9 +1,9 @@
 from terrex.packets.base import ClientPacket
-from terrex.packets.packet_ids import PacketIds
+from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
 class RequestWorldData(ClientPacket):
-    id = PacketIds.REQUEST_WORLD_DATA
+    id = MessageID.RequestWorldData
 
     def write(self, writer: Writer):
         pass
@@ -11,4 +11,3 @@ class RequestWorldData(ClientPacket):
     def read(self, reader: Reader) -> None:
         pass
 
-RequestWorldData.register()

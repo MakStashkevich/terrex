@@ -87,7 +87,7 @@ The proxy acts as a man-in-the-middle:
 | `help` | - | Show this help. |
 | `quit` | - | Stop proxy and exit. |
 | `show/hide` | `<in\|out\|both> <all\|TAG>` | Toggle logging for packets (e.g., `show both 34` for `PLAYER_HP`). TAG is decimal (0-255) or hex (e.g., `0x17`). |
-| `list` | - | List all known packet IDs from [`PacketIds`](../terrex/packets/packet_ids.py). |
+| `list` | - | List all known packet IDs from [`MessageID`](../terrex/structures/id/MessageID.py). |
 | `flush` | - | Flush **all** dump files (bin/txt). |
 | `nosave` | - | Close **all** dump files. |
 

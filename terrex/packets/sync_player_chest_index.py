@@ -1,10 +1,10 @@
-from .packet_ids import PacketIds
+from terrex.structures.id import MessageID
 from .base import ServerPacket
 from ..util.streamer import Reader, Writer
 
 
 class SyncPlayerChestIndex(ServerPacket):
-    id = PacketIds.SYNC_PLAYER_CHEST_INDEX
+    id = MessageID.SyncPlayerChestIndex
 
     def __init__(self) -> None:
         self.player_id: int = 0
@@ -17,4 +17,3 @@ class SyncPlayerChestIndex(ServerPacket):
     def write(self, writer: Writer) -> None:
         raise NotImplementedError("Server does not send SyncPlayerChestIndex (client-bound packet only)")
 
-SyncPlayerChestIndex.register()

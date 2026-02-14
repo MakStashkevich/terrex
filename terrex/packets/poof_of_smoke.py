@@ -1,10 +1,10 @@
 from terrex.packets.base import ServerPacket
-from terrex.packets.packet_ids import PacketIds
+from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader
 
 
 class PoofOfSmoke(ServerPacket):
-    id = PacketIds.POOF_SMOKE
+    id = MessageID.PoofOfSmoke
 
     def __init__(self, x: int = 0, y: int = 0):
         self.x = x
@@ -15,4 +15,4 @@ class PoofOfSmoke(ServerPacket):
         self.y = reader.read_short()
 
 
-PoofOfSmoke.register()
+

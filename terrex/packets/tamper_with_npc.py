@@ -1,9 +1,9 @@
 from terrex.packets.base import ServerPacket
-from terrex.packets.packet_ids import PacketIds
+from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader
 
-class TamperWithNpc(ServerPacket):
-    id = 131
+class TamperWithNPC(ServerPacket):
+    id = MessageID.TamperWithNPC
 
     def __init__(self, npc_id: int = 0, set_npc_immunity: bool = False, immunity_time: int = 0, immunity_player_id: int = 0):
         self.npc_id = npc_id
@@ -21,4 +21,3 @@ class TamperWithNpc(ServerPacket):
     def handle(self, world, player, evman):
         pass
 
-TamperWithNpc.register()

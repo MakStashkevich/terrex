@@ -2,14 +2,13 @@ from typing import Any
 
 from terrex.item.item import Item
 from terrex.events.events import Event
-from terrex.packets.packet_ids import PacketIds
-from terrex.packets.update_item_drop import UpdateItemDrop
+from terrex.packets.sync_item import SyncItem
+from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 from terrex.structures.vec2 import Vec2
 
 
-class UpdateItemDrop2(UpdateItemDrop):
-    id = PacketIds.UPDATE_ITEM_DROP_2
+class InstancedItem(SyncItem):
+    id = MessageID.InstancedItem
     # repeats logic UpdateItemDrop
 
-UpdateItemDrop2.register()

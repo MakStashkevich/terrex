@@ -2,7 +2,7 @@ from enum import IntEnum
 from typing import Optional
 
 from terrex.packets.base import ServerPacket
-from terrex.packets.packet_ids import PacketIds
+from terrex.structures.id import MessageID
 from terrex.structures.vec2 import Vec2
 from terrex.util.streamer import Reader
 
@@ -14,7 +14,7 @@ class SoundMode(IntEnum):
 
 
 class PlayLegacySound(ServerPacket):
-    id = PacketIds.PLAY_LEGACY_SOUND
+    id = MessageID.PlayLegacySound
 
     def __init__(self, pos: Optional[Vec2] = None, sound_id: int = 0, mode: SoundMode = SoundMode.STYLE):
         self.pos = pos or Vec2(0.0, 0.0)
@@ -27,4 +27,4 @@ class PlayLegacySound(ServerPacket):
         self.mode = SoundMode(reader.read_byte())
 
 
-PlayLegacySound.register()
+

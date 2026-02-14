@@ -1,9 +1,9 @@
 from terrex.packets.base import SyncPacket
-from terrex.packets.packet_ids import PacketIds
+from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
 class SyncTilePicking(SyncPacket):
-    id = 125
+    id = MessageID.SyncTilePicking
 
     def __init__(self, player_id: int = 0, x: int = 0, y: int = 0, pick_damage: int = 0):
         self.player_id = player_id
@@ -26,4 +26,3 @@ class SyncTilePicking(SyncPacket):
     def handle(self, world, player, evman):
         pass
 
-SyncTilePicking.register()

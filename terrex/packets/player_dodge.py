@@ -1,7 +1,7 @@
 from enum import IntEnum
 
 from terrex.packets.base import SyncPacket
-from terrex.packets.packet_ids import PacketIds
+from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
 
@@ -11,7 +11,7 @@ class DodgeType(IntEnum):
 
 
 class PlayerDodge(SyncPacket):
-    id = PacketIds.PLAYER_DODGE
+    id = MessageID.PlayerDodge
 
     def __init__(self, player_id: int = 0, ty: DodgeType = DodgeType.NINJA):
         self.player_id = player_id
@@ -26,4 +26,4 @@ class PlayerDodge(SyncPacket):
         writer.write_byte(self.ty)
 
 
-PlayerDodge.register()
+

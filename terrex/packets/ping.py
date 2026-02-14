@@ -1,10 +1,10 @@
 from terrex.packets.base import SyncPacket
-from terrex.packets.packet_ids import PacketIds
+from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
 
 class Ping(SyncPacket):
-    id = PacketIds.PING
+    id = MessageID.Ping
 
     def read(self, reader: Reader):
         pass
@@ -13,4 +13,4 @@ class Ping(SyncPacket):
         pass
 
 
-Ping.register()
+

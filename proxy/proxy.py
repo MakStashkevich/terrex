@@ -4,12 +4,12 @@ import sys
 import argparse
 from datetime import datetime
 from proxy.config import config
-from terrex.packets.packet_ids import PacketIds
 from terrex.packets.base import stringify_value
 from proxy.parser import IncrementalParser
+from terrex.structures.id import MessageID
 from terrex.structures.net_mode import NetMode
 
-IGNORED_PACKET_IDS = [PacketIds.SEND_SECTION]
+IGNORED_PACKET_IDS = [MessageID.TileSection]
 
 BUFFER_SIZE = 4096
 
@@ -101,7 +101,7 @@ def user_input():
             print(toggle_cfg_tags(dirr, tag, value))
         elif cmd == "list":
             print("Packet tags:")
-            for pid in PacketIds:
+            for pid in MessageID:
                 print(f"  {pid.value:3d} (0x{pid.value:02X}): {pid.name}")
         elif cmd == "flush":
             with config.lock:
@@ -192,7 +192,7 @@ def forward(
                 try:
                     # Get packet name
                     try:
-                        pkt_name = str(PacketIds.from_id(packet.id))
+                        pkt_name = str(MessageID(packet.id))
                     except ValueError:
                         pkt_name = f"Unknown(0x{packet.id:02X})"
 

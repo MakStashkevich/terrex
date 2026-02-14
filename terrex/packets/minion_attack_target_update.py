@@ -1,9 +1,9 @@
 from terrex.packets.base import ClientPacket
-from terrex.packets.packet_ids import PacketIds
+from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
 class MinionAttackTargetUpdate(ClientPacket):
-    id = 115
+    id = MessageID.MinionAttackTargetUpdate
 
     def __init__(self, player_id: int = 0, minion_target: int = 0):
         self.player_id = player_id
@@ -20,4 +20,3 @@ class MinionAttackTargetUpdate(ClientPacket):
     def handle(self, world, player, evman):
         pass
 
-MinionAttackTargetUpdate.register()

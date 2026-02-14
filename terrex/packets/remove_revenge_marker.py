@@ -1,9 +1,9 @@
 from terrex.packets.base import ServerPacket
-from terrex.packets.packet_ids import PacketIds
+from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader
 
 class RemoveRevengeMarker(ServerPacket):
-    id = 127
+    id = MessageID.RemoveRevengeMarker
 
     def __init__(self, unique_id: int = 0):
         self.unique_id = unique_id
@@ -14,4 +14,3 @@ class RemoveRevengeMarker(ServerPacket):
     def handle(self, world, player, evman):
         pass
 
-RemoveRevengeMarker.register()

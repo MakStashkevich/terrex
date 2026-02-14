@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import is_dataclass
+import inspect
 from typing import Any, Type, Dict
 from enum import Enum
 from terrex.entity.player import Player
@@ -9,16 +10,16 @@ from terrex.events.eventmanager import EventManager
 from terrex.util.streamer import Reader, Writer
 from terrex.util.stringify import stringify_value
 
-registry: Dict[int, Type["Packet"]] = {}
+packet_registry: Dict[int, Type["Packet"]] = {}
 
 
 class Packet(ABC):
     id: int
 
-    @classmethod
-    def register(cls: Type["Packet"]) -> Type["Packet"]:
-        registry[cls.id] = cls
-        return cls
+    # @classmethod
+    # def register(cls: Type["Packet"]) -> Type["Packet"]:
+    #     packet_registry[cls.id] = cls
+    #     return cls
 
     def read(self, reader: Reader) -> None:
         raise NotImplementedError("Method read must be overridden")
@@ -28,6 +29,24 @@ class Packet(ABC):
 
     def handle(self, world: World, player: Player, evman: EventManager) -> None:
         pass
+    
+    def __init_subclass__(cls):
+        super().__init_subclass__()
+
+        if inspect.isabstract(cls):
+            return
+
+        if not hasattr(cls, "id"):
+            raise TypeError(f"{cls.__name__} must define class attribute 'id'")
+
+        if "read" not in cls.__dict__:
+            raise TypeError(f"{cls.__name__} must implement classmethod read()")
+
+        if cls.id in packet_registry:
+            raise ValueError(
+                f"Packet id {cls.id} already registered for {packet_registry[cls.id]}"
+            )
+        packet_registry[cls.id] = cls
 
     def __to_log_dict(self) -> dict[str, Any]:
         return {name: stringify_value(value) for name, value in vars(self).items()}
@@ -36,7 +55,7 @@ class Packet(ABC):
         return f"{self.__class__.__name__}({self.__to_log_dict()})"
 
 
-class ServerPacket(Packet):
+class ServerPacket(Packet, ABC):
     """Server -> Client packets. Client only reads (read)."""
 
     _net_mode: NetMode = NetMode.SERVER
@@ -51,7 +70,7 @@ class ServerPacket(Packet):
         )
 
 
-class ClientPacket(Packet):
+class ClientPacket(Packet, ABC):
     """Client -> Server packets. Client only writes (write)."""
 
     _net_mode: NetMode = NetMode.CLIENT
@@ -66,7 +85,7 @@ class ClientPacket(Packet):
         )
 
 
-class SyncPacket(Packet):
+class SyncPacket(Packet, ABC):
     """Server <-> Client (Sync) packets. Both methods required."""
 
     _net_mode: NetMode = NetMode.SYNC

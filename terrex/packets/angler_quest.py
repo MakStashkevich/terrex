@@ -1,10 +1,9 @@
 from terrex.packets.base import ServerPacket
-from terrex.packets.packet_ids import PacketIds
+from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
-
 class AnglerQuest(ServerPacket):
-    id = PacketIds.ANGLER_QUEST
+    id = MessageID.AnglerQuest
 
     def __init__(self, quest: int = 0, completed: bool = False):
         self.quest = quest
@@ -19,4 +18,4 @@ class AnglerQuest(ServerPacket):
         writer.write_bool(self.completed)
 
 
-AnglerQuest.register()
+

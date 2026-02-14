@@ -1,10 +1,10 @@
 from terrex.packets.base import SyncPacket
-from terrex.packets.packet_ids import PacketIds
+from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
 
 class PlaceObject(SyncPacket):
-    id = PacketIds.PLACE_OBJECT
+    id = MessageID.PlaceObject
 
     def __init__(self, x: int = 0, y: int = 0, ty: int = 0, style: int = 0, alternate: int = 0, random: int = 0, direction: bool = False):
         self.x = x
@@ -34,4 +34,4 @@ class PlaceObject(SyncPacket):
         writer.write_bool(self.direction)
 
 
-PlaceObject.register()
+

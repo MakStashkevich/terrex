@@ -1,9 +1,9 @@
 from terrex.packets.base import ServerPacket
-from terrex.packets.packet_ids import PacketIds
+from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader
 
 class SyncRevengeMarker(ServerPacket):
-    id = 126
+    id = MessageID.SyncRevengeMarker
 
     def __init__(self, unique_id: int = 0, x: float = 0.0, y: float = 0.0, npc_id: int = 0, npc_hp_percent: float = 0.0, npc_type: int = 0, npc_ai: int = 0, coin_value: int = 0, base_value: float = 0.0, spawned_from_statue: bool = False):
         self.unique_id = unique_id
@@ -32,4 +32,3 @@ class SyncRevengeMarker(ServerPacket):
     def handle(self, world, player, evman):
         pass
 
-SyncRevengeMarker.register()

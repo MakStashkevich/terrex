@@ -7,12 +7,12 @@ import traceback
 from typing import Optional
 
 from terrex import packets
-from terrex.packets.base import registry, Packet
+from terrex.packets.base import packet_registry, Packet
+from terrex.structures.id import MessageID
 from terrex.structures.net_mode import NetMode
 from terrex.world.world import World
 from terrex.entity.player import Player
 from terrex.events.eventmanager import EventManager
-from terrex.packets.packet_ids import PacketIds
 from terrex.structures.game_content.creative.creative_power.spawn_rate_slider_per_player_power import (
     SpawnRateSliderPerPlayerPower,
 )
@@ -69,7 +69,7 @@ class Client:
         time.sleep(0.1)  # Allow the threads to start
 
         # Send connect packet
-        self.send(packets.Connect(self.protocol))
+        self.send(packets.Hello(self.protocol))
 
     def send(self, packet: Packet) -> None:
         """Send the package to the queue."""
@@ -110,7 +110,7 @@ class Client:
                 payload = payload_full[1:]
 
                 # print(f"[READ] ID пакета: 0x{packet_id:02X}")
-                packet_cls = registry.get(packet_id)
+                packet_cls = packet_registry.get(packet_id)
                 if packet_cls:
                     packet = packet_cls()
                     reader = Reader(payload, protocol_version=self.protocol, net_mode=NetMode.SERVER)
@@ -123,7 +123,7 @@ class Client:
                     self.recv_queue.put(packet)
                 else:
                     try:
-                        name = PacketIds(packet_id).name
+                        name = MessageID(packet_id).name
                     except ValueError:
                         name = "UNKNOWN"
                     print(f"Unknown ID packet: 0x{packet_id:02X}, name: {name}")
@@ -136,12 +136,12 @@ class Client:
         self.running = False
 
     def _handle_server_packet(self, packet: Packet) -> bool:
-        if packet.id == PacketIds.PING.value:
+        if packet.id == MessageID.Ping:
             self.on_ping_received()
             return False
 
-        if packet.id == PacketIds.DISCONNECT.value and isinstance(
-            packet, packets.Disconnect
+        if packet.id == MessageID.Kick and isinstance(
+            packet, packets.Kick
         ):
             print(f"Disconnect with reason: {get_translation(packet.reason)}")
             self.stop()
@@ -149,21 +149,21 @@ class Client:
 
         if self.running and not self.connected_to_server:
             # server req password
-            if packet.id == PacketIds.REQUEST_PASSWORD.value:
+            if packet.id == MessageID.RequestPassword:
                 packet = packets.SendPassword(self.server_password)
                 self.send(packet)
 
-            # server accept password and get server slot user id
+            # server accept password and receive player info
             if (
-                packet.id == PacketIds.SET_USER_SLOT.value
-                and isinstance(packet, packets.SetUserSlot)
+                packet.id == MessageID.PlayerInfo
+                and isinstance(packet, packets.SyncPlayer)
                 and not packet.is_server
             ):
                 # save server player id
                 self.player.id = packet.player_id
 
                 # send player info to server
-                player_info = packets.PlayerInfo(
+                player_info = packets.SyncPlayer(
                     player_id=self.player.id,
                     skin_variant=self.player.skin_variant,
                     voice_variant=self.player.voice_variant,
@@ -201,7 +201,7 @@ class Client:
 
                 self.send(packets.ClientUuid(PLAYER_UUID))
                 self.send(
-                    packets.PlayerHp(
+                    packets.PlayerLifeMana(
                         player_id=self.player.id,
                         hp=self.player.currHP,
                         max_hp=self.player.maxHP,
@@ -215,7 +215,7 @@ class Client:
                     )
                 )
                 self.send(
-                    packets.UpdatePlayerBuff(player_id=self.player.id, buffs=[0] * 22)
+                    packets.PlayerBuffs(player_id=self.player.id, buffs=[0] * 22)
                 )
                 self.send(
                     packets.UpdatePlayerLoadout(
@@ -226,7 +226,7 @@ class Client:
                 )
                 for i in range(0, 139):  # 138
                     self.send(
-                        packets.PlayerInventorySlot(
+                        packets.SyncEquipment(
                             player_id=self.player.id,
                             slot_id=i,
                             stack=0,
@@ -236,7 +236,7 @@ class Client:
                     )
                 for i in range(299, 339):  # 338
                     self.send(
-                        packets.PlayerInventorySlot(
+                        packets.SyncEquipment(
                             player_id=self.player.id,
                             slot_id=i,
                             stack=0,
@@ -246,7 +246,7 @@ class Client:
                     )
                 for i in range(499, 540):  # 539
                     self.send(
-                        packets.PlayerInventorySlot(
+                        packets.SyncEquipment(
                             player_id=self.player.id,
                             slot_id=i,
                             stack=0,
@@ -256,7 +256,7 @@ class Client:
                     )
                 for i in range(700, 740):  # 739
                     self.send(
-                        packets.PlayerInventorySlot(
+                        packets.SyncEquipment(
                             player_id=self.player.id,
                             slot_id=i,
                             stack=0,
@@ -266,7 +266,7 @@ class Client:
                     )
                 for i in range(900, 990):  # 989
                     self.send(
-                        packets.PlayerInventorySlot(
+                        packets.SyncEquipment(
                             player_id=self.player.id,
                             slot_id=i,
                             stack=0,
@@ -276,14 +276,14 @@ class Client:
                     )
                 self.send(packets.RequestWorldData())
                 # server: WORLD_INFO
-                self.send(packets.RequestEssentialTiles(spawn_x=-1, spawn_y=-1))
+                self.send(packets.SpawnTileData(spawn_x=-1, spawn_y=-1))
                 # server: WORLD_INFO & STATUS (load data by blocks...) & SEND_SECTION's, Unknown(0x9B) {'id': 155, 'raw': '1b012800'}, UPDATE_CHEST_ITEM's
                 self.player.initialized = True
 
             # server say: you can spawn player
-            if packet.id == PacketIds.COMPLETE_CONNECTION_SPAWN.value:
+            if packet.id == MessageID.InitialSpawn:
                 self.send(
-                    packets.SpawnPlayer(
+                    packets.PlayerSpawn(
                         player_id=self.player.id,
                         spawn_x=0.0,
                         spawn_y=0.0,
@@ -302,7 +302,7 @@ class Client:
                 # then server send: NPC_HOME_UPDATE (0-29), current ANGLER_QUEST, 6 packets of SYNC_REVENGE_MARKER
 
             # server say: you successful connected to server
-            if packet.id == PacketIds.FINISHED_CONNECTING_TO_SERVER.value:
+            if packet.id == MessageID.FinishedConnectingToServer:
                 # then server send: LOAD_NET_MODULE (LoadNetModuleServerText messages MOTD & connect success player)
                 # UPDATE_TILE_ENTITY
                 self.connected_to_server = True
@@ -315,7 +315,7 @@ class Client:
 
                 # Set player teem if needed
                 self.send(
-                    packets.PlayerTeam(
+                    packets.TeamChange(
                         player_id=self.player.id,
                         team=2,  # green team
                     )
@@ -323,13 +323,13 @@ class Client:
 
                 # -------- repeated every minute --------
                 self.send(
-                    packets.PlayerZone(
+                    packets.SyncPlayerZone(
                         player_id=self.player.id,
                         flags=0,  # 131072 / todo: check this
                     )
                 )
                 self.send(
-                    packets.UpdatePlayerBuff(player_id=self.player.id, buffs=[0] * 22)
+                    packets.PlayerBuffs(player_id=self.player.id, buffs=[0] * 22)
                 )  # repeat???
 
                 # ---0x0D UPDATE_PLAYER (0x0D) ---
@@ -362,7 +362,7 @@ class Client:
                 # Update npc names from 0 to 29
                 for i in range(29):
                     self.send(
-                        packets.UpdateNpcName(
+                        packets.UniqueTownNPCInfoSyncRequest(
                             npc_id=i, name=None, town_npc_variation_idx=None
                         )
                     )

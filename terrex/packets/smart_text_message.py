@@ -1,10 +1,10 @@
 from terrex.packets.base import ServerPacket
-from terrex.packets.packet_ids import PacketIds
+from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader
 from terrex.structures.localization.network_text import NetworkText
 
 class SmartTextMessage(ServerPacket):
-    id = PacketIds.SMART_TEXT_MESSAGE
+    id = MessageID.SmartTextMessage
 
     def __init__(self, color_r: int = 255, color_g: int = 255, color_b: int = 255, message: NetworkText = NetworkText(), message_length: int = 0):
         self.color_r = color_r
@@ -23,4 +23,3 @@ class SmartTextMessage(ServerPacket):
     def handle(self, world, player, evman):
         pass
 
-SmartTextMessage.register()

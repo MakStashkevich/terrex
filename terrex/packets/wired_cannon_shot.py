@@ -1,9 +1,9 @@
 from terrex.packets.base import ServerPacket
-from terrex.packets.packet_ids import PacketIds
+from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader
 
 class WiredCannonShot(ServerPacket):
-    id = 108
+    id = MessageID.WiredCannonShot
 
     def __init__(self, damage: int = 0, knockback: float = 0.0, x: int = 0, y: int = 0, angle: int = 0, ammo: int = 0, player_id: int = 0):
         self.damage = damage
@@ -26,4 +26,3 @@ class WiredCannonShot(ServerPacket):
     def handle(self, world, player, evman):
         pass
 
-WiredCannonShot.register()

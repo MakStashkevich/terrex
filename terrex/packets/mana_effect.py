@@ -1,12 +1,13 @@
 from typing import Any
 
 from terrex.packets.base import SyncPacket
-from terrex.packets.packet_ids import PacketIds
+
+from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
 
 class ManaEffect(SyncPacket):
-    id = PacketIds.MANA_EFFECT
+    id = MessageID.ManaEffect
 
     def __init__(self, player_id: int = 0, mana_amount: int = 0):
         self.player_id = player_id
@@ -20,4 +21,3 @@ class ManaEffect(SyncPacket):
         writer.write_byte(self.player_id)
         writer.write_short(self.mana_amount)
 
-ManaEffect.register()

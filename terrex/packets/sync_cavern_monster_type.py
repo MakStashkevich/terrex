@@ -1,9 +1,9 @@
 from terrex.packets.base import SyncPacket
-from terrex.packets.packet_ids import PacketIds
+from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
 class SyncCavernMonsterType(SyncPacket):
-    id = 136
+    id = MessageID.SyncCavernMonsterType
 
     def __init__(self, types: list[int] = None):
         self.types = types or [0] * 6
@@ -18,4 +18,3 @@ class SyncCavernMonsterType(SyncPacket):
     def handle(self, world, player, evman):
         pass
 
-SyncCavernMonsterType.register()

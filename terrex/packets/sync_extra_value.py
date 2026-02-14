@@ -1,11 +1,11 @@
 from terrex.packets.base import SyncPacket
-from terrex.packets.packet_ids import PacketIds
+from terrex.structures.id import MessageID
 from terrex.structures.vec2 import Vec2
 from terrex.util.streamer import Reader, Writer
 
 
 class SyncExtraValue(SyncPacket):
-    id = PacketIds.SYNC_EXTRA_VALUE
+    id = MessageID.SyncExtraValue
 
     def __init__(self, npc_index: int = 0, extra_value: int = 0, pos: Vec2 | None = None):
         self.npc_index = npc_index
@@ -23,4 +23,4 @@ class SyncExtraValue(SyncPacket):
         self.pos.write(writer)
 
 
-SyncExtraValue.register()
+
