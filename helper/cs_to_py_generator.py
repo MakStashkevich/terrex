@@ -356,16 +356,9 @@ class CsToPyParser:
         # Remove new int[] {} if present
         args_str = re.sub(r"new\s+(int|bool)\s*\[.*?\]\s*\{", "", args_str)
         # print(f"DEBUG _convert after sub: '{repr(args_str)}'")
-        args_str = re.sub(r"new\s+(int|bool)\s*\[\s*0\s*\]", "", args_str)
+        args_str = re.sub(r"new\s+(int|bool)\s*\[\s*\d+\s*\]", "", args_str)
         args_str = args_str.replace("}", "").strip()
         # print(f"DEBUG _convert after clean: '{repr(args_str)}', items={[x.strip() for x in args_str.split(',') if x.strip()]}")
-        if not args_str:
-            # print("DEBUG _convert return None (empty)")
-            return None
-        # args_str = re.sub(r"new\s+(int|bool)\s*\[\s*0\s*\]", "", args_str)
-        # args_str = args_str.replace("}", "").strip()
-        # if not args_str:
-        #     return None
 
         # Fix for new int[N] without {}
         if re.match(r'^\s*new\s+(int|bool)\s*\[\s*\d+\s*\]\s*', args_str):
