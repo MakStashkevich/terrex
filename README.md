@@ -4,7 +4,7 @@ Programmable automation client for Terraria worlds.
 
 [![PyPI version](https://badge.fury.io/py/terrex.svg)](https://badge.fury.io/py/terrex)
 
-![Terrex logo](./assets/logo.jpg)
+![Terrex logo](https://raw.githubusercontent.com/makstashkevich/terrex/master/assets/logo.jpg)
 
 ---
 
@@ -15,13 +15,13 @@ Terrex is a Python framework for building programmable Terraria agents (bots).
 It provides a clean event-driven API for connecting to servers, reacting to world state,
 parsing packets and executing scripted behaviors.
 
-Originally inspired by an archived TerraBot project by Alexander Freeman (MIT licensed) (inactive for ~10 years),  
+Originally inspired by an archived [TerraBot](https://github.com/flammified/terrabot) project by Alexander Freeman (MIT licensed) (inactive for ~10 years),  
 Terrex is a modernized, extended and actively developed fork focused on:
 
 * automation
 * simulation
 * protocol control
-* scalable multi-bot systems
+* scalable multi-agent systems
 
 Think of it as a runtime for Terraria agents — not just a bot.
 
@@ -104,13 +104,13 @@ Current high-priority areas:
 * Movement & physics layer
 
 Packet documentation reference:
-[https://tshock.readme.io/docs/multiplayer-packet-structure](https://tshock.readme.io/docs/multiplayer-packet-structure)
+[https://github.com/MakStashkevich/terrex/blob/master/docs/packets.md](https://github.com/MakStashkevich/terrex/blob/master/docs/packets.md)
 
 ---
 
 ## Origins
 
-Terrex is based on a fork of the original TerraBot project by Alexander Freeman (MIT licensed) (now archived and unmaintained).
+Terrex is based on a fork of the original [TerraBot](https://github.com/flammified/terrabot) project by Alexander Freeman (MIT licensed) (now archived and unmaintained).
 The codebase has been refactored, extended and re-architected for modern Python workflows.
 
 ---
@@ -122,7 +122,3 @@ The codebase has been refactored, extended and re-architected for modern Python 
 * scripting behaviors (FSM / behavior trees)
 * performance scaling
 * cleaner API surface
-
----
-
-Terrex — extended control over Terraria worlds.

@@ -1,6 +1,42 @@
+[build-system]
+requires = ["setuptools>=65.5.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "terrex"
+version = "1.0.0"
+description = "Programmable automation client for Terraria servers"
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = ["terraria", "automation", "bots", "agents", "protocol", "api"]
+license = "MIT"
+license-files = ["LICENSE.txt"]
+authors = [
+    { name="Maksim Stashkevich", email="makstashkevich@gmail.com" }
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Games/Entertainment",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent"
+]
+dependencies = ["numpy"]
+
+[tool.setuptools.packages.find]
+where = ["terrex"]
+
+[project.optional-dependencies]
+dev = ["check-manifest"]
+test = ["coverage"]
+
 [tool.black]
 line-length = 200
-target-version = ["py312"]
+target-version = ["py310"]
 skip-string-normalization = true
 exclude = '''
 (
@@ -18,7 +54,7 @@ exclude = '''
 '''
 
 [tool.ruff]
-target-version = "py312"
+target-version = "py310"
 line-length = 200
 fix = true
 exclude = [
@@ -43,7 +79,7 @@ ignore = [
 known-first-party = ["terrex"]
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.10"
 strict = false
 warn_return_any = true
 warn_unused_ignores = true
