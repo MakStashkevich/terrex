@@ -69,3 +69,4 @@ terraria-protocol/
 !LICENSE.txt
 !requirements.txt
 .ruff_cache/
+*tshock*

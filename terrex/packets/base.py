@@ -23,9 +23,9 @@ class Packet(ABC):
     def write(self, writer: Writer) -> None:
         raise NotImplementedError("Method write must be overridden")
 
-    @abstractmethod
     def handle(self, world: World, player: Player, evman: EventManager) -> None:
-        pass
+        """Optional method to handle the packet"""
+        raise NotImplementedError("Method handle can be overridden if needed")
 
     def __init_subclass__(cls):
         super().__init_subclass__()
@@ -33,14 +33,15 @@ class Packet(ABC):
         if inspect.isabstract(cls):
             return
 
-        if not hasattr(cls, "id"):
+        if not isinstance(getattr(cls, "id", None), int):
             raise TypeError(f"{cls.__name__} must define class attribute 'id'")
 
-        if "read" not in cls.__dict__:
-            raise TypeError(f"{cls.__name__} must implement classmethod read()")
+        if not callable(getattr(cls, "read", None)):
+            raise TypeError(f"{cls.__name__} must implement read()")
 
         if cls.id in packet_registry:
             raise ValueError(f"Packet id {cls.id} already registered for {packet_registry[cls.id]}")
+
         packet_registry[cls.id] = cls
 
     def __to_log_dict(self) -> dict[str, Any]:

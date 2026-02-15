@@ -2,7 +2,7 @@
 # ruff: noqa
 
 # base
-from .base import Packet, packet_registry
+from .base import Packet as Packet, packet_registry as packet_registry
 
 # packets
 from .hello import Hello as Hello
@@ -66,7 +66,7 @@ from .instrument_sound import InstrumentSound as InstrumentSound
 from .hit_switch import HitSwitch as HitSwitch
 from .unknown60 import Unknown60 as Unknown60
 from .spawn_boss_use_license_start_event import SpawnBossUseLicenseStartEvent as SpawnBossUseLicenseStartEvent
-from .player_dodge import PlayerDodge as PlayerDodge
+from .player_dodge import Unknown62 as Unknown62
 from .sync_tile_paint_or_coating import SyncTilePaintOrCoating as SyncTilePaintOrCoating
 from .sync_wall_paint_or_coating import SyncWallPaintOrCoating as SyncWallPaintOrCoating
 from .teleport_entity import TeleportEntity as TeleportEntity

@@ -1,12 +1,12 @@
 import re
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import StrEnum
 from pathlib import Path
 
 from terrex.terrex import TERRARIA_VERSION
 
-GENERATOR_VERSION = "1.1.0"
+GENERATOR_VERSION = "1.1.1"
 GENERATOR_AUTHOR = "Maksim Stashkevich"
 
 
@@ -133,6 +133,8 @@ class CsToPyParser:
                 m_member = re.match(r"^(\w+)\s*(=\s*(\d+))?\s*,?\s*$", stripped)
                 if m_member:
                     name = m_member.group(1)
+                    if name == "None":
+                        name = "NoneValue"
                     val = str(len(self.current_constants))
                     self.current_constants[name] = val
                     i += 1
@@ -156,15 +158,19 @@ class CsToPyParser:
             )
             if m_const:
                 name, val = m_const.groups()
+                if name == "None":
+                    name = "NoneValue"
                 val = val.strip()
                 if self.pending_obsolete:
                     self.current_removed_constants[name] = val
                     self.pending_obsolete = False
                 else:
-                    self.current_constants[name] = val
-                    if self.pending_old_comment:
-                        self.current_old_comments[name] = self.pending_old_comment
-                        self.pending_old_comment = None
+                    # ignore: public const int Count = 1;
+                    if name != "Count":
+                        self.current_constants[name] = val
+                        if self.pending_old_comment:
+                            self.current_old_comments[name] = self.pending_old_comment
+                            self.pending_old_comment = None
                 if name == "Count":
                     self.count_value = int(val)
                 i += 1
@@ -191,6 +197,8 @@ class CsToPyParser:
             m_assign = re.match(r"(\w+)\.(\w+)\s*=\s*(\d+);", stripped)
             if m_assign:
                 class_ref, name, val = m_assign.groups()
+                if name == "None":
+                    name = "NoneValue"
                 if class_ref == self.top_class:
                     self.current_constants[name] = val
                     if name == "Count":
@@ -283,9 +291,6 @@ class CsToPyParser:
             raise ValueError("Class not found")
         self.current_class = self.top_class
 
-        # print("DEBUG PARSE END: sets_by_class =", repr(self.sets_by_class))
-        # print("DEBUG PARSE END: current_sets_owner =", repr(self.current_sets_owner))
-        # print("DEBUG PARSE END: class_counts =", repr(self.class_counts))
         return self._generate_python_code()
 
     def _reset(self):
@@ -310,13 +315,10 @@ class CsToPyParser:
         self.factory_count_ref = {}
 
     def _convert_set_call(self, set_type: str, args_str: str) -> str | None:
-        # print(f"DEBUG _convert_set_call ENTER: type='{set_type}', args_in='{repr(args_str)}'")
         # Remove new int[] {} if present
         args_str = re.sub(r"new\s+(int|bool)\s*\[.*?\]\s*\{", "", args_str)
-        # print(f"DEBUG _convert after sub: '{repr(args_str)}'")
         args_str = re.sub(r"new\s+(int|bool)\s*\[\s*\d+\s*\]", "", args_str)
         args_str = args_str.replace("}", "").strip()
-        # print(f"DEBUG _convert after clean: '{repr(args_str)}', items={[x.strip() for x in args_str.split(',') if x.strip()]}")
 
         # Fix for new int[N] without {}
         if re.match(r"^\s*new\s+(int|bool)\s*\[\s*\d+\s*\]\s*", args_str):
@@ -371,7 +373,8 @@ class CsToPyParser:
 
             pairs_str = ", ".join(pairs)
             if not pairs_str:
-                pairs_str = "0"
+                # create empty int set
+                return f"factory.create_int_set({default})"
             return f"factory.create_int_set({default}, {pairs_str})"
         return None
 
@@ -386,41 +389,65 @@ class CsToPyParser:
         self.sets_by_class[owner_path].append((set_name, py_code))
 
     def _convert_array_call(self, right: str) -> str | None:
-        m = re.search(
-            r"new\s+(int|byte|short|sbyte|ushort|bool)\s*\[\s*(.*?)\s*\]\s*\{([^}]*)\}\s*;?",
-            right.strip(),
+        right = right.strip()
+        # Jagged array first, to avoid false positive on simple regex
+        jagged_m = re.search(
+            r"new\s+(int|byte|short|sbyte|ushort|bool)\s*\[\]\s*\[\]\s*\{(.*)\}\s*;?",
+            right,
         )
-        if not m:
-            return None
-        arr_type, size_str, content = m.groups()
-        size_str = size_str.strip()
-        content = content.strip() if content else ""
-        vals = []
-        if content:
-            content = re.sub(r"\s*,\s*", ",", content)
-            vals = [v.strip() for v in content.split(",") if v.strip()]
-        elif size_str == "0" or not size_str:
+        if jagged_m:
+            arr_type, content = jagged_m.groups()
+            content = content.strip()
+            if not content:
+                return "[]"
+            # Find all subarray calls
+            sub_pattern = r"new\s+(?:int|byte|short|sbyte|ushort|bool)\s*\[\s*[^]]*\s*\]\s*\{([^}]+)\}"
+            inner_contents = re.findall(sub_pattern, content)
+            py_subs = []
+            for inner_content in inner_contents:
+                inner_content = inner_content.strip()
+                inner_content = re.sub(r"\s*,\s*", ",", inner_content)
+                vals = [v.strip() for v in inner_content.split(",") if v.strip()]
+                py_subs.append("[" + ", ".join(vals) + "]")
+            return "[" + ", ".join(py_subs) + "]"
+
+        # Simple array
+        simple_m = re.search(
+            r"new\s+(int|byte|short|sbyte|ushort|bool)\s*\[\s*(.*?)\s*\]\s*\{([^}]*)\}\s*;?",
+            right,
+        )
+        if simple_m:
+            arr_type, size_str, content = simple_m.groups()
+            size_str = size_str.strip()
+            content = content.strip() if content else ""
             vals = []
-        else:
-            vals = []
-        if arr_type == "bool":
-            py_vals = [("True" if v.lower().strip() == "true" else "False" if v.lower().strip() == "false" else v) for v in vals]
-            return "[" + ", ".join(py_vals) + "]"
-        else:
-            return "[" + ", ".join(vals) + "]"
+            if content:
+                content = re.sub(r"\s*,\s*", ",", content)
+                vals = [v.strip() for v in content.split(",") if v.strip()]
+            elif size_str == "0" or not size_str:
+                vals = []
+            else:
+                vals = []
+            if arr_type == "bool":
+                py_vals = [("True" if v.lower().strip() == "true" else "False" if v.lower().strip() == "false" else v) for v in vals]
+                return "[" + ", ".join(py_vals) + "]"
+            else:
+                return "[" + ", ".join(vals) + "]"
+
+        return None
 
     def _generate_python_code(self) -> str:
-        out = [
+        imports_out = [
             '"""',
             f"{self.current_class} - autogenerated from decompiled Terraria .cs files",
             f"Terraria namespace: {self.namespace}",
             f'Terraria version: v{".".join(map(str, TERRARIA_VERSION))}',
             f"Generator: TerrariaPyGen v{GENERATOR_VERSION} ({GENERATOR_AUTHOR})",
-            f'Generated on: {datetime.now().strftime("%Y-%m-%d %H:%M")}',
+            f'Generated on: {datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")}',
             '"""',
             "",
-            "",
         ]
+        out = []
 
         def is_pure_enum(consts):
             return consts and all(val.lstrip("-").isdigit() for val in consts.values())
@@ -436,7 +463,7 @@ class CsToPyParser:
                 "from enum import IntEnum, auto",
             ]
 
-            out.extend(imports)
+            imports_out.extend(imports)
             out.append("")
             class_def = f"class {self.current_class}(IntEnum):" if top_is_pure else f"class {self.current_class}:"
             out.append(class_def)
@@ -455,7 +482,7 @@ class CsToPyParser:
                     out.append(f"    {name} = {val}")
             out.append(f"    Count = {max_count}")
         else:
-            out.append("from enum import IntEnum, auto")
+            imports_out.append("from enum import IntEnum, auto")
             out.append("")
             enum_type = "IntEnum" if is_pure_enum(top_consts) else "auto"
             out.append(f"class {self.current_class}({enum_type}):")
@@ -506,6 +533,13 @@ class CsToPyParser:
 
         sets_map = {}
         for owner_path, sets_dict in self.sets_by_class.items():
+            if not owner_path:
+                # example not owner path on SpecificallyImmuneTo from NPCID:
+                # nPCDebuffImmunityDatum = new NPCDebuffImmunityData()
+				# {
+				# 	SpecificallyImmuneTo = new int[] { 31 }
+				# };
+                continue
             sub_parts = owner_path.split(".")
             if sub_parts[-1] == "Sets":
                 if len(sub_parts) == 2:
@@ -518,14 +552,22 @@ class CsToPyParser:
         if has_sets:
             out.append(f"class {self.current_class}Sets:")
             for sub_name in sorted(sets_map):
-                parent_ref = self.factory_count_ref.get(sub_name, self.current_class)
+                # if sub_name is "Main" (because it hardcoded base sub-class name) -> try found "CurrentClassName"
+                if sub_name == "Main":
+                    parent_ref = self.factory_count_ref.get(self.current_class, self.current_class)
+                    base_const_class = parent_ref.split(".", 1)[0]
+                    # if Class.const != base class name try import him
+                    if base_const_class != self.current_class:
+                        imports_out.append(f"from terrex.structures.id.{base_const_class} import {base_const_class}")
+                else:
+                    parent_ref = self.factory_count_ref.get(sub_name, self.current_class)
                 out.append(f"    class {sub_name}:")
                 out.append(f"        factory = SetFactory({parent_ref}.Count)")
                 for name, code in sets_map[sub_name]:
                     out.append(f"        {name} = {code}")
                 out.append("")
 
-        return "\n".join(out)
+        return "\n".join(imports_out) + "\n\n" + "\n".join(out)
 
 
 def find_cs_files(folder: Path, max_depth: int = 3) -> list[Path]:

@@ -4,6 +4,11 @@ from terrex.util.streamer import Reader, Writer
 
 
 class Hello(ClientPacket):
+    """
+    It is used for the first request and comparison by the server of the Terraria version with the client version.
+    
+    In case of an error, the server sends a Kick [2] packet and terminates the connection.
+    """
     id = MessageID.Hello
 
     def __init__(self, version: int = 0):

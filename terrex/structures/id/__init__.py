@@ -19,7 +19,7 @@ from .ItemID import *
 from .ItemSourceID import *
 from .ItemUseStyleID import *
 from .LiquidID import *
-from .MessageID import *
+from .MessageID import MessageID as MessageID
 from .MountID import *
 from .MusicID import *
 from .NPCHeadID import *
@@ -36,7 +36,7 @@ from .PrefixID import *
 from .ProjectileDrawLayerID import *
 from .ProjectileID import *
 from .ProjectileSourceID import *
-from .set_factory import *
+from .set_factory import SetFactory as SetFactory
 from .StatusID import *
 from .SurfaceBackgroundID import *
 from .TeleportationSide import *
