@@ -1,6 +1,6 @@
 # Terrex
 
-Programmable automation client for Terraria worlds.
+Programmable automation client for Terraria servers.
 
 [![PyPI version](https://badge.fury.io/py/terrex.svg)](https://badge.fury.io/py/terrex)
 
