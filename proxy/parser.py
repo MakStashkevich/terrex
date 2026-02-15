@@ -8,6 +8,8 @@ from terrex.util.streamer import Reader
 
 
 class UnknownPacket(Packet):
+    id: int = -1
+
     def __init__(self, pid: int):
         super().__init__()
         self.id = pid

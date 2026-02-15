@@ -9,20 +9,18 @@ from terrex.util.streamer import Reader
 
 
 @dataclass
-class TileSection:
-    from terrex.structures import Chest, Sign, Tile, TileEntity
-
+class TileSectionData:
     x_start: int
     y_start: int
     width: int
     height: int
-    tiles: list[Tile]
-    chests: list[Chest]
-    signs: list[Sign]
-    tile_entities: list[TileEntity]
+    tiles: list
+    chests: list
+    signs: list
+    tile_entities: list
 
 
-def decompress_tile_block_inner(reader: Reader, x_start: int, y_start: int, width: int, height: int) -> TileSection:
+def decompress_tile_block_inner(reader: Reader, x_start: int, y_start: int, width: int, height: int) -> TileSectionData:
     from terrex.structures import Chest, Sign, Tile
     from terrex.structures.tile_entity import read_tile_entity
 
@@ -60,7 +58,7 @@ def decompress_tile_block_inner(reader: Reader, x_start: int, y_start: int, widt
     n_entities = reader.read_short()
     tile_entities = [read_tile_entity(reader) for _ in range(n_entities)]
 
-    return TileSection(
+    return TileSectionData(
         x_start=x_start,
         y_start=y_start,
         width=width,

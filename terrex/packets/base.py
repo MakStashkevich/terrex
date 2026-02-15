@@ -15,11 +15,9 @@ packet_registry: dict[int, type["Packet"]] = {}
 class Packet(ABC):
     id: int
 
-    @abstractmethod
     def read(self, reader: Reader) -> None:
         raise NotImplementedError("Method read must be overridden")
 
-    @abstractmethod
     def write(self, writer: Writer) -> None:
         raise NotImplementedError("Method write must be overridden")
 

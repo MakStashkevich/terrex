@@ -77,7 +77,8 @@ def user_input():
             continue
         cmd = argv[0]
         if cmd == "help":
-            print("""
+            print(
+                """
 * help: show this message
 * quit: stop processing stdin
 * show <in|out|both> <all|TAG>: show the dbg repr of matching messages
@@ -85,7 +86,8 @@ def user_input():
 * list: list all tags along with the name
 * flush: flush network traffic writes to disk
 * nosave: stop saving network traffic to disk
-""")
+"""
+            )
             continue
         if cmd == "quit":
             sys.exit(0)
@@ -188,16 +190,17 @@ def forward(
                     break
                 try:
                     # Get packet name
+                    packet_id = f"0x{packet.id:02X}[{packet.id}]"
                     try:
-                        pkt_name = str(MessageID(packet.id))
+                        pkt_name = MessageID(packet.id).name
                     except ValueError:
-                        pkt_name = f"Unknown(0x{packet.id:02X})"
+                        pkt_name = f"Unknown({packet_id})"
 
                     timestamp = current_timestamp()
                     try:
                         log_payload = stringify_value(vars(packet))
                     except RecursionError:
-                        log_payload = f"**recursion depth exceeded in logging** id=0x{packet.id:02X} ({pkt_name})"
+                        log_payload = f"**recursion depth exceeded in logging** id={packet_id} ({pkt_name})"
 
                     if packet.id in IGNORED_PACKET_IDS:
                         continue
@@ -207,14 +210,14 @@ def forward(
 
                     # Log to txt if enabled (all packets)
                     if traffic_txt is not None:
-                        traffic_txt.write(f"[{timestamp}] ---0x{packet.id:02X} {pkt_name} ---\n")
+                        traffic_txt.write(f"[{timestamp}] ---{packet_id} {pkt_name} ---\n")
                         traffic_txt.write(f"{log_payload}\n\n")
                         if config.flush_txt[flush_txt_idx]:
                             traffic_txt.flush()
 
                     # Log to shared both-traffic file
                     if config.both_traffic_txt is not None:
-                        config.both_traffic_txt.write(f"{direction} ---0x{packet.id:02X} {pkt_name} ---\n")
+                        config.both_traffic_txt.write(f"{direction} ---{packet_id} {pkt_name} ---\n")
                         config.both_traffic_txt.write(f"{log_payload}\n\n")
                         if config.flush_both_txt:
                             config.both_traffic_txt.flush()
