@@ -3,9 +3,8 @@ from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
 
-class Unknown66(SyncPacket):
-    # HealOtherPlayer
-    id = MessageID.Unknown66
+class HealOtherPlayer(SyncPacket):
+    id = MessageID.HealOtherPlayer
 
     def __init__(self, player_id: int = 0, heal_amount: int = 0):
         self.player_id = player_id

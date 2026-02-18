@@ -6,7 +6,7 @@ from pathlib import Path
 
 from terrex.terrex import TERRARIA_VERSION
 
-GENERATOR_VERSION = "1.1.1"
+GENERATOR_VERSION = "1.1.2"
 GENERATOR_AUTHOR = "Maksim Stashkevich"
 
 
@@ -67,6 +67,27 @@ ALLOWED_CLASSES: dict[TerrariaPath, list[str]] = {
         "WallID",
         "WaterStyleID",
     ]
+}
+
+
+# Here is a small correction to the names
+# of the message identifiers (Terraria packets),
+# because for reasons unknown to me,
+# they are marked as unknown in the game code,
+# but some of them are still in use, lol
+#
+# P.S. The names used here are made up for convenience
+# and have nothing to do with the actual names in the game code.
+#
+# P.P.S. I will ask you not to change them, so as not to break the logic of Terrex.
+correct_message_keys_map = {
+    'Unknown42': 'PlayerMana',
+    'Unknown57': 'UpdateGoodEvil',
+    'Unknown60': 'UpdateHomeNPC',
+    'Unknown62': 'PlayerDodge',
+    'Unknown66': 'HealOtherPlayer',
+    'Unknown67': 'TShockPlaceholder',
+    'Unknown68': 'ClientUUID',
 }
 
 
@@ -160,6 +181,10 @@ class CsToPyParser:
                 name, val = m_const.groups()
                 if name == "None":
                     name = "NoneValue"
+                elif self.top_class == "MessageID" and name in correct_message_keys_map:
+                    self.pending_old_comment = f"Replaced for Terrex. Original name: {name}"
+                    name = correct_message_keys_map[name]
+
                 val = val.strip()
                 if self.pending_obsolete:
                     self.current_removed_constants[name] = val
@@ -536,9 +561,9 @@ class CsToPyParser:
             if not owner_path:
                 # example not owner path on SpecificallyImmuneTo from NPCID:
                 # nPCDebuffImmunityDatum = new NPCDebuffImmunityData()
-				# {
-				# 	SpecificallyImmuneTo = new int[] { 31 }
-				# };
+                # {
+                # 	SpecificallyImmuneTo = new int[] { 31 }
+                # };
                 continue
             sub_parts = owner_path.split(".")
             if sub_parts[-1] == "Sets":

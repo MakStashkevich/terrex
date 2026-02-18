@@ -28,9 +28,8 @@ class SetNpcHome:
         writer.write_byte(self.homeless)
 
 
-class Unknown60(SyncPacket):
-    # NPCHomeUpdate
-    id = MessageID.Unknown60
+class UpdateHomeNPC(SyncPacket):
+    id = MessageID.UpdateHomeNPC
 
     def read(self, reader: Reader) -> None:
         self.data = SetNpcHome.read(reader)

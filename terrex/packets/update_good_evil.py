@@ -3,9 +3,8 @@ from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader
 
 
-class Unknown57(ServerPacket):
-    # UpdateGoodEvil
-    id = MessageID.Unknown57
+class UpdateGoodEvil(ServerPacket):
+    id = MessageID.UpdateGoodEvil
 
     def __init__(self, good: int = 0, evil: int = 0, crimson: int = 0):
         self.good = good

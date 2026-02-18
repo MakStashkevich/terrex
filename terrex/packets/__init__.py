@@ -61,18 +61,18 @@ from .add_npc_buff import AddNPCBuff as AddNPCBuff
 from .npc_buffs import NPCBuffs as NPCBuffs
 from .add_player_buff_pvp import AddPlayerBuffPvP as AddPlayerBuffPvP
 from .unique_town_npc_info_sync_request import UniqueTownNPCInfoSyncRequest as UniqueTownNPCInfoSyncRequest
-from .unknown57 import Unknown57 as Unknown57
+from .update_good_evil import UpdateGoodEvil as UpdateGoodEvil
 from .instrument_sound import InstrumentSound as InstrumentSound
 from .hit_switch import HitSwitch as HitSwitch
-from .unknown60 import Unknown60 as Unknown60
+from .update_home_npc import UpdateHomeNPC as UpdateHomeNPC
 from .spawn_boss_use_license_start_event import SpawnBossUseLicenseStartEvent as SpawnBossUseLicenseStartEvent
-from .player_dodge import Unknown62 as Unknown62
+from .player_dodge import PlayerDodge as PlayerDodge
 from .sync_tile_paint_or_coating import SyncTilePaintOrCoating as SyncTilePaintOrCoating
 from .sync_wall_paint_or_coating import SyncWallPaintOrCoating as SyncWallPaintOrCoating
 from .teleport_entity import TeleportEntity as TeleportEntity
-from .unknown66 import Unknown66 as Unknown66
-from .unknown67 import Unknown67 as Unknown67 # null on official server, but may be used on TShock
-from .unknown68 import Unknown68 as Unknown68
+from .heal_other_player import HealOtherPlayer as HealOtherPlayer
+from .tshock_placeholder import TShockPlaceholder as TShockPlaceholder # null on official server, but may be used on TShock
+from .client_uuid import ClientUUID as ClientUUID
 from .chest_name import ChestName as ChestName
 from .bug_catching import BugCatching as BugCatching
 from .bug_releasing import BugReleasing as BugReleasing

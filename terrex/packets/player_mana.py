@@ -4,7 +4,7 @@ from terrex.util.streamer import Reader, Writer
 
 
 class PlayerMana(SyncPacket):
-    id = MessageID.Unknown42
+    id = MessageID.PlayerMana
 
     def __init__(self, player_id: int = 0, mana: int = 0, max_mana: int = 0):
         self.player_id = player_id

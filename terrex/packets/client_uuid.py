@@ -3,9 +3,8 @@ from terrex.structures.id import MessageID
 from terrex.util.streamer import Reader, Writer
 
 
-class Unknown68(ClientPacket):
-    # ClientUUID
-    id = MessageID.Unknown68
+class ClientUUID(ClientPacket):
+    id = MessageID.ClientUUID
 
     def __init__(self, uuid4: str = "01032c81-623f-4435-85e5-e0ec816b09ca"):
         self.uuid4 = uuid4

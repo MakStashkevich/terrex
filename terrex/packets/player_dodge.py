@@ -10,9 +10,8 @@ class DodgeType(IntEnum):
     SHADOW = 2
 
 
-class Unknown62(SyncPacket):
-    # PlayerDodge
-    id = MessageID.Unknown62
+class PlayerDodge(SyncPacket):
+    id = MessageID.PlayerDodge
 
     def __init__(self, player_id: int = 0, ty: DodgeType = DodgeType.NINJA):
         self.player_id = player_id

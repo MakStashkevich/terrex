@@ -276,10 +276,13 @@ class Client:
                 self.send(
                     packets.PlayerSpawn(
                         player_id=self.player.id,
-                        spawn_x=0.0,
-                        spawn_y=0.0,
-                        respawn_time_remaining=128,
-                        player_spawn_context=2,
+                        spawn_x=-1,
+                        spawn_y=-1,
+                        respawn_time_remaining=0,
+                        number_of_deaths_pve=0,
+                        number_of_deaths_pvp=0,
+                        team_id=2, # todo: move to player
+                        player_spawn_context=1,
                     )
                 )
                 self.send(
@@ -304,7 +307,7 @@ class Client:
                 self.send(
                     packets.TeamChange(
                         player_id=self.player.id,
-                        team=2,  # green team
+                        team=2,  # todo: green team, move to player
                     )
                 )
 
