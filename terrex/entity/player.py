@@ -7,6 +7,7 @@ from terrex.structures.variable.float_var import FloatVar
 from terrex.structures.variable.int_var import IntVar
 from terrex.structures.variable.str_var import StrVar
 from terrex.world.shape.rectangle import Rectangle
+from terrex.world.world_zone import WorldZone
 
 
 class Player(Entity):
@@ -30,6 +31,9 @@ class Player(Entity):
 
     # inventory
     inventory: list = []
+    
+    # world
+    zone: WorldZone = WorldZone()
 
     # skin
     skin_variant: int = IntVar(0)

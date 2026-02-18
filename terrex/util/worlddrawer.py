@@ -1,8 +1,10 @@
 from PIL import Image, ImageDraw
 from progressbar import ETA, Bar, FileTransferSpeed, Percentage, ProgressBar, RotatingMarker
 
+from terrex.world.world import World
 
-def draw_world(world):
+
+def draw_world(world: World):
     height = len(world.tiles)
     width = len(world.tiles[0]) if height > 0 else 0
     image = Image.new("RGB", (width, height), "white")

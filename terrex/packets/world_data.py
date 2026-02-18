@@ -153,8 +153,11 @@ class WorldData(ServerPacket):
         self.glowing_mushroom_tree_top_style = reader.read_byte()
         self.underworld_tree_top_style = reader.read_byte()
         self.rain = reader.read_float()
-        self.event_info = reader.read_ulong()  # u64
+        self.event_info = reader.read_ulong()
         self.ore_tiers_tiles = [reader.read_short() for _ in range(7)]
         self.invasion_type = reader.read_sbyte()
         self.lobby_id = reader.read_ulong()
         self.sandstorm_severity = reader.read_float()
+
+    def handle(self, world, player, evman):
+        world.time = self.time
