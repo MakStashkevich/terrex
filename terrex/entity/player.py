@@ -31,7 +31,7 @@ class Player(Entity):
 
     # inventory
     inventory: list = []
-    
+
     # world
     zone: WorldZone = WorldZone()
 
@@ -45,13 +45,13 @@ class Player(Entity):
     hide_misc: bool = BoolVar(False)
 
     # skin colors
-    hair_color: Rgb = Rgb(255, 255, 255)
-    skin_color: Rgb = Rgb(255, 255, 255)
-    eye_color: Rgb = Rgb(255, 255, 255)
-    shirt_color: Rgb = Rgb(255, 255, 255)
-    under_shirt_color: Rgb = Rgb(255, 255, 255)
-    pants_color: Rgb = Rgb(255, 255, 255)
-    shoe_color: Rgb = Rgb(255, 255, 255)
+    hair_color: Rgb = Rgb(151, 100, 69)
+    skin_color: Rgb = Rgb(255, 125, 90)
+    eye_color: Rgb = Rgb(105, 90, 75)
+    shirt_color: Rgb = Rgb(175, 165, 140)
+    under_shirt_color: Rgb = Rgb(160, 180, 215)
+    pants_color: Rgb = Rgb(255, 230, 175)
+    shoe_color: Rgb = Rgb(160, 105, 60)
 
     # difficulty flag
     difficulty: int = IntVar(1)
