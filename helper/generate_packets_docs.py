@@ -6,9 +6,9 @@ from pathlib import Path
 
 sys.path.insert(0, '.')
 
-from terrex.packets import packet_registry
-from terrex.packets.base import ClientPacket, ServerPacket, SyncPacket
-from terrex.structures.id import MessageID
+from terrex.packet import packet_registry
+from terrex.packet.base import ClientPacket, ServerPacket, SyncPacket
+from terrex.id import MessageID
 
 size_map = {
     'byte': '1',

@@ -6,9 +6,9 @@ from datetime import datetime
 
 from proxy.config import config
 from proxy.parser import IncrementalParser
-from terrex.packets.base import stringify_value
-from terrex.structures.id import MessageID
-from terrex.structures.net_mode import NetMode
+from terrex.packet.base import stringify_value
+from terrex.id import MessageID
+from terrex.net.mode import NetMode
 
 IGNORED_PACKET_IDS = [MessageID.TileSection]
 

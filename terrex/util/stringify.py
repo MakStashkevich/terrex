@@ -2,15 +2,15 @@ from dataclasses import is_dataclass
 from enum import Enum
 from typing import Any
 
-from terrex.structures.localization.network_text import NetworkText
+from terrex.localization.network_text import NetworkText
 
 
 def stringify_network_text(value: Any, depth: int = 0, max_depth: int = 20, seen: set = None) -> dict[str, Any]:
     if seen is None:
         seen = set()
 
-    from terrex.structures.localization.network_text import NetworkText
-    from terrex.util.localization import get_translation
+    from terrex.localization.network_text import NetworkText
+    from terrex.localization.localization import get_translation
 
     if not isinstance(value, NetworkText):
         return repr(value)

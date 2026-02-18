@@ -1,7 +1,7 @@
 import time
 
 from terrex import Terrex
-from terrex.events import Event
+from terrex.event import Event
 
 # Create a Terrex object
 # used with proxy on port 8888

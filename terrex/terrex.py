@@ -1,11 +1,11 @@
-from terrex import structures
-from terrex.entity.player import Player
-from terrex.protocols import PROTOCOLS
-from terrex.structures.chat.chat_command import ChatCommand
+from terrex.net import module
+from terrex.player.player import Player
+from terrex.net.protocol import PROTOCOLS
+from terrex.net.chat_command import ChatCommand
 from terrex.world.world import World
 
-from . import client, packets
-from .events import EventManager
+from . import client, packet
+from .event import EventManager
 
 # The latest supported version of Terraria
 TERRARIA_VERSION = (1, 4, 5, 5)
@@ -43,8 +43,8 @@ class Terrex:
     def send_message(self, text: str):
         if self.player.logged_in:
             self.client.send(
-                packets.LoadNetModule(
-                    module=structures.NetTextModule(
+                packet.LoadNetModule(
+                    module=module.NetTextModule(
                         chat_command_id=ChatCommand.SayChat,
                         text=text,
                     ),

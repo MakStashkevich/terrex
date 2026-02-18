@@ -1,10 +1,10 @@
 import struct
 import traceback
 
-from terrex.packets.base import Packet, packet_registry
-from terrex.structures.id import MessageID
-from terrex.structures.net_mode import NetMode
-from terrex.util.streamer import Reader
+from terrex.packet.base import Packet, packet_registry
+from terrex.id import MessageID
+from terrex.net.mode import NetMode
+from terrex.net.streamer import Reader
 
 
 class UnknownPacket(Packet):

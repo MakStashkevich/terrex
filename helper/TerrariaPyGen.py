@@ -484,7 +484,7 @@ class CsToPyParser:
         has_sets = bool(self.sets_by_class)
         if has_sets:
             imports = [
-                "from terrex.structures.id.set_factory import SetFactory",
+                "from terrex.id.set_factory import SetFactory",
                 "from enum import IntEnum, auto",
             ]
 
@@ -583,7 +583,7 @@ class CsToPyParser:
                     base_const_class = parent_ref.split(".", 1)[0]
                     # if Class.const != base class name try import him
                     if base_const_class != self.current_class:
-                        imports_out.append(f"from terrex.structures.id.{base_const_class} import {base_const_class}")
+                        imports_out.append(f"from terrex.id.{base_const_class} import {base_const_class}")
                 else:
                     parent_ref = self.factory_count_ref.get(sub_name, self.current_class)
                 out.append(f"    class {sub_name}:")

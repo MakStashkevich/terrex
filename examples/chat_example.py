@@ -1,8 +1,8 @@
 import time
 
 from terrex import Terrex
-from terrex.events import Event
-from terrex.structures.game_content.net_modules import NetTextModule
+from terrex.event import Event
+from terrex.net.module import NetTextModule
 
 # Create a Terrex object
 # used with proxy on port 8888

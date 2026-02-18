@@ -1,0 +1,13 @@
+from terrex.packet.base import ServerPacket
+from terrex.id import MessageID
+from terrex.net.streamer import Reader
+
+
+class DeadPlayer(ServerPacket):
+    id = MessageID.DeadPlayer
+
+    def __init__(self, player_id: int = 0):
+        self.player_id = player_id
+
+    def read(self, reader: Reader):
+        self.player_id = reader.read_byte()
