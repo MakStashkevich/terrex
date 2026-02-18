@@ -6,7 +6,7 @@ from pathlib import Path
 
 from terrex.terrex import TERRARIA_VERSION
 
-GENERATOR_VERSION = "1.1.2"
+GENERATOR_VERSION = "1.1.3"
 GENERATOR_AUTHOR = "Maksim Stashkevich"
 
 
@@ -14,7 +14,7 @@ class TerrariaPath(StrEnum):
     ID = "Terraria.ID"
 
 
-PATH_MAPPING: dict[TerrariaPath, str] = {TerrariaPath.ID: "terrex/structures/id"}
+PATH_MAPPING: dict[TerrariaPath, str] = {TerrariaPath.ID: "terrex/id"}
 
 ALLOWED_CLASSES: dict[TerrariaPath, list[str]] = {
     TerrariaPath.ID: [
