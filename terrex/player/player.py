@@ -39,8 +39,8 @@ class Player(Entity):
     skin_variant: int = IntVar(0)
     voice_variant: int = IntVar(1)
     voice_pitch_offset: float = FloatVar(0.0)
-    hair: int = IntVar(0)
-    hair_dye: int = IntVar(255)
+    hair: int = IntVar(0, min=0, max=228)
+    hair_dye: int = IntVar(255, min=0, max=255)
     accessory_visibility: int = IntVar(0)
     hide_misc: bool = BoolVar(False)
 
