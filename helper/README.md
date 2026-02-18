@@ -5,7 +5,7 @@
 
 **TerrariaPyGen** is a powerful auto-generator for Python classes and enums from decompiled Terraria C# sources (namespace `Terraria.ID`). It converts static ID classes (e.g., `ItemID`, `TileID`, `NPCID`) into convenient Python structures ready for use in the Terrex project.
 
-Generates files into the `terrex/structures/id/` directory, supporting nested classes, obsolete constants, `[Old]` comments, and complex `SetFactory` for Terraria Sets.
+Generates files into the `terrex/id/` directory, supporting nested classes, obsolete constants, `[Old]` comments, and complex `SetFactory` for Terraria Sets.
 
 ## ✨ Features
 
@@ -30,7 +30,7 @@ Place `.cs` files into `folder_with_cs_files/` (or specify path).
 ```bash
 python helper/TerrariaPyGen.py folder_with_cs_files/ArmorIDs.cs
 ```
-Output: `terrex/structures/id/ArmorIDs.py`
+Output: `terrex/id/ArmorIDs.py`
 
 ### Recursive Generation
 ```bash
@@ -40,7 +40,7 @@ Processes all `.cs` files up to depth 3.
 
 ### Example Output
 ```
-Saved to terrex/structures/id/ArmorIDs.py
+Saved to terrex/id/ArmorIDs.py
 Done: 1/1 successful
 ```
 
@@ -105,7 +105,7 @@ namespace Terraria.ID
 }
 ```
 
-**Output:** `terrex/structures/id/MessageID.py`
+**Output:** `terrex/id/MessageID.py`
 ```python
 from enum import IntEnum, auto
 
