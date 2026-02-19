@@ -27,9 +27,23 @@ case "$CMD" in
         echo "Running formatter only: black"
         black .
         ;;
+    build)
+        echo "Running checks and building package"
+        ./ci.sh check
+        rm -rf dist/ build/ terrex.egg-info/
+        pip install --upgrade pip build
+        python -m build
+        echo "Build complete. Check dist/ directory."
+        ;;
+    pypi)
+        echo "Building and uploading to PyPI"
+        ./ci.sh build
+        pip install --upgrade twine
+        twine upload dist/*
+        ;;
     *)
         echo "Unknown command: $CMD"
-        echo "Usage: $0 [all|check|format]"
+        echo "Usage: $0 [all|check|format|build|pypi]"
         exit 1
         ;;
 esac
