@@ -1,3 +1,6 @@
+from terrex.net.tile import Tile
+
+
 class World:
     time: int = 0
     day_info: int = 0
@@ -52,6 +55,8 @@ class World:
     # todo: move this
     items: object = {}
     item_owner_index: object = {}
+    
+    tiles = dict[int, dict[int, Tile]]
 
     def initialize_tiles(self, width, height):
         self.tiles = [[None for x in range(0, width)] for y in range(0, height)]

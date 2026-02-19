@@ -21,8 +21,8 @@ class TileSectionData:
 
 
 def decompress_tile_block_inner(reader: Reader, x_start: int, y_start: int, width: int, height: int) -> TileSectionData:
-    from terrex.structures import Chest, Sign, Tile
-    from terrex.game_content.tile_entities.tile_entity import read_tile_entity
+    from terrex.net import Chest, Sign, Tile
+    from terrex.entity.tile_entity import read_tile_entity
 
     tiles = [[None for _ in range(0, x_start + width)] for _ in range(0, y_start + height)]
     rle = 0
