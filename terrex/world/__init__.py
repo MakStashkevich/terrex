@@ -1,14 +1,13 @@
-from .shape import Circle, GenAction, GenShape, HalfCircle, Mound, Point, Rectangle, RectangleArea, Slime, Tail
+"""
+World module for Terrex.
+"""
+
+from .map_helper import MapTile, MapHelper
+from .world import World
+
 
 __all__ = [
-    'Point',
-    'RectangleArea',
-    'GenAction',
-    'GenShape',
-    'Rectangle',
-    'Circle',
-    'HalfCircle',
-    'Mound',
-    'Slime',
-    'Tail',
+    "MapTile",
+    "MapHelper",
+    "World",
 ]

@@ -1,2 +1,12 @@
-from .eventmanager import EventManager as EventManager
-from .event import Event as Event
+"""
+Event module for Terrex. Contains event system classes.
+"""
+
+from .event import Event
+from .eventmanager import EventManager
+
+
+__all__ = [
+    "Event",
+    "EventManager",
+]

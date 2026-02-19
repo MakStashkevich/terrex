@@ -1,3 +1,7 @@
+"""
+Shape module for world generation in Terrex.
+"""
+
 from .base import GenAction, GenShape, Point, RectangleArea
 from .circle import Circle
 from .half_circle import HalfCircle
