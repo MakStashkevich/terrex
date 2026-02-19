@@ -70,3 +70,4 @@ terraria-protocol/
 !requirements.txt
 .ruff_cache/
 *tshock*
+*.cs
