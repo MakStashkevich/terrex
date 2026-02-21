@@ -98,7 +98,10 @@ class Client:
         """Read exactly n bytes."""
         data = b""
         while len(data) < n:
-            chunk = self.sock.recv(n - len(data))
+            try:
+                chunk = self.sock.recv(n - len(data))
+            except OSError:
+                raise ConnectionError("Socket closed") from None
             if len(chunk) == 0:
                 raise ConnectionError("The connection is closed")
             data += chunk
@@ -133,7 +136,9 @@ class Client:
                         name = "UNKNOWN"
                     print(f"Unknown ID packet: 0x{packet_id:02X}, name: {name}")
                     continue
-            except (ConnectionError, Exception) as e:
+            except ConnectionError:
+                break
+            except Exception as e:
                 print(traceback.format_exc())
                 print(f"Error read packet by client: {e}")
                 break
@@ -369,6 +374,8 @@ class Client:
                 self.sock.sendall(full_packet)
             except queue.Empty:
                 continue
+            except (OSError, ConnectionError):
+                break
             except Exception as e:
                 print(traceback.format_exc())
                 print(f"Error send packet by client: {e}")
