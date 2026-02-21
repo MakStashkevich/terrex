@@ -39,15 +39,6 @@ class Terrex:
 
         self.client = client.Client(ip, port, protocol, server_password, self.player, self.world, self.evman)
 
-    def start(self):
-        try:
-            self.client.connect()
-            while self.client.running:
-                time.sleep(0.1)
-        except KeyboardInterrupt:
-            print("Stopping bot...")
-            self.stop()
-
     def send_message(self, text: str):
         if self.player.logged_in:
             self.client.send(
@@ -64,3 +55,18 @@ class Terrex:
 
     def stop(self):
         self.client.stop()
+
+    def __enter__(self):
+        self.client.connect()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.stop()
+
+    def run_until_disconnected(self):
+        try:
+            while self.client.running:
+                time.sleep(0.1)
+        except KeyboardInterrupt:
+            print("Stopping bot...")
+        self.stop()
