@@ -2,9 +2,9 @@
 
 from terrex.id import TileID, WallID
 from terrex.net.rgb import Rgb as Color
-from terrex.world.map_helper import MapHelper
 
-def add_colors(MapHelper: MapHelper):
+def add_colors() -> None:
+    from terrex.world.map_helper import MapHelper
     color = [[] for _ in range(TileID.Count)]
     for i in range(TileID.Count):
         color[i] = [Color() for _ in range(13)]
@@ -1427,7 +1427,7 @@ def add_colors(MapHelper: MapHelper):
     colorArray2[365][0] = color[748][0] * single
     colorArray2[366][0] = color[749][0] * single
 
-    colorArray3 = [Color()] * 256
+    colorArray3 = [Color() for _ in range(256)]
     color6 = Color(50, 40, 255)
     color7 = Color(145, 185, 255)
     for u in range(len(colorArray3)):
@@ -1439,7 +1439,7 @@ def add_colors(MapHelper: MapHelper):
             int(color6.get_B() * single1 + color7.get_B() * length)
         )
 
-    colorArray4 = [Color()] * 256
+    colorArray4 = [Color() for _ in range(256)]
     color8 = Color(88, 61, 46)
     color9 = Color(37, 78, 123)
     for v in range(len(colorArray4)):
@@ -1451,7 +1451,7 @@ def add_colors(MapHelper: MapHelper):
             int(color8.get_B() * single3 + color9.get_B() * single2)
         )
 
-    colorArray5 = [Color()] * 256
+    colorArray5 = [Color() for _ in range(256)]
     color10 = Color(74, 67, 60)
     color9 = Color(53, 70, 97)
     for w in range(len(colorArray5)):
@@ -1484,7 +1484,7 @@ def add_colors(MapHelper: MapHelper):
         num += num2
 
     num += 774
-    MapHelper.color_lookup = [Color()] * num
+    MapHelper.color_lookup = [Color() for _ in range(num)]
     MapHelper.color_lookup[0] = Color.get_Transparent()
     num3 = 1
     MapHelper.tile_position = num3
@@ -1506,10 +1506,10 @@ def add_colors(MapHelper: MapHelper):
 
     for c in range(WallID.Count):
         if MapHelper.wall_option_counts[c] <= 0:
-            MapHelper.tile_lookup[c] = 0
+            MapHelper.wall_lookup[c] = 0
         else:
             # colorArray9 = colorArray2[c]
-            MapHelper.tile_lookup[c] = num3
+            MapHelper.wall_lookup[c] = num3
             for d in range(MapHelper.wall_option_counts[c]):
                 MapHelper.color_lookup[num3] = colorArray2[c][d]
                 num3 += 1
