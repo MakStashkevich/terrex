@@ -1,5 +1,8 @@
 from collections.abc import Callable
 from typing import Any
+import asyncio
+import concurrent.futures
+import inspect
 
 from terrex.event.event import Event
 
@@ -8,20 +11,30 @@ class EventManager:
 
     def __init__(self):
         self.event_listeners = {}
-        self.event_methods = {}
-
-    """A decorator function
-        Use it as follows:
-
-        eventmanager = bot.get_event_manager()
-
-        @eventmanager.on_event(Events.CHAT)
-        def chat_message(self, data):
-            print(data)
-
-    """
+        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=4)
 
     def on_event(self, event_id: Event):
+        """
+        Decorator to register a function as an event listener for event_id.
+
+        Usage:
+        terrex = Terrex()
+        evman = terrex.get_event_manager()
+
+        Sync example:
+        @evman.on_event(Event.CHAT)
+        def handler(data):
+            print(data)
+
+        Async example:
+        @evman.on_event(Event.CHAT)
+        async def async_handler(data):
+            await asyncio.sleep(1)
+            print(data)
+
+        Both sync and async functions are supported.
+        """
+
         def add_wrapper(f: Callable[[Any], None]):
             if event_id not in self.event_listeners:
                 self.event_listeners[event_id] = []
@@ -32,17 +45,38 @@ class EventManager:
         return add_wrapper
 
     def method_on_event(self, event_id: Event, listener: Callable[[Any], None]):
-        if event_id not in self.event_methods:
-            self.event_methods[event_id] = []
+        """
+        Registers a callable as an event listener for event_id.
+
+        Usage:
+        terrex = Terrex()
+        evman = terrex.get_event_manager()
+
+        Sync example:
+        evman.method_on_event(Event.CHAT, self.handler)
+
+        def handler(self, data):
+            print(data)
+
+        Async example:
+        evman.method_on_event(Event.CHAT, self.async_handler)
+
+        async def async_handler(self, data):
+            await asyncio.sleep(1)
+            print(data)
+
+        Supports sync and async callables.
+        """
+        if event_id not in self.event_listeners:
+            self.event_listeners[event_id] = []
         if callable(listener):
-            self.event_methods[event_id].append(listener)
+            self.event_listeners[event_id].append(listener)
 
     def raise_event(self, event_id: Event, data: Any = None):
-        # print("Event happened: ", event_id)
         if event_id in self.event_listeners:
             for f in self.event_listeners[event_id]:
-                f(data)
-        if event_id in self.event_methods:
-            for f in self.event_methods[event_id]:
                 if callable(f):
-                    f(data)
+                    if inspect.iscoroutinefunction(f):
+                        self.executor.submit(lambda: asyncio.run(f(data)))
+                    else:
+                        self.executor.submit(f, data)
