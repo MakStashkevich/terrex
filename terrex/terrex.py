@@ -1,3 +1,5 @@
+import time
+
 from terrex.net import module
 from terrex.player.player import Player
 from terrex.net.protocol import PROTOCOLS
@@ -38,7 +40,13 @@ class Terrex:
         self.client = client.Client(ip, port, protocol, server_password, self.player, self.world, self.evman)
 
     def start(self):
-        self.client.connect()
+        try:
+            self.client.connect()
+            while self.client.running:
+                time.sleep(0.1)
+        except KeyboardInterrupt:
+            print("Stopping bot...")
+            self.stop()
 
     def send_message(self, text: str):
         if self.player.logged_in:

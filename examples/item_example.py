@@ -24,11 +24,5 @@ def item_drop_update(data):
     print("X: " + str(data.x) + " Y: " + str(data.y))
 
 
+# Start the client
 terrex.start()
-
-try:
-    while terrex.client.running:
-        time.sleep(0.1)
-except KeyboardInterrupt:
-    print("Stopping bot...")
-    terrex.stop()
