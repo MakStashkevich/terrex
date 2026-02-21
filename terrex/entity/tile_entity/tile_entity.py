@@ -99,6 +99,8 @@ TileEntity = TrainingDummy | ItemFrame | LogicSensor | DisplayDoll | WeaponRack 
 
 def read_tile_entity(reader: Reader) -> TileEntity:
     typ = reader.read_byte()
+    if typ < 0:
+        return
     id_ = reader.read_int()
     x = reader.read_short()
     y = reader.read_short()
@@ -230,7 +232,8 @@ def read_tile_entity(reader: Reader) -> TileEntity:
         item_type = reader.read_ushort()
         return CritterAnchor(type=typ, id=id_, x=x, y=y, item_type=item_type)
     else:
-        raise ValueError(f"Unknown TileEntity type: {typ}")
+        # raise ValueError
+        print(f"Unknown TileEntity type: {typ}")
 
 
 def write_tile_entity(entity: TileEntity, writer: Writer) -> None:
