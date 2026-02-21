@@ -6,6 +6,7 @@ import time
 import traceback
 
 from terrex import packet
+from terrex.main import Main
 from terrex.player.player import Player
 from terrex.event.eventmanager import EventManager
 from terrex.packet.base import Packet, packet_registry
@@ -114,7 +115,10 @@ class Client:
                     packet = packet_cls()
                     reader = Reader(payload, protocol_version=self.protocol, net_mode=NetMode.SERVER)
                     packet.read(reader)
-                    packet.handle(self.world, self.player, self._evman)
+                    try:
+                        packet.handle(self.world, self.player, self._evman)
+                    except NotImplementedError:
+                        pass
 
                     if not self._handle_server_packet(packet):
                         continue
@@ -134,26 +138,27 @@ class Client:
 
         self.running = False
 
-    def _handle_server_packet(self, packet: Packet) -> bool:
-        if packet.id == MessageID.Ping:
+    def _handle_server_packet(self, pkt: Packet) -> bool:
+        if pkt.id == MessageID.Ping:
             self.on_ping_received()
             return False
 
-        if packet.id == MessageID.Kick and isinstance(packet, packet.Kick):
+        if pkt.id == MessageID.Kick and isinstance(pkt, packet.Kick):
             print(f"Disconnect with reason: {get_translation(packet.reason)}")
             self.stop()
             return False
 
         if self.running and not self.connected_to_server:
             # server req password
-            if packet.id == MessageID.RequestPassword:
-                packet = packet.SendPassword(self.server_password)
-                self.send(packet)
+            if pkt.id == MessageID.RequestPassword:
+                pkt = packet.SendPassword(self.server_password)
+                self.send(pkt)
 
             # server accept password and receive player info
-            if packet.id == MessageID.PlayerInfo and isinstance(packet, packet.SyncPlayer) and not packet.is_server:
+            if pkt.id == MessageID.PlayerInfo and isinstance(pkt, packet.PlayerInfo) and not pkt.is_server:
                 # save server player id
-                self.player.id = packet.player_id
+                Main.my_player_id = self.player.id = pkt.player_id
+                Main.player[pkt.player_id] = self.player
 
                 # send player info to server
                 player_info = packet.SyncPlayer(
@@ -192,7 +197,7 @@ class Client:
                 player_info.ate_artisan_bread = self.player.ate_artisan_bread
                 self.send(player_info)
 
-                self.send(packet.ClientUuid(PLAYER_UUID))
+                self.send(packet.ClientUUID(PLAYER_UUID))
                 self.send(
                     packet.PlayerLifeMana(
                         player_id=self.player.id,
@@ -209,7 +214,7 @@ class Client:
                 )
                 self.send(packet.PlayerBuffs(player_id=self.player.id, buffs=[0] * 22))
                 self.send(
-                    packet.UpdatePlayerLoadout(
+                    packet.SyncLoadout(
                         player_id=self.player.id,
                         loadout_index=0,
                         accessory_visibility=self.player.accessory_visibility,
@@ -272,7 +277,7 @@ class Client:
                 self.player.initialized = True
 
             # server say: you can spawn player
-            if packet.id == MessageID.InitialSpawn:
+            if pkt.id == MessageID.InitialSpawn:
                 self.send(
                     packet.PlayerSpawn(
                         player_id=self.player.id,
@@ -286,7 +291,7 @@ class Client:
                     )
                 )
                 self.send(
-                    packet.LoadNetModule(
+                    packet.NetModules(
                         module=NetCreativePowersModule.create(power=SpawnRateSliderPerPlayerPower.create(value=0.0)),
                     )
                 )
@@ -294,7 +299,7 @@ class Client:
                 # then server send: NPC_HOME_UPDATE (0-29), current ANGLER_QUEST, 6 packets of SYNC_REVENGE_MARKER
 
             # server say: you successful connected to server
-            if packet.id == MessageID.FinishedConnectingToServer:
+            if pkt.id == MessageID.FinishedConnectingToServer:
                 # then server send: LOAD_NET_MODULE (LoadNetModuleServerText messages MOTD & connect success player)
                 # UPDATE_TILE_ENTITY
                 self.connected_to_server = True
@@ -315,7 +320,7 @@ class Client:
                 self.send(
                     packet.SyncPlayerZone(
                         player_id=self.player.id,
-                        flags=0,  # 131072 / todo: check this
+                        # todo: add all zone flags
                     )
                 )
                 self.send(packet.PlayerBuffs(player_id=self.player.id, buffs=[0] * 22))  # repeat???
@@ -335,7 +340,7 @@ class Client:
                 # {'projectile_id': 1, 'pos': {'x': 67163.5, 'y': 6750.5, 'TILE_TO_POS_SCALE': 16.0}, 'vel': {'x': 0.0, 'y': 0.0, 'TILE_TO_POS_SCALE': 16.0}, 'owner': 0, 'ty': 18, 'flags': 0, 'ai': [0.0, 0.0], 'damage': None, 'knockback': None, 'original_damage': None, 'proj_uuid': None}
 
                 self.send(
-                    packet.UpdatePlayerLuck(
+                    packet.UpdatePlayerLuckFactors(
                         player_id=self.player.id,
                         ladybug_luck_time_left=self.player.ladybug_luck_time_left,
                         torch_luck=self.player.torch_luck,

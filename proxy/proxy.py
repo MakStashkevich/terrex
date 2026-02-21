@@ -10,7 +10,7 @@ from terrex.packet.base import stringify_value
 from terrex.id import MessageID
 from terrex.net.mode import NetMode
 
-IGNORED_PACKET_IDS = [MessageID.TileSection]
+IGNORED_PACKET_IDS = []
 
 BUFFER_SIZE = 4096
 
@@ -197,13 +197,12 @@ def forward(
                         pkt_name = f"Unknown({packet_id})"
 
                     timestamp = current_timestamp()
-                    try:
-                        log_payload = stringify_value(vars(packet))
-                    except RecursionError:
-                        log_payload = f"**recursion depth exceeded in logging** id={packet_id} ({pkt_name})"
-
-                    if packet.id in IGNORED_PACKET_IDS:
-                        continue
+                    log_payload = ""
+                    if packet.id not in IGNORED_PACKET_IDS:
+                        try:
+                            log_payload = stringify_value(vars(packet))
+                        except RecursionError:
+                            log_payload = f"**recursion depth exceeded in logging** id={packet_id} ({pkt_name})"
 
                     if tags[packet.id]:
                         print(f"{direction}{'<' if direction == 'STC' else '>'} {packet.id} {pkt_name} {log_payload}")

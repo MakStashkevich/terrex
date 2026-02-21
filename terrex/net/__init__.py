@@ -15,7 +15,7 @@ from .sign import Sign
 from .streamer import Reader, Writer
 from .teleport_pylon_type import TeleportPylonType
 from .tile_npc_data import TileNPCData
-from .tile import TileFlags, Tile
+from .tile import Tile
 from .vec2 import Vec2
 from .world_zone import WorldZone
 
@@ -36,7 +36,6 @@ __all__ = [
     "Writer",
     "TeleportPylonType",
     "TileNPCData",
-    "TileFlags",
     "Tile",
     "Vec2",
     "WorldZone",

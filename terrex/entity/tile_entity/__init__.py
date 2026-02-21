@@ -17,6 +17,7 @@ from .tile_entity import (
     KiteAnchor,
     CritterAnchor,
     TileEntity,
+    read_tile_entity,
 )
 
 
@@ -35,4 +36,5 @@ __all__ = [
     "KiteAnchor",
     "CritterAnchor",
     "TileEntity",
+    "read_tile_entity"
 ]

@@ -6,9 +6,9 @@ class Event(enum.Enum):
     # Data: message as string
     Chat = 0
 
-    # Trigger: Tile information
+    # Trigger: Tile section
     # Data: 2D array of Tiles
-    TileUpdate = 1
+    TileSectionUpdate = 1
 
     # Trigger: Login
     # Data: null

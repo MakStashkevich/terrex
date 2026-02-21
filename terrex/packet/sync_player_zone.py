@@ -18,11 +18,11 @@ class SyncPlayerZone(SyncPacket):
         town_npc_count: int = 0,
     ):
         self.player_id = player_id
-        self.zone1 = zone1
-        self.zone2 = zone2
-        self.zone3 = zone3
-        self.zone4 = zone4
-        self.zone5 = zone5
+        self.zone1 = zone1 or BitsByte()
+        self.zone2 = zone2 or BitsByte()
+        self.zone3 = zone3 or BitsByte()
+        self.zone4 = zone4 or BitsByte()
+        self.zone5 = zone5 or BitsByte()
         self.town_npc_count = town_npc_count
 
     def read(self, reader: Reader):
@@ -36,11 +36,11 @@ class SyncPlayerZone(SyncPacket):
 
     def write(self, writer: Writer):
         writer.write_byte(self.player_id)
-        writer.write_byte(self.zone1)
-        writer.write_byte(self.zone2)
-        writer.write_byte(self.zone3)
-        writer.write_byte(self.zone4)
-        writer.write_byte(self.zone5)
+        writer.write_byte(int(self.zone1))
+        writer.write_byte(int(self.zone2))
+        writer.write_byte(int(self.zone3))
+        writer.write_byte(int(self.zone4))
+        writer.write_byte(int(self.zone5))
         writer.write_byte(self.town_npc_count)
 
     def handle(self, world, player, evman):

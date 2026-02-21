@@ -37,7 +37,7 @@ class EventManager:
         if callable(listener):
             self.event_methods[event_id].append(listener)
 
-    def raise_event(self, event_id: Event, data: Any):
+    def raise_event(self, event_id: Event, data: Any = None):
         # print("Event happened: ", event_id)
         if event_id in self.event_listeners:
             for f in self.event_listeners[event_id]:

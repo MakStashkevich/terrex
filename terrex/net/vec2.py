@@ -5,8 +5,8 @@ from terrex.net.streamer import Reader, Writer
 
 @dataclass
 class Vec2:
-    x: float
-    y: float
+    x: float = 0.0
+    y: float = 0.0
 
     TILE_TO_POS_SCALE: float = 16.0
 

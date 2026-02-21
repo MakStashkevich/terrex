@@ -1,4 +1,8 @@
-from terrex.net.tile import Tile
+from terrex.entity.tile_entity.tile_entity import TileEntity
+from terrex.net.chest import Chest
+from terrex.net.sign import Sign
+from terrex.net.tile_stack import TileStack
+from terrex.net.world_size import WorldSize
 
 
 class World:
@@ -55,8 +59,15 @@ class World:
     # todo: move this
     items: object = {}
     item_owner_index: object = {}
-    
-    tiles = dict[int, dict[int, Tile]]
 
-    def initialize_tiles(self, width, height):
-        self.tiles = [[None for x in range(0, width)] for y in range(0, height)]
+    tiles: TileStack = TileStack()
+    chest: dict[int, Chest] = {}
+    sign: dict[int, Sign] = {}
+    tile_entity: list[TileEntity] = []
+
+    # always false because we connected to generated server world
+    generating_world: bool = False
+
+    @classmethod
+    def underworld_layer(cls) -> int:
+        return cls.max_tiles_y - 200

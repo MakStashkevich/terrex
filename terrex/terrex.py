@@ -43,7 +43,7 @@ class Terrex:
     def send_message(self, text: str):
         if self.player.logged_in:
             self.client.send(
-                packet.LoadNetModule(
+                packet.NetModules(
                     module=module.NetTextModule(
                         chat_command_id=ChatCommand.SayChat,
                         text=text,

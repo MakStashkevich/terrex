@@ -24,7 +24,7 @@ class AreaTileChange(SyncPacket):
         tiles = []
         needed = self.width * self.height
         while len(tiles) < needed:
-            tile, rle = Tile.deserialize_packed(reader)
+            tile, rle = Tile.deserialize_packed(reader, self.tile_x, self.tile_y)
             tiles.extend([tile] * (rle + 1))
         self.tiles = tiles[:needed]
 
