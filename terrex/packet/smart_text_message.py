@@ -1,7 +1,7 @@
 from terrex.packet.base import ServerPacket
 from terrex.id import MessageID
 from terrex.localization.network_text import NetworkText
-from terrex.net.rgb import Rgb
+from terrex.net.structure.rgb import Rgb
 from terrex.net.streamer import Reader
 
 
@@ -18,5 +18,3 @@ class SmartTextMessage(ServerPacket):
         self.message = NetworkText.read(reader)
         self.message_length = reader.read_short()
 
-    def handle(self, world, player, evman):
-        pass

@@ -24,5 +24,3 @@ class SyncEmoteBubble(ServerPacket):
             if self.emote < 0:
                 self.emote_metadata = reader.read_short()
 
-    def handle(self, world, player, evman):
-        pass

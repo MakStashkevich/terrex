@@ -2,7 +2,7 @@ from terrex.event.event import Event
 from terrex.item.item import Item
 from terrex.packet.base import SyncPacket
 from terrex.id import MessageID
-from terrex.net.vec2 import Vec2
+from terrex.net.structure.vec2 import Vec2
 from terrex.net.streamer import Reader, Writer
 
 
@@ -36,14 +36,14 @@ class SyncItem(SyncPacket):
         writer.write_byte(self.no_delay)
         writer.write_short(self.item_net_id)
 
-    def handle(self, world, player, evman):
+    async def handle(self, world, player, evman):
         # todo: fix Item props
         item_object = Item(self.item_id, self.item_net_id, self.pos, self.vel, self.prefix, self.stack_size)
 
         if self.item_id in world.items:
-            evman.raise_event(Event.ItemDropUpdate, item_object)
+            await evman.raise_event(Event.ItemDropUpdate, item_object)
         else:
             world.items[self.item_id] = item_object
             if self.item_id not in world.item_owner_index:
                 world.item_owner_index[self.item_id] = 255
-            evman.raise_event(Event.ItemDropped, item_object)
+            await evman.raise_event(Event.ItemDropped, item_object)

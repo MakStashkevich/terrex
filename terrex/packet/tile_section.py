@@ -10,7 +10,9 @@ from terrex.world.world import World
 
 
 def decompress_tile_block_inner(reader: Reader, x_start: int, y_start: int, width: int, height: int) -> None:
-    from terrex.net import Chest, Sign, Tile
+    from terrex.net.structure.chest import Chest
+    from terrex.net.structure.sign import Sign
+    from terrex.net.structure.tile import Tile
     from terrex.entity.tile_entity import read_tile_entity
 
     tile: Tile | None = None
@@ -71,5 +73,5 @@ class TileSection(ServerPacket):
 
         decompress_tile_block_inner(section_reader, self.x_start, self.y_start, self.width, self.height)
 
-    def handle(self, world, player, evman):
-        evman.raise_event(Event.TileSectionUpdate)
+    async def handle(self, world, player, evman):
+        await evman.raise_event(Event.TileSectionUpdate)

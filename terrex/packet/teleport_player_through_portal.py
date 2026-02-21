@@ -30,5 +30,3 @@ class TeleportPlayerThroughPortal(SyncPacket):
         writer.write_float(self.vel_x)
         writer.write_float(self.vel_y)
 
-    def handle(self, world, player, evman):
-        pass

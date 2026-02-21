@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import IntEnum
 
-from terrex.net.teleport_pylon_type import TeleportPylonType
+from terrex.net.enum.teleport_pylon_type import TeleportPylonType
 from terrex.net.streamer import Reader, Writer
 
 from .net_module import NetSyncModule

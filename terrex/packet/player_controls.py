@@ -1,6 +1,6 @@
 from terrex.packet.base import SyncPacket
 from terrex.id import MessageID
-from terrex.net.vec2 import Vec2
+from terrex.net.structure.vec2 import Vec2
 from terrex.net.streamer import Reader, Writer
 
 # Константы для флагов PulleyMode

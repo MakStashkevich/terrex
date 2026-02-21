@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from terrex.net.vec2 import Vec2
+from terrex.net.structure.vec2 import Vec2
 
 
 @dataclass

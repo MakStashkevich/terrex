@@ -12,5 +12,3 @@ class RemoveRevengeMarker(ServerPacket):
     def read(self, reader: Reader) -> None:
         self.unique_id = reader.read_int()
 
-    def handle(self, world, player, evman):
-        pass

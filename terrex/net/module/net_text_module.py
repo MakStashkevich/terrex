@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 
-from terrex.net.chat_command import ChatCommand
+from terrex.net.enum.chat_command import ChatCommand
 from terrex.localization.network_text import NetworkText
-from terrex.net.mode import NetMode
-from terrex.net.rgb import Rgb
+from terrex.net.enum.mode import NetMode
+from terrex.net.structure.rgb import Rgb
 from terrex.net.streamer import Reader, Writer
 
 from .net_module import NetSyncModule

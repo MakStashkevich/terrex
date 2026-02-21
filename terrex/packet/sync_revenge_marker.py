@@ -42,5 +42,3 @@ class SyncRevengeMarker(ServerPacket):
         self.base_value = reader.read_float()
         self.spawned_from_statue = reader.read_bool()
 
-    def handle(self, world, player, evman):
-        pass

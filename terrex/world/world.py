@@ -1,8 +1,8 @@
 from terrex.entity.tile_entity.tile_entity import TileEntity
-from terrex.net.chest import Chest
-from terrex.net.sign import Sign
+from terrex.net.structure.chest import Chest
+from terrex.net.structure.sign import Sign
 from terrex.net.tile_stack import TileStack
-from terrex.net.world_size import WorldSize
+from terrex.net.enum.world_size import WorldSize
 
 
 class World:

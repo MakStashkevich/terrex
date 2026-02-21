@@ -12,5 +12,3 @@ class AchievementMessageNPCKilled(ServerPacket):
     def read(self, reader: Reader) -> None:
         self.npc_id = reader.read_short()
 
-    def handle(self, world, player, evman):
-        pass

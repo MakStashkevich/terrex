@@ -6,39 +6,38 @@ from terrex.event import Event
 from terrex.net.module import NetTextModule
 from terrex.world.map_helper import MapHelper
 
-# Create a Terrex object used with proxy on port 8888
-with Terrex("127.0.0.1", 8888, server_password="4444") as client:
+import asyncio
 
-    # Use chat event for handle messages
-    @client.on(Event.Chat)
-    def chat(module: NetTextModule):
-        if client.player.id == module.author_id:
-            # ignore self messages
-            return
 
-        msg = module.text.text
-        print(f"Chat message: {msg}")
+async def main():
+    # Create a Terrex object and used as async client
+    async with Terrex("127.0.0.1", 8888, server_password="4444") as client:
+        # Send message to chat after connected to Terraria server
+        await client.send_message("I'm alive!")
 
-        # Do something with the message
-        # In this case, stop the bot if the word "Stop" occurs
-        if "stop" in msg:
-            client.send_message("goodbye!")
-            client.stop()
+        # Use chat event for handle messages
+        @client.on(Event.Chat)
+        async def chat(module: NetTextModule):
+            if client.player.id == module.author_id:
+                # ignore self messages
+                return
 
-        # Or reply with the message "hello world!" if you encounter the word "hello" :-)
-        elif "hello" in msg:
-            client.send_message("hello world!")
+            msg = module.text.text
+            print(f"Chat message: {msg}")
 
-        elif "map" in msg:
+            # Do something with the message
+            # In this case, stop the bot if the word "Stop" occurs
+            if "stop" in msg:
+                await client.send_message("Goodbye!")
+                await client.stop()
 
-            def generate_map():
-                client.send_message("start generate map image...")
-                img = MapHelper.draw_world_image()
-                img.save("world.png", compress_level=0)
-                client.send_message("map image successful generated!")
+            # Or reply with the message "hello world!" if you encounter the word "hello" :-)
+            elif "hello" in msg:
+                await client.send_message("Hello world!")
 
-            thread = threading.Thread(target=generate_map, daemon=True)
-            thread.start()
+        # Keep runned process until disconnected
+        await client.run_until_disconnected()
 
-    # Keep runned process until disconnected
-    client.run_until_disconnected()
+
+if __name__ == "__main__":
+    asyncio.run(main())

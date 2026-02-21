@@ -2,7 +2,7 @@ from enum import IntEnum
 
 from terrex.packet.base import ServerPacket
 from terrex.id import MessageID
-from terrex.net.vec2 import Vec2
+from terrex.net.structure.vec2 import Vec2
 from terrex.net.streamer import Reader
 
 

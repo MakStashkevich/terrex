@@ -32,7 +32,7 @@ class NetModules(SyncPacket):
         writer.write_ushort(self.module.id)
         self.module.write(writer)
 
-    def handle(self, world, player, evman):
+    async def handle(self, world, player, evman):
         if (
             isinstance(self.module, NetTextModule)
             and self.module.author_id is not None
@@ -40,4 +40,4 @@ class NetModules(SyncPacket):
             # ignore client chat commands
             and self.module.chat_command_id is None
         ):
-            evman.raise_event(Event.Chat, self.module)
+            await evman.raise_event(Event.Chat, self.module)

@@ -1,6 +1,6 @@
 from terrex.packet.base import SyncPacket
 from terrex.id import MessageID
-from terrex.net.rgb import Rgb
+from terrex.net.structure.rgb import Rgb
 from terrex.net.streamer import Reader, Writer
 
 

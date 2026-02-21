@@ -12,5 +12,3 @@ class AchievementMessageEventHappened(ServerPacket):
     def read(self, reader: Reader) -> None:
         self.event_id = reader.read_short()
 
-    def handle(self, world, player, evman):
-        pass

@@ -1,6 +1,6 @@
 from terrex.entity.entity import Entity
 from terrex.entity.npc import NPC
-from terrex.net.rgb import Rgb
+from terrex.net.structure.rgb import Rgb
 from terrex.net.variable.bool_var import BoolVar
 from terrex.net.variable.const_var import ConstVar
 from terrex.net.variable.float_var import FloatVar

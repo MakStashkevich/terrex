@@ -19,5 +19,3 @@ class TamperWithNPC(ServerPacket):
             self.immunity_time = reader.read_int()
             self.immunity_player_id = reader.read_short()
 
-    def handle(self, world, player, evman):
-        pass

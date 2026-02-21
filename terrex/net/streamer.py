@@ -1,6 +1,6 @@
 import struct
 
-from terrex.net.mode import NetMode
+from terrex.net.enum.mode import NetMode
 
 
 class Reader:

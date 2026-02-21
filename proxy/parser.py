@@ -3,7 +3,7 @@ import traceback
 
 from terrex.packet.base import Packet, packet_registry
 from terrex.id import MessageID
-from terrex.net.mode import NetMode
+from terrex.net.enum.mode import NetMode
 from terrex.net.streamer import Reader
 
 

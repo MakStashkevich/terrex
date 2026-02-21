@@ -17,6 +17,3 @@ class MinionAttackTargetUpdate(ClientPacket):
     def write(self, writer: Writer) -> None:
         writer.write_byte(self.player_id)
         writer.write_short(self.minion_target)
-
-    def handle(self, world, player, evman):
-        pass

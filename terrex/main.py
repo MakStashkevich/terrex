@@ -1,4 +1,4 @@
-from terrex.player.player import Player
+from typing import Any
 
 
 class Main:
@@ -7,7 +7,7 @@ class Main:
     """
 
     # players info
-    player: dict[int, Player] = {}
+    player: dict[int, Any] = {}
     my_player_id: int = -1
 
     # flags for special world seeds

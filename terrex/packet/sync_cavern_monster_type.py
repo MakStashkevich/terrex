@@ -16,5 +16,3 @@ class SyncCavernMonsterType(SyncPacket):
         for t in self.types:
             writer.write_ushort(t)
 
-    def handle(self, world, player, evman):
-        pass

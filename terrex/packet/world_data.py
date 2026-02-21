@@ -160,7 +160,7 @@ class WorldData(ServerPacket):
         self.lobby_id = reader.read_ulong()
         self.sandstorm_severity = reader.read_float()
 
-    def handle(self, world, player, evman):
+    async def handle(self, world, player, evman):
         World.time = self.time
         World.day_info = self.day_info
         World.moon_phase = self.moon_phase

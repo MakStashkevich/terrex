@@ -1,6 +1,6 @@
 from terrex.id.TileID import TileIDSets
 from terrex.main import Main
-from terrex.net.rgb import Rgb as Color
+from terrex.net.structure.rgb import Rgb as Color
 from terrex.net.tile_npc_data import TileNPCData
 from terrex.world.shape.base import Point
 from terrex.world.shape.rectangle import Rectangle

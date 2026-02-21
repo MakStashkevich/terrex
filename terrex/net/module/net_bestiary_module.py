@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from terrex.net.bestiary import Bestiary
+from terrex.net.structure.bestiary import Bestiary
 from terrex.net.streamer import Reader, Writer
 
 from .net_module import NetServerModule

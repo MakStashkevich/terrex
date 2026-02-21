@@ -1,10 +1,8 @@
-import traceback
-from typing import Dict, List, Tuple, Optional
-from PIL import Image
+from typing import List
 from dataclasses import dataclass
 from terrex.id import WallID
 from terrex.main import Main
-from terrex.net.rgb import Rgb as Color
+from terrex.net.structure.rgb import Rgb as Color
 from terrex.world.world import World
 from terrex.world.world_gen import WorldGen
 
@@ -43,25 +41,6 @@ class MapHelper:
         from terrex.world.map_colors import add_colors
 
         add_colors()
-
-    @classmethod
-    def draw_world_image(cls) -> Image.Image:
-        if not cls.color_lookup:
-            cls.initialize()
-        height = max(1, World.max_tiles_y)
-        width = max(1, World.max_tiles_x)
-        print(width, height)
-        img = Image.new('RGB', (width, height))
-        pixels = img.load()
-        for y in range(height):
-            for x in range(width):
-                mt = cls.create_map_tile(x, y, 255)
-                color = cls.get_map_tile_xna_color(mt)
-                rgb = (color.r, color.g, color.b)
-                pixels[x, y] = rgb
-        # print(f"tile_position={cls.tile_position}, wall_position={cls.wall_position}, liquid_position={cls.liquid_position}, sky_position={cls.sky_position}")
-        # print(f"dirt_position={cls.dirt_position}, rock_position={cls.rock_position}, hell_position={cls.hell_position}")
-        return img
 
     @classmethod
     def map_color(cls, tile_type: int, old_color: Color, color_type: int) -> Color:

@@ -24,5 +24,3 @@ class WiredCannonShot(ServerPacket):
         self.ammo = reader.read_short()
         self.player_id = reader.read_byte()
 
-    def handle(self, world, player, evman):
-        pass

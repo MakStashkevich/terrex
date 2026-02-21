@@ -1,8 +1,8 @@
 from terrex.packet.base import SyncPacket
 from terrex.id import MessageID
 from terrex.localization.network_text import NetworkText
-from terrex.net.rgb import Rgb
-from terrex.net.vec2 import Vec2
+from terrex.net.structure.rgb import Rgb
+from terrex.net.structure.vec2 import Vec2
 from terrex.net.streamer import Reader, Writer
 
 

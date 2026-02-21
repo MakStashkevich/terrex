@@ -8,7 +8,7 @@ from proxy.config import config
 from proxy.parser import IncrementalParser
 from terrex.packet.base import stringify_value
 from terrex.id import MessageID
-from terrex.net.mode import NetMode
+from terrex.net.enum.mode import NetMode
 
 IGNORED_PACKET_IDS = []
 

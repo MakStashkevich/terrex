@@ -24,5 +24,3 @@ class SyncTilePicking(SyncPacket):
         writer.write_short(self.y)
         writer.write_byte(self.pick_damage)
 
-    def handle(self, world, player, evman):
-        pass

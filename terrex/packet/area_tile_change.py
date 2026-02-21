@@ -1,6 +1,6 @@
 from terrex.packet.base import SyncPacket
 from terrex.id import MessageID, TileChangeType
-from terrex.net.tile import Tile
+from terrex.net.structure.tile import Tile
 from terrex.net.streamer import Reader, Writer
 
 

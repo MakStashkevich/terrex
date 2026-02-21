@@ -11,6 +11,3 @@ class ToggleParty(ClientPacket):
 
     def write(self, writer: Writer) -> None:
         pass
-
-    def handle(self, world, player, evman):
-        pass

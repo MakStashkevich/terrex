@@ -1,6 +1,6 @@
 from terrex.id import MessageID
 
-from ..net.vec2 import Vec2
+from terrex.net.structure.vec2 import Vec2
 from terrex.net.streamer import Reader, Writer
 from .base import ClientPacket
 

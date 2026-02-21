@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from terrex.net.liquid import Liquid
+from terrex.net.structure.liquid import Liquid
 from terrex.net.streamer import Reader, Writer
 
 from .net_module import NetServerModule

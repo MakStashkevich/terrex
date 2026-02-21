@@ -1,6 +1,6 @@
 from abc import ABC
 
-from terrex.net.vec2 import Vec2
+from terrex.net.structure.vec2 import Vec2
 
 
 class Entity(ABC):

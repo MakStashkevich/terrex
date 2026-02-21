@@ -1,7 +1,7 @@
 """Auto-generated map colors from the decoded code of the Terraria game"""
 
 from terrex.id import TileID, WallID
-from terrex.net.rgb import Rgb as Color
+from terrex.net.structure.rgb import Rgb as Color
 
 def add_colors() -> None:
     from terrex.world.map_helper import MapHelper

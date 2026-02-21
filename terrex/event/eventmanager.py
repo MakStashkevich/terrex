@@ -11,7 +11,7 @@ class EventManager:
 
     def __init__(self):
         self.event_listeners = {}
-        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=4)
+        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=20)
 
     def on_event(self, event_id: Event):
         """
@@ -38,8 +38,7 @@ class EventManager:
         def add_wrapper(f: Callable[[Any], None]):
             if event_id not in self.event_listeners:
                 self.event_listeners[event_id] = []
-            if callable(f):
-                self.event_listeners[event_id].append(f)
+            self.event_listeners[event_id].append(f)
             return f
 
         return add_wrapper
@@ -69,14 +68,20 @@ class EventManager:
         """
         if event_id not in self.event_listeners:
             self.event_listeners[event_id] = []
-        if callable(listener):
-            self.event_listeners[event_id].append(listener)
+        self.event_listeners[event_id].append(listener)
 
-    def raise_event(self, event_id: Event, data: Any = None):
-        if event_id in self.event_listeners:
-            for f in self.event_listeners[event_id]:
-                if callable(f):
-                    if inspect.iscoroutinefunction(f):
-                        self.executor.submit(lambda: asyncio.run(f(data)))
-                    else:
-                        self.executor.submit(f, data)
+    async def raise_event(self, event_id: Event, data: Any = None):
+        handlers = self.event_listeners.get(event_id, [])
+        coros = []
+        loop = asyncio.get_running_loop()
+
+        for f in handlers:
+            if inspect.iscoroutinefunction(f):
+                # every async func execute on current event loop
+                coros.append(f(data))
+            else:
+                # every sync func execute on thread executor
+                coros.append(loop.run_in_executor(self.executor, f, data))
+
+        if coros:
+            await asyncio.gather(*coros, return_exceptions=True)
