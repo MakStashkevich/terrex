@@ -1,11 +1,8 @@
-import threading
-import time
-
 from PIL import Image
 
 from terrex import Terrex
-from terrex.event import Event
-from terrex.net.module import NetTextModule
+from terrex.event.message import NewMessage
+from terrex.event.player import FromOtherPlayer
 from terrex.world.map_helper import MapHelper
 
 import asyncio
@@ -38,26 +35,21 @@ def draw_map_image(world: World) -> Image.Image:
 async def main():
     # Create a Terrex object and used as async client
     async with Terrex("127.0.0.1", 8888, server_password="4444") as client:
-        # Send message to chat after connected to Terraria server
-        await client.send_message("I'm alive!")
 
-        # Use chat event for handle messages
-        @client.on(Event.Chat)
-        def chat_draw_map(module: NetTextModule):  # use sync func
-            if client.player.id == module.author_id:
-                # ignore self messages
-                return
-
-            msg = module.text.text
-            if not "map" in msg:
-                return
-
-            # set wait=True to make sure that the message is 100% delivered BEFORE start draw map
-            client.call_async(client.send_message, "Start generate map image...", True)
+        # Use chat event to handle "map" command from other players
+        @client.on(NewMessage(r"^map$") & FromOtherPlayer())
+        def handle_map_command_from_other_player():  # synchronous handler to avoid event loop blocking
+            """
+            Generates and saves a PNG map image of the world when "map" is received from other players.
+            Uses a synchronous function for heavy computation.
+            Sends status messages before and after generation.
+            """
+            # Ensure the start message is delivered before starting the heavy task
+            client.call_async(client.send_message, "Starting map image generation...", True)
             draw_map_image(client.world)
-            client.call_async(client.send_message, "Map image successful generated!")
+            client.call_async(client.send_message, "Map image successfully generated!")
 
-        # Keep runned process until disconnected
+        # Keep the process running until disconnected
         await client.run_until_disconnected()
 
 

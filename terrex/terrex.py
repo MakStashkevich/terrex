@@ -7,7 +7,8 @@ from typing import Awaitable, ParamSpec, TypeVar, Union
 import concurrent
 
 from terrex.client import Client
-from terrex.event.event import Event
+from terrex.event.dispatcher import Dispatcher
+from terrex.event.base import EventFilter
 from terrex.net import module
 from terrex.player.player import Player
 from terrex.net.protocol import PROTOCOLS
@@ -20,6 +21,7 @@ from .event import EventManager
 # The latest supported version of Terraria
 TERRARIA_VERSION = (1, 4, 5, 5)
 
+E = TypeVar("E")
 P = ParamSpec("P")
 T = TypeVar("T")
 
@@ -53,9 +55,10 @@ class Terrex:
         self.world = World()
         self.player = player or Player()
 
-        self.evman = EventManager()
+        dispatcher = Dispatcher(self)
+        self.evman = EventManager(dispatcher)
 
-        self.client = Client(ip, port, protocol, server_password, self.player, self.world, self.evman)
+        self.client = Client(ip, port, protocol, server_password, self)
 
     async def send_message(self, text: str, wait: bool = False):
         if self.player.logged_in:
@@ -66,14 +69,14 @@ class Terrex:
                         text=text,
                     ),
                 ),
-                wait=wait
+                wait=wait,
             )
 
     def get_event_manager(self):
         return self.evman
 
-    def on(self, event_id: Event):
-        return self.evman.on_event(event_id)
+    def on(self, filter: EventFilter):
+        return self.evman.on_event(filter)
 
     def _task_done_callback(self, task: asyncio.Task):
         """

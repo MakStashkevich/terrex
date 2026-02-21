@@ -5,8 +5,6 @@ import traceback
 
 from terrex import packet
 from terrex.main import Main
-from terrex.player.player import Player
-from terrex.event.eventmanager import EventManager
 from terrex.packet.base import Packet, packet_registry
 from terrex.net.creative_power.spawn_rate_slider_per_player_power import (
     SpawnRateSliderPerPlayerPower,
@@ -16,7 +14,6 @@ from terrex.id import MessageID
 from terrex.net.enum.mode import NetMode
 from terrex.localization.localization import get_translation
 from terrex.net.streamer import Reader, Writer
-from terrex.world.world import World
 
 PLAYER_UUID = "01032c81-623f-4435-85e5-e0ec816b09ca"
 
@@ -28,20 +25,22 @@ class Client:
         port: int,
         protocol: int,
         server_password: str,
-        player: Player,
-        world: World,
-        evman: EventManager,
+        terrex,
     ):
+        from terrex.terrex import Terrex
+
+        if not isinstance(terrex, Terrex):
+            return
+
         self.host = host
         self.port = port
         self.protocol = protocol
         self.server_password = server_password
-        self.player = player
-        self.world = world
-        self._evman = evman
 
-        self.world_lock = asyncio.Lock()
-        self.player_lock = asyncio.Lock()
+        self.terrex = terrex
+        self.player = terrex.player
+        self.world = terrex.world
+        self.evman = terrex.evman
 
         self.reader: asyncio.StreamReader | None = None
         self.writer: asyncio.StreamWriter | None = None
@@ -453,7 +452,7 @@ class Client:
                     if not isinstance(packet, Packet):
                         continue
                     try:
-                        await packet.handle(self.world, self.player, self._evman)
+                        await packet.handle(self.world, self.player, self.evman)
                     except NotImplementedError:
                         pass
                 except asyncio.TimeoutError:
@@ -477,6 +476,9 @@ class Client:
         if not self.running:
             return
         self.running = False
+
+        # Stop event manager, dispatcher with threads
+        self.evman.stop()
 
         # Signal queues to stop
         try:

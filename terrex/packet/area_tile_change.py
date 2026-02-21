@@ -2,6 +2,7 @@ from terrex.packet.base import SyncPacket
 from terrex.id import MessageID, TileChangeType
 from terrex.net.structure.tile import Tile
 from terrex.net.streamer import Reader, Writer
+from terrex.world.world import World
 
 
 class AreaTileChange(SyncPacket):
@@ -24,7 +25,8 @@ class AreaTileChange(SyncPacket):
         tiles = []
         needed = self.width * self.height
         while len(tiles) < needed:
-            tile, rle = Tile.deserialize_packed(reader, self.tile_x, self.tile_y)
+            # todo: add props world
+            tile, rle = Tile.deserialize_packed(reader, World, self.tile_x, self.tile_y)
             tiles.extend([tile] * (rle + 1))
         self.tiles = tiles[:needed]
 

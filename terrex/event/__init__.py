@@ -1,12 +1,19 @@
-"""
-Event module for Terrex. Contains event system classes.
-"""
-
-from .event import Event
-from .eventmanager import EventManager
-
+from .base import EventFilter
+from .context import EventContext
+from .dispatcher import Dispatcher
+from .manager import EventManager
+from .types import BaseEvent
+from .message import NewMessage
+from .player import FromPlayer, FromCurrentPlayer, FromOtherPlayer
 
 __all__ = [
-    "Event",
+    "EventFilter",
+    "EventContext",
+    "BaseEvent",
     "EventManager",
+    "Dispatcher",
+    "NewMessage",
+    "FromPlayer",
+    "FromCurrentPlayer",
+    "FromOtherPlayer"
 ]

@@ -10,7 +10,7 @@ from terrex.packet.base import stringify_value
 from terrex.id import MessageID
 from terrex.net.enum.mode import NetMode
 
-IGNORED_PACKET_IDS = []
+IGNORED_PACKET_IDS = [MessageID.TileSection]
 
 BUFFER_SIZE = 4096
 

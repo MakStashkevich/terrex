@@ -1,32 +1,32 @@
 import zlib
-from copy import deepcopy
-from dataclasses import dataclass
 
-from terrex.event.event import Event
+from terrex.event.types import TileSectionUpdateEvent
 from terrex.packet.base import ServerPacket
 from terrex.id import MessageID
 from terrex.net.streamer import Reader
 from terrex.world.world import World
 
 
-def decompress_tile_block_inner(reader: Reader, x_start: int, y_start: int, width: int, height: int) -> None:
+def decompress_tile_block_inner(reader: Reader, world: World, x_start: int, y_start: int, width: int, height: int) -> list['Tile']:
     from terrex.net.structure.chest import Chest
     from terrex.net.structure.sign import Sign
     from terrex.net.structure.tile import Tile
     from terrex.entity.tile_entity import read_tile_entity
 
+    tile_list: list[Tile] = []
     tile: Tile | None = None
     rle: int = 0
     for y in range(y_start, y_start + height):
         for x in range(x_start, x_start + width):
             if rle == 0:
-                tile, rle = Tile.deserialize_packed(reader, x, y)
-                # print(tile)
+                tile, rle = Tile.deserialize_packed(reader, world, x, y)
+                tile_list.append(tile)
             else:
                 rle -= 1
                 new_tile = World.tiles.get(x, y) or Tile()
                 new_tile.copy_from(tile)
                 World.tiles.set(x, y, new_tile)
+                tile_list.append(tile)
 
     print("AFTER TILES OFFSET:", reader.index)
     print("NEXT 64 BYTES RAW:", reader.data[reader.index : reader.index + 64])
@@ -46,6 +46,8 @@ def decompress_tile_block_inner(reader: Reader, x_start: int, y_start: int, widt
     n_entities = reader.read_short()
     for _ in range(n_entities):
         World.tile_entity.append(read_tile_entity(reader))
+        
+    return tile_list
 
 
 class TileSection(ServerPacket):
@@ -71,7 +73,8 @@ class TileSection(ServerPacket):
         # if dimensions > 1000 * 1000:
         #     raise ValueError(f"Section dimensions too large: {width}x{height}")
 
-        decompress_tile_block_inner(section_reader, self.x_start, self.y_start, self.width, self.height)
+        # todo: add props world
+        self.tiles = decompress_tile_block_inner(section_reader, World, self.x_start, self.y_start, self.width, self.height)
 
     async def handle(self, world, player, evman):
-        await evman.raise_event(Event.TileSectionUpdate)
+        await evman.raise_event(TileSectionUpdateEvent(self, self.tiles))

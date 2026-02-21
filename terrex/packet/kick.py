@@ -1,4 +1,4 @@
-from terrex.event.event import Event
+from terrex.event.types import BlockedEvent
 from terrex.packet.base import ServerPacket
 from terrex.id import MessageID
 from terrex.localization.network_text import NetworkText
@@ -15,4 +15,4 @@ class Kick(ServerPacket):
         self.reason = NetworkText.read(reader)
 
     async def handle(self, world, player, evman):
-        await evman.raise_event(Event.Blocked, self.reason)
+        await evman.raise_event(BlockedEvent(self, self.reason))

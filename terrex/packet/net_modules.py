@@ -1,4 +1,4 @@
-from terrex.event.event import Event
+from terrex.event.types import ChatEvent
 from terrex.packet.base import SyncPacket
 from terrex.net.module import (
     NetTextModule,
@@ -40,4 +40,4 @@ class NetModules(SyncPacket):
             # ignore client chat commands
             and self.module.chat_command_id is None
         ):
-            await evman.raise_event(Event.Chat, self.module)
+            await evman.raise_event(ChatEvent(self, self.module.author_id, self.module.text.text, self.module.chat_command_id))

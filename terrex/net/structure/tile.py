@@ -24,13 +24,13 @@ class Tile:
     frame_y: int = 0  # short
 
     @classmethod
-    def deserialize_packed(cls, reader: Reader, tile_x: int, tile_y: int) -> tuple["Tile", int]:
-        tile = World.tiles.get(tile_x, tile_y)
-        if tile:
+    def deserialize_packed(cls, reader: Reader, world: World, tile_x: int, tile_y: int) -> tuple["Tile", int]:
+        tile = world.tiles.get(tile_x, tile_y)
+        if tile and isinstance(tile, Tile):
             tile.clear_everything()
         else:
             tile = cls()
-            World.tiles.set(tile_x, tile_y, tile)
+            world.tiles.set(tile_x, tile_y, tile)
 
         flags_bytes = [reader.read_byte(), 0, 0]
         if flags_bytes[0] & 0x01:

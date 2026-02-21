@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from terrex.player.player import Player
-from terrex.event.eventmanager import EventManager
+from terrex.event.manager import EventManager
 from terrex.net.enum.mode import NetMode
 from terrex.net.streamer import Reader, Writer
 from terrex.util.stringify import stringify_value

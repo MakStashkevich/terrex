@@ -1,12 +1,10 @@
-import threading
-import time
-
 from terrex import Terrex
-from terrex.event import Event
-from terrex.net.module import NetTextModule
-from terrex.world.map_helper import MapHelper
+from terrex.event.message import NewMessage
+from terrex.event.player import FromCurrentPlayer, FromOtherPlayer
 
 import asyncio
+
+from terrex.event.types import ChatEvent
 
 
 async def main():
@@ -15,27 +13,29 @@ async def main():
         # Send message to chat after connected to Terraria server
         await client.send_message("I'm alive!")
 
-        # Use chat event for handle messages
-        @client.on(Event.Chat)
-        async def chat(module: NetTextModule):
-            if client.player.id == module.author_id:
-                # ignore self messages
-                return
-
-            msg = module.text.text
+        @client.on(NewMessage())
+        async def handle_all_chat_messages(event: ChatEvent):
+            """Prints every chat message received or sent."""
+            msg = event.text
             print(f"Chat message: {msg}")
 
-            # Do something with the message
-            # In this case, stop the bot if the word "Stop" occurs
-            if "stop" in msg:
-                await client.send_message("Goodbye!")
-                await client.stop()
+        @client.on(NewMessage(r"(?i)^(.*)alive(.*)$") & FromCurrentPlayer())
+        async def handle_own_alive_message():
+            """Responds with laughter to own chat messages containing 'alive' (case-insensitive)."""
+            await client.send_message("Ha-ha-ha!!!")
 
-            # Or reply with the message "hello world!" if you encounter the word "hello" :-)
-            elif "hello" in msg:
-                await client.send_message("Hello world!")
+        @client.on(NewMessage(r"^(hello|hi)$") & FromOtherPlayer())
+        async def handle_greeting_from_other_player():
+            """Responds to 'hello' or 'hi' from other players."""
+            await client.send_message("Hello world!")
 
-        # Keep runned process until disconnected
+        @client.on(NewMessage(r"^(stop|bye)$") & FromOtherPlayer())
+        async def handle_farewell_from_other_player():
+            """Responds to 'stop' or 'bye' from other players and stops the client."""
+            await client.send_message("Goodbye!")
+            await client.stop()
+
+        # Keep the process running until disconnected
         await client.run_until_disconnected()
 
 
