@@ -6,68 +6,44 @@ from terrex.event.event import Event
 from terrex.packet.base import ServerPacket
 from terrex.id import MessageID
 from terrex.net.streamer import Reader
+from terrex.world.world import World
 
 
-@dataclass
-class TileSectionData:
-    x_start: int
-    y_start: int
-    width: int
-    height: int
-    tiles: list
-    chests: list
-    signs: list
-    tile_entities: list
-
-
-def decompress_tile_block_inner(reader: Reader, x_start: int, y_start: int, width: int, height: int) -> TileSectionData:
+def decompress_tile_block_inner(reader: Reader, x_start: int, y_start: int, width: int, height: int) -> None:
     from terrex.net import Chest, Sign, Tile
     from terrex.entity.tile_entity import read_tile_entity
 
-    tiles = [[None for _ in range(0, x_start + width)] for _ in range(0, y_start + height)]
-    rle = 0
-    tile = None
-
+    tile: Tile | None = None
+    rle: int = 0
     for y in range(y_start, y_start + height):
         for x in range(x_start, x_start + width):
             if rle == 0:
-                tile, rle = Tile.deserialize_packed(reader)
-                tiles[y][x] = tile
+                tile, rle = Tile.deserialize_packed(reader, x, y)
                 # print(tile)
             else:
                 rle -= 1
-                tiles[y][x] = deepcopy(tile)
+                new_tile = World.tiles.get(x, y) or Tile()
+                new_tile.copy_from(tile)
+                World.tiles.set(x, y, new_tile)
 
     print("AFTER TILES OFFSET:", reader.index)
     print("NEXT 64 BYTES RAW:", reader.data[reader.index : reader.index + 64])
 
     n_chests = reader.read_short()
-    chests = []
     for _ in range(n_chests):
         chest = Chest.read(reader)
-        if 0 <= chest.x < 8000:
-            chests.append(chest)
+        if 0 <= chest.index < 8000:
+            World.chest[chest.index] = chest
 
     n_signs = reader.read_short()
-    signs = []
     for _ in range(n_signs):
         sign = Sign.read(reader)
         if 0 <= sign.index < 32000:
-            signs.append(sign)
+            World.sign[sign.index] = sign
 
     n_entities = reader.read_short()
-    tile_entities = [read_tile_entity(reader) for _ in range(n_entities)]
-
-    return TileSectionData(
-        x_start=x_start,
-        y_start=y_start,
-        width=width,
-        height=height,
-        tiles=tiles,
-        chests=chests,
-        signs=signs,
-        tile_entities=tile_entities,
-    )
+    for _ in range(n_entities):
+        World.tile_entity.append(read_tile_entity(reader))
 
 
 class TileSection(ServerPacket):
@@ -93,7 +69,7 @@ class TileSection(ServerPacket):
         # if dimensions > 1000 * 1000:
         #     raise ValueError(f"Section dimensions too large: {width}x{height}")
 
-        self.data = decompress_tile_block_inner(section_reader, self.x_start, self.y_start, self.width, self.height)
+        decompress_tile_block_inner(section_reader, self.x_start, self.y_start, self.width, self.height)
 
     def handle(self, world, player, evman):
-        evman.raise_event(Event.TileUpdate, self.data)
+        evman.raise_event(Event.TileSectionUpdate)
