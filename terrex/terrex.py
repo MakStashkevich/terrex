@@ -1,5 +1,6 @@
 import time
 
+from terrex.event.event import Event
 from terrex.net import module
 from terrex.player.player import Player
 from terrex.net.protocol import PROTOCOLS
@@ -52,6 +53,9 @@ class Terrex:
 
     def get_event_manager(self):
         return self.evman
+
+    def on(self, event_id: Event):
+        return self.evman.on_event(event_id)
 
     def stop(self):
         self.client.stop()

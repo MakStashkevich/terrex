@@ -8,10 +8,9 @@ from terrex.world.map_helper import MapHelper
 
 # Create a Terrex object used with proxy on port 8888
 with Terrex("127.0.0.1", 8888, server_password="4444") as client:
-    event = client.get_event_manager()
 
-    # Connect a function to an event using a decorator
-    @event.on_event(Event.Chat)
+    # Use chat event for handle messages
+    @client.on(Event.Chat)
     def chat(module: NetTextModule):
         if client.player.id == module.author_id:
             # ignore self messages
