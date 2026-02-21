@@ -55,6 +55,9 @@ class Client:
         self._ping_last_sent = 0.0
         self._ping_start_time = 0.0
 
+        self.handle_queue = queue.Queue()
+        self.handle_thread: threading.Thread | None = None
+
     def connect(self) -> None:
         """Connect to the server and perform a handshake."""
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -63,8 +66,10 @@ class Client:
 
         self.reader_thread = threading.Thread(target=self._reader_loop, daemon=True)
         self.writer_thread = threading.Thread(target=self._writer_loop, daemon=True)
+        self.handle_thread = threading.Thread(target=self._handle_loop, daemon=True)
         self.reader_thread.start()
         self.writer_thread.start()
+        self.handle_thread.start()
 
         time.sleep(0.1)  # Allow the threads to start
 
@@ -109,16 +114,13 @@ class Client:
                 packet_id = payload_full[0]
                 payload = payload_full[1:]
 
-                # print(f"[READ] ID пакета: 0x{packet_id:02X}")
                 packet_cls = packet_registry.get(packet_id)
                 if packet_cls:
                     packet = packet_cls()
                     reader = Reader(payload, protocol_version=self.protocol, net_mode=NetMode.SERVER)
                     packet.read(reader)
-                    try:
-                        packet.handle(self.world, self.player, self._evman)
-                    except NotImplementedError:
-                        pass
+                    if hasattr(packet, 'handle') and callable(packet.handle):
+                        self.handle_queue.put(packet)
 
                     if not self._handle_server_packet(packet):
                         continue
@@ -286,7 +288,7 @@ class Client:
                         respawn_time_remaining=0,
                         number_of_deaths_pve=0,
                         number_of_deaths_pvp=0,
-                        team_id=2, # todo: move to player
+                        team_id=2,  # todo: move to player
                         player_spawn_context=1,
                     )
                 )
@@ -300,7 +302,7 @@ class Client:
 
             # server say: you successful connected to server
             if pkt.id == MessageID.FinishedConnectingToServer:
-                # then server send: LOAD_NET_MODULE (LoadNetModuleServerText messages MOTD & connect success player)
+                # then server send: NetModules (with messages MOTD & connect success player)
                 # UPDATE_TILE_ENTITY
                 self.connected_to_server = True
 
@@ -333,12 +335,6 @@ class Client:
 
                 # --------- end repeated block
 
-                # ---0x1B PROJECTILE_UPDATE (0x1B) ---
-                # {'projectile_id': 0, 'pos': {'x': 67167.0, 'y': 6743.0, 'TILE_TO_POS_SCALE': 16.0}, 'vel': {'x': 0.0, 'y': 0.0, 'TILE_TO_POS_SCALE': 16.0}, 'owner': 0, 'ty': 398, 'flags': 0, 'ai': [0.0, 0.0], 'damage': None, 'knockback': None, 'original_damage': None, 'proj_uuid': None}
-
-                # ---0x1B PROJECTILE_UPDATE (0x1B) ---
-                # {'projectile_id': 1, 'pos': {'x': 67163.5, 'y': 6750.5, 'TILE_TO_POS_SCALE': 16.0}, 'vel': {'x': 0.0, 'y': 0.0, 'TILE_TO_POS_SCALE': 16.0}, 'owner': 0, 'ty': 18, 'flags': 0, 'ai': [0.0, 0.0], 'damage': None, 'knockback': None, 'original_damage': None, 'proj_uuid': None}
-
                 self.send(
                     packet.UpdatePlayerLuckFactors(
                         player_id=self.player.id,
@@ -355,12 +351,6 @@ class Client:
                 # Update npc names from 0 to 29
                 for i in range(29):
                     self.send(packet.UniqueTownNPCInfoSyncRequest(npc_id=i, name=None, town_npc_variation_idx=None))
-
-                # ---0x9A Unknown(0x9A) ---
-                # {'id': 154, 'raw': ''}
-
-                # ---0x97 Unknown(0x97) ---
-                # {'id': 151, 'raw': '7400'}
 
         return True
 
@@ -414,6 +404,20 @@ class Client:
             self.update_ping()
             time.sleep(0.05)
 
+    def _handle_loop(self) -> None:
+        """Handle event-handles packets in a separate thread."""
+        while self.running:
+            try:
+                packet = self.handle_queue.get(timeout=1.0)
+                if not isinstance(packet, Packet):
+                    continue
+                try:
+                    packet.handle(self.world, self.player, self._evman)
+                except NotImplementedError:
+                    pass
+            except queue.Empty:
+                continue
+
     def reset_ping(self) -> None:
         """Reset the ping."""
         self.current_ping = 0
@@ -433,3 +437,5 @@ class Client:
             self.writer_thread.join(timeout=1.0)
         if self.ping_thread and self.ping_thread != current_thread and self.ping_thread.is_alive():
             self.ping_thread.join(timeout=1.0)
+        if self.handle_thread and self.handle_thread != current_thread and self.handle_thread.is_alive():
+            self.handle_thread.join(timeout=1.0)
