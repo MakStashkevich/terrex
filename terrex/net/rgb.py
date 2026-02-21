@@ -8,7 +8,34 @@ class Rgb:
     r: int = 0
     g: int = 0
     b: int = 0
-    a: int = 255
+    a: int = 0
+
+    def __init__(self, r: int | None = None, g: int | None = None, b: int | None = None, a: int | None = None) -> None:
+        # new Color()
+        if r is None and g is None and b is None and a is None:
+            self.r = 0
+            self.g = 0
+            self.b = 0
+            self.a = 0
+            return
+
+        # new Color(r,g,b)
+        if r is not None and g is not None and b is not None and a is None:
+            self.r = r
+            self.g = g
+            self.b = b
+            self.a = 255
+            return
+
+        # new Color(r,g,b,a)
+        if r is not None and g is not None and b is not None and a is not None:
+            self.r = r
+            self.g = g
+            self.b = b
+            self.a = a
+            return
+
+        raise ValueError("Invalid constructor arguments")
 
     def get_R(self) -> int:
         return self.r
@@ -19,7 +46,7 @@ class Rgb:
     def get_B(self) -> int:
         return self.b
 
-    def set_A(self) -> int:
+    def get_A(self) -> int:
         return self.a
 
     @classmethod
@@ -40,8 +67,10 @@ class Rgb:
         writer.write_byte(self.b)
 
     def __mul__(self, scalar: int | float) -> 'Rgb':
-        # масштабируем каждый компонент и округляем
         return Rgb(int(self.r * scalar), int(self.g * scalar), int(self.b * scalar))
+
+    def __str__(self):
+        return f"Rgb(r={self.r}, g={self.g}, b={self.b}, a={self.a})"
 
     @classmethod
     def get_AliceBlue(cls) -> 'Rgb':
