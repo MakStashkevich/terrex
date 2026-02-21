@@ -71,3 +71,4 @@ terraria-protocol/
 .ruff_cache/
 *tshock*
 *.cs
+._*
