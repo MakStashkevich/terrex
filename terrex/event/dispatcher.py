@@ -1,5 +1,5 @@
 from collections.abc import Callable
-from typing import Any, Awaitable, Dict, List, Tuple, TypeVar
+from typing import Any, Awaitable, Dict, List, Tuple
 
 from terrex.event.context import EventContext
 from .types import BaseEvent
@@ -7,7 +7,7 @@ import asyncio
 import inspect
 import concurrent.futures
 
-from .base import EventFilter, StopPropagation
+from .filter.base import EventFilter, StopPropagation
 
 
 class Dispatcher:
@@ -15,7 +15,7 @@ class Dispatcher:
         from terrex.terrex import Terrex
 
         if not isinstance(terrex, Terrex):
-            return
+            raise TypeError("terrex must be a Terrex instance")
 
         self._terrex = terrex
         self._handlers: Dict[type[BaseEvent], List[Tuple[int, EventFilter[Any], Callable[[Any], Awaitable[None]]]]] = {}

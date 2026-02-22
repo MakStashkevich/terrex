@@ -30,7 +30,7 @@ class Client:
         from terrex.terrex import Terrex
 
         if not isinstance(terrex, Terrex):
-            return
+            raise TypeError("terrex must be a Terrex instance")
 
         self.host = host
         self.port = port

@@ -8,7 +8,7 @@ import concurrent
 
 from terrex.client import Client
 from terrex.event.dispatcher import Dispatcher
-from terrex.event.base import EventFilter
+from terrex.event.filter.base import EventFilter
 from terrex.net import module
 from terrex.player.player import Player
 from terrex.net.protocol import PROTOCOLS

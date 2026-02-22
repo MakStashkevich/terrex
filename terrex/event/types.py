@@ -6,6 +6,11 @@ from terrex.net.enum.chat_command import ChatCommand
 
 class BaseEvent:
     def __init__(self, packet):
+        from terrex.packet import Packet
+
+        if not isinstance(packet, Packet):
+            raise TypeError("packet must be a Packet instance")
+
         self.packet = packet
 
 
@@ -36,9 +41,9 @@ class InitializedEvent(BaseEvent):
 
 
 class ChatEvent(RegexEvent):
-    def __init__(self, packet, author_id: int, text: str, chat_command_id: ChatCommand):
+    def __init__(self, packet, player_id: int, text: str, chat_command_id: ChatCommand):
         super().__init__(packet)
-        self.author_id: int = author_id
+        self.player_id: int = player_id
         self.text: str = text
         self.chat_command_id: ChatCommand = chat_command_id
 
@@ -50,26 +55,27 @@ class TileSectionUpdateEvent(BaseEvent):
 
 
 class ItemOwnerChangedEvent(BaseEvent):
-    def __init__(self, packet, item_id: int, owner_id: int):
+    def __init__(self, packet, item_id: int, player_id: int):
         super().__init__(packet)
         self.item_id: int = item_id
-        self.owner_id: int = owner_id
-
-
-class ItemDroppedEvent(BaseEvent):
-    def __init__(self, packet, item: Any):
-        super().__init__(packet)
-        self.item: Any = item
-
-
-class ItemDropUpdateEvent(BaseEvent):
-    def __init__(self, packet, item: Any):
-        super().__init__(packet)
-        self.item: Any = item
-
-
-# todo
-class NewPlayerEvent(BaseEvent):
-    def __init__(self, packet, player_id: int):
-        super().__init__(packet)
         self.player_id: int = player_id
+
+
+class ItemEvent(BaseEvent):
+    def __init__(self, packet, item):
+        super().__init__(packet)
+
+        from terrex.item.item import Item
+
+        if not isinstance(item, Item):
+            raise TypeError("item must be a Item instance")
+
+        self.item: Item = item
+
+
+class ItemDroppedEvent(ItemEvent):
+    pass
+
+
+class ItemDropUpdateEvent(ItemEvent):
+    pass

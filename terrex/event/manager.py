@@ -1,6 +1,6 @@
 from collections.abc import Callable
-from typing import Awaitable, TypeVar, cast
-from .base import EventFilter
+from typing import Awaitable
+from .filter.base import EventFilter
 from .types import BaseEvent
 from .dispatcher import Dispatcher
 
