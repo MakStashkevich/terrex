@@ -4,7 +4,6 @@ import time
 import traceback
 
 from terrex import packet
-from terrex.main import Main
 from terrex.packet.base import Packet, packet_registry
 from terrex.net.creative_power.spawn_rate_slider_per_player_power import (
     SpawnRateSliderPerPlayerPower,
@@ -176,8 +175,8 @@ class Client:
             # server accept password and receive player info
             if pkt.id == MessageID.PlayerInfo and isinstance(pkt, packet.PlayerInfo) and not pkt.is_server:
                 # save server player id
-                Main.my_player_id = self.player.id = pkt.player_id
-                Main.player[pkt.player_id] = self.player
+                self.world.my_player_id = self.player.id = pkt.player_id
+                self.world.players[pkt.player_id] = self.player
 
                 # send player info to server
                 player_info = packet.SyncPlayer(

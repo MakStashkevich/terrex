@@ -21,7 +21,7 @@ def draw_map_image(world: World) -> Image.Image:
     pixels = img.load()
     for y in range(height):
         for x in range(width):
-            mt = MapHelper.create_map_tile(x, y, 255)
+            mt = MapHelper.create_map_tile(world, x, y, 255)
             color = MapHelper.get_map_tile_xna_color(mt)
             pixels[x, y] = (color.r, color.g, color.b)
     img.save("world.png", compress_level=0)

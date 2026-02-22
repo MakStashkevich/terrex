@@ -1,10 +1,3 @@
-from terrex.entity.tile_entity.tile_entity import TileEntity
-from terrex.net.structure.chest import Chest
-from terrex.net.structure.sign import Sign
-from terrex.net.tile_stack import TileStack
-from terrex.net.enum.world_size import WorldSize
-
-
 class World:
     time: int = 0
     day_info: int = 0
@@ -60,13 +53,47 @@ class World:
     items: object = {}
     item_owner_index: object = {}
 
-    tiles: TileStack = TileStack()
-    chest: dict[int, Chest] = {}
-    sign: dict[int, Sign] = {}
-    tile_entity: list[TileEntity] = []
+    tiles: object | None = None
+    chests: dict = {}
+    signs: dict = {}
+    tile_entities: list = []
 
     # always false because we connected to generated server world
     generating_world: bool = False
+
+    # players info
+    players: dict = {}
+    my_player_id: int = -1
+
+    # flags for special world seeds
+    # https://terraria.wiki.gg/wiki/Special_world_seeds
+    drunk_world: bool = False
+    get_good_world: bool = False
+    tenth_anniversary_world: bool = False
+    dont_starve_world: bool = False
+    not_the_bees_world: bool = False
+    remix_world: bool = False
+    no_traps_world: bool = False
+    zenith_world: bool = False
+    skyblock_world: bool = False
+    vampire_seed: bool = False
+    infected_seed: bool = False
+    team_based_spawns_seed: bool = False
+    dual_dungeons_seed: bool = False
+
+    def __init__(self):
+        from terrex.net.tile_stack import TileStack
+        from terrex.entity.tile_entity.tile_entity import TileEntity
+        from terrex.net.structure.chest import Chest
+        from terrex.net.structure.sign import Sign
+        from terrex.player.player import Player
+
+        self.tiles: TileStack = TileStack()
+        self.chests: dict[int, Chest] = {}
+        self.signs: dict[int, Sign] = {}
+        self.tile_entities: list[TileEntity] = []
+
+        self.players: dict[int, Player] = {}
 
     @classmethod
     def underworld_layer(cls) -> int:

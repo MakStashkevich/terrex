@@ -1,10 +1,8 @@
 from terrex.id.TileID import TileIDSets
-from terrex.main import Main
 from terrex.net.structure.rgb import Rgb as Color
 from terrex.net.tile_npc_data import TileNPCData
 from terrex.world.shape.base import Point
 from terrex.world.shape.rectangle import Rectangle
-from terrex.world.world import World
 
 
 class WorldGen:
@@ -55,14 +53,19 @@ class WorldGen:
         return white
 
     @classmethod
-    def get_biome_influence(cls, start_x: int, end_x: int, start_y: int, end_y: int) -> tuple[int, int, int]:
+    def get_biome_influence(cls, world, start_x: int, end_x: int, start_y: int, end_y: int) -> tuple[int, int, int]:
+        from terrex.world.world import World
+
+        if not isinstance(world, World):
+            raise TypeError("world must be a World instance")
+
         corrupt_count = 0
         crimson_count = 0
         hallowed_count = 0
 
         for x in range(start_x, end_x + 1):
             for y in range(start_y, end_y + 1):
-                tile = World.tiles.get(x, y)
+                tile = world.tiles.get(x, y)
                 if tile is not None:
                     if TileIDSets.Main.Corrupt[tile.type]:
                         corrupt_count += 1
@@ -74,7 +77,12 @@ class WorldGen:
         return corrupt_count, crimson_count, hallowed_count
 
     @classmethod
-    def get_cactus_type(cls, tile_x: int, tile_y: int, frame_x: int, frame_y: int) -> tuple[bool, bool, bool]:
+    def get_cactus_type(cls, world, tile_x: int, tile_y: int, frame_x: int, frame_y: int) -> tuple[bool, bool, bool]:
+        from terrex.world.world import World
+
+        if not isinstance(world, World):
+            raise TypeError("world must be a World instance")
+
         evil = False
         good = False
         crimson = False
@@ -90,10 +98,10 @@ class WorldGen:
         y = tile_y
         flag = False
 
-        if not cls.in_world(x, y, 2):
+        if not cls.in_world(world, x, y, 2):
             return evil, good, crimson
 
-        tile = World.tiles.get(x, y)
+        tile = world.tiles.get(x, y)
         if tile is None:
             return evil, good, crimson
 
@@ -104,9 +112,9 @@ class WorldGen:
             if tile.type == 80 and tile.active:
                 flag = True
             y += 1
-            if y > tile_y + 20 or not cls.in_world(x, y, 2):
+            if y > tile_y + 20 or not cls.in_world(world, x, y, 2):
                 break
-            tile = World.tiles.get(x, y)
+            tile = world.tiles.get(x, y)
 
         if tile is not None and tile.active:
             if tile.type == 112:
@@ -119,22 +127,32 @@ class WorldGen:
         return evil, good, crimson
 
     @classmethod
-    def in_world_point(cls, p: Point, fluff: int = 0) -> bool:
-        return cls.in_world(p.x, p.y, fluff)
+    def in_world_point(cls, world, p: Point, fluff: int = 0) -> bool:
+        return cls.in_world(world, p.x, p.y, fluff)
 
     @classmethod
-    def in_world(cls, x: int, y: int, fluff: int = 0) -> bool:
-        if x < fluff or x >= World.max_tiles_x - fluff or y < fluff or y >= World.max_tiles_y - fluff:
+    def in_world(cls, world, x: int, y: int, fluff: int = 0) -> bool:
+        from terrex.world.world import World
+
+        if not isinstance(world, World):
+            raise TypeError("world must be a World instance")
+
+        if x < fluff or x >= world.max_tiles_x - fluff or y < fluff or y >= world.max_tiles_y - fluff:
             return False
         return True
 
     @classmethod
-    def in_world_rect(cls, rect: Rectangle, fluff: int = 0) -> bool:
+    def in_world_rect(cls, world, rect: Rectangle, fluff: int = 0) -> bool:
+        from terrex.world.world import World
+
+        if not isinstance(world, World):
+            raise TypeError("world must be a World instance")
+
         x = rect.x
         y = rect.y
         max_x = rect.x + rect.width
         max_y = rect.y + rect.height
 
-        if x < fluff or max_x >= World.max_tiles_x - fluff or y < fluff or max_y >= World.max_tiles_y - fluff:
+        if x < fluff or max_x >= world.max_tiles_x - fluff or y < fluff or max_y >= world.max_tiles_y - fluff:
             return False
         return True

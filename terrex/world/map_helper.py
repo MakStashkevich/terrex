@@ -1,9 +1,6 @@
 from typing import List
 from dataclasses import dataclass
-from terrex.id import WallID
-from terrex.main import Main
 from terrex.net.structure.rgb import Rgb as Color
-from terrex.world.world import World
 from terrex.world.world_gen import WorldGen
 
 
@@ -85,33 +82,47 @@ class MapHelper:
         return Color(int(color.r * light), int(color.g * light), int(color.b * light))
 
     @classmethod
-    def create_map_tile(cls, x: int, y: int, base_light: int, background_override: int = 0) -> MapTile:
-        tile = World.tiles.get(x, y)
-        if tile is None:
+    def create_map_tile(cls, world, x: int, y: int, base_light: int, background_override: int = 0) -> MapTile:
+        from terrex.net.structure.tile import Tile
+        from terrex.world.world import World
+
+        if not isinstance(world, World):
+            raise TypeError("world must be a World instance")
+
+        tile = world.tiles.get(x, y)
+        if not isinstance(tile, Tile):
             return MapTile(0, 0, 0)
-        if not tile.active: print(f"x={x}, y={y}, tile={tile}")
+
+        if not tile.active:
+            print(f"x={x}, y={y}, tile={tile}")
+
         color = 0
         light = base_light
         base_type = 0
         base_option = 0
-        color, light, base_type, base_option = cls.get_tile_type(x, y, tile, color, light, base_type, base_option)
-        # if not tile.active: print(f"(get_tile_type) color={color}, light={light}, base_type={base_type}, base_option={base_option}")
+        color, light, base_type, base_option = cls.get_tile_type(world, x, y, tile, color, light, base_type, base_option)
         if base_type == 0:
             color, light, base_type, base_option = cls.get_wall_type(x, y, tile, color, light, base_type, base_option)
-            # if not tile.active: print(f"(get_wall_type) color={color}, light={light}, base_type={base_type}, base_option={base_option}")
         if base_type == 0:
             color = 0
             light = base_light
             if background_override == 0:
-                base_type, light = cls.get_background_type(x, y, light)
+                base_type, light = cls.get_background_type(world, x, y, light)
             else:
                 base_type = background_override
-            # if not tile.active: print(f"(background_override) color={color}, light={light}, base_type={base_type}, base_option={base_option}")
-        # if not tile.active: print(f"(end) color={color}, light={light}, base_type={base_type}, base_option={base_option}")
         return MapTile(base_type + base_option, color, light)
 
     @classmethod
-    def get_tile_type(cls, x: int, y: int, tile: 'Tile', new_color: int, new_light: int, base_type: int, base_option: int) -> tuple[int, int, int, int]:
+    def get_tile_type(cls, world, x: int, y: int, tile, new_color: int, new_light: int, base_type: int, base_option: int) -> tuple[int, int, int, int]:
+        from terrex.net.structure.tile import Tile
+        from terrex.world.world import World
+
+        if not isinstance(world, World):
+            raise TypeError("world must be a World instance")
+
+        if not isinstance(tile, Tile):
+            raise TypeError("tile must be a Tile instance")
+
         debug_show_unbreakable = getattr(cls, 'show_unbreakable_wall', False)
         if (not debug_show_unbreakable or tile.wall != 350) and tile.active:
             tile_type = tile.type
@@ -145,7 +156,7 @@ class MapHelper:
                 if (x + y) % 2 == 0:
                     base_type = 0
             if base_type != 0:
-                base_option = cls.get_tile_base_option(x, y, tile_type, tile, base_option)
+                base_option = cls.get_tile_base_option(world, x, y, tile_type, tile, base_option)
                 if tile_type == 160:
                     new_color = 0
                     return new_color, new_light, base_type, base_option
@@ -153,7 +164,13 @@ class MapHelper:
         return new_color, new_light, base_type, base_option
 
     @classmethod
-    def get_wall_type(cls, x: int, y: int, tile: 'Tile', new_color: int, new_light: int, base_type: int, base_option: int) -> tuple[int, int, int, int]:
+    def get_wall_type(cls, x: int, y: int, tile, new_color: int, new_light: int, base_type: int, base_option: int) -> tuple[int, int, int, int]:
+        from terrex.net.structure.tile import Tile
+        from terrex.id import WallID
+
+        if not isinstance(tile, Tile):
+            raise TypeError("tile must be a Tile instance")
+
         is_invisible_wall = tile.invisible_wall
         if tile.wall > 0 and tile.fullbright_wall and not is_invisible_wall:
             new_light = 255
@@ -182,19 +199,24 @@ class MapHelper:
         return new_color, new_light, base_type, base_option
 
     @classmethod
-    def get_background_type(cls, x: int, y: int, light: int) -> tuple[int, int]:
-        if y < World.world_surface:
-            if Main.remix_world:
+    def get_background_type(cls, world, x: int, y: int, light: int) -> tuple[int, int]:
+        from terrex.world.world import World
+
+        if not isinstance(world, World):
+            raise TypeError("world must be a World instance")
+
+        if y < world.world_surface:
+            if world.remix_world:
                 light = 5
                 return 100, light
             light = 255
-            bg_type = cls.calc_sky_gradient(cls.sky_position, 256, y)
+            bg_type = cls.calc_sky_gradient(world, cls.sky_position, 256, y)
             return bg_type, light
-        if y >= World.underworld_layer():
+        if y >= world.underworld_layer():
             return cls.hell_position, light
         num = 0
 
-        if World.generating_world is False:
+        if world.generating_world is False:
             # stub sceneArea.Contains(x, y)
             if False:
                 scene_snowiness = getattr(cls, 'scene_snowiness', 0.0)
@@ -206,7 +228,7 @@ class MapHelper:
                         break
                     for y1 in range(y - 36, y + 31, 10):
                         # type = Main.Map[x1, y1].Type  # minimap type, stub
-                        map_tile = World.tiles.get(x1, y1)
+                        map_tile = world.tiles.get(x1, y1)
                         map_type = map_tile.type if not map_tile is None else 0
                         for snow_type in cls.snow_types:
                             if snow_type == map_type:
@@ -216,14 +238,23 @@ class MapHelper:
                         if found:
                             break
 
-        if y < World.rock_layer:
+        if y < world.rock_layer:
             return cls.dirt_position + num, light
         return cls.rock_position + num, light
 
     @classmethod
-    def get_tile_base_option(cls, x: int, y: int, tile_type: int, tile_cache: 'Tile', base_option: int) -> int:
+    def get_tile_base_option(cls, world, x: int, y: int, tile_type: int, tile, base_option: int) -> int:
+        from terrex.net.structure.tile import Tile
+        from terrex.world.world import World
+
+        if not isinstance(world, World):
+            raise TypeError("world must be a World instance")
+
+        if not isinstance(tile, Tile):
+            raise TypeError("tile must be a Tile instance")
+
         if tile_type == 89:
-            frame_div = tile_cache.frame_x // 54
+            frame_div = tile.frame_x // 54
             if frame_div in (0, 21, 23):
                 base_option = 0
             elif frame_div == 43:
@@ -233,11 +264,11 @@ class MapHelper:
         elif tile_type in (160, 627, 628, 692):
             base_option = (x + y) % 9
         elif tile_type == 461:
-            if Main.player[Main.my_player_id].zone.corrupt:
+            if world.players[world.my_player_id].zone.corrupt:
                 base_option = 1
-            elif Main.player[Main.my_player_id].zone.crimson:
+            elif world.players[world.my_player_id].zone.crimson:
                 base_option = 2
-            elif Main.player[Main.my_player_id].zone.hallow:
+            elif world.players[world.my_player_id].zone.hallow:
                 base_option = 3
             # if Main.scene_metrics.zone_corrupt:
             #     base_option = 1
@@ -246,7 +277,7 @@ class MapHelper:
             # elif Main.scene_metrics.zone_hallow:
             #     base_option = 3
         elif tile_type == 80:
-            evil, good, crimson = WorldGen.get_cactus_type(x, y, tile_cache.frame_x, tile_cache.frame_y)
+            evil, good, crimson = WorldGen.get_cactus_type(world, x, y, tile.frame_x, tile.frame_y)
             if evil:
                 base_option = 1
             elif good:
@@ -257,10 +288,10 @@ class MapHelper:
                 base_option = 0
         elif tile_type == 529:
             num9 = y + 1
-            corrupt_count2, crimson_count2, hallowed_count2 = WorldGen.get_biome_influence(x, x, num9, num9)
+            corrupt_count2, crimson_count2, hallowed_count2 = WorldGen.get_biome_influence(world, x, x, num9, num9)
             num10 = max(corrupt_count2, crimson_count2, hallowed_count2)
             if corrupt_count2 == 0 and crimson_count2 == 0 and hallowed_count2 == 0:
-                base_option = 1 if x < WorldGen.beach_distance or x > World.max_tiles_x - WorldGen.beach_distance else 0
+                base_option = 1 if x < WorldGen.beach_distance or x > world.max_tiles_x - WorldGen.beach_distance else 0
             elif hallowed_count2 == num10:
                 base_option = 2
             elif crimson_count2 != num10:
@@ -268,9 +299,9 @@ class MapHelper:
             else:
                 base_option = 3
         elif tile_type == 530:
-            num2 = y - (tile_cache.frame_y % 36) // 18 + 2
-            num3 = x - (tile_cache.frame_x % 54) // 18
-            corrupt_count, crimson_count, hallowed_count = WorldGen.get_biome_influence(num3, num3 + 3, num2, num2)
+            num2 = y - (tile.frame_y % 36) // 18 + 2
+            num3 = x - (tile.frame_x % 54) // 18
+            corrupt_count, crimson_count, hallowed_count = WorldGen.get_biome_influence(world, num3, num3 + 3, num2, num2)
             num4 = max(corrupt_count, crimson_count, hallowed_count)
             if corrupt_count != 0 or crimson_count != 0 or hallowed_count != 0:
                 if hallowed_count == num4:
@@ -282,19 +313,19 @@ class MapHelper:
             else:
                 base_option = 0
         elif tile_type == 19:
-            num13 = tile_cache.frame_y // 18
+            num13 = tile.frame_y // 18
             base_option = 1 if num13 == 48 else 0
         elif tile_type == 15:
-            num8 = tile_cache.frame_y // 40
+            num8 = tile.frame_y // 40
             base_option = 1 if num8 in (1, 20) else 0
         elif tile_type in (518, 519):
-            base_option = tile_cache.frame_y // 18
+            base_option = tile.frame_y // 18
         elif tile_type == 4:
-            base_option = 1 if tile_cache.frame_x < 66 else 0
+            base_option = 1 if tile.frame_x < 66 else 0
         elif tile_type == 572:
-            base_option = tile_cache.frame_y // 36
+            base_option = tile.frame_y // 36
         elif tile_type in (21, 441):
-            frame_div = tile_cache.frame_x // 36
+            frame_div = tile.frame_x // 36
             if frame_div in (1, 2, 10, 13, 15):
                 base_option = 1
             elif frame_div in (3, 4):
@@ -306,7 +337,7 @@ class MapHelper:
             else:
                 base_option = 0
         elif tile_type in (467, 468):
-            num = tile_cache.frame_x // 36
+            num = tile.frame_x // 36
             if num in range(0, 12):
                 base_option = num
             elif num in (12, 13, 15, 18):
@@ -318,10 +349,10 @@ class MapHelper:
             else:
                 base_option = 12
         elif tile_type == 560:
-            num = tile_cache.frame_x // 36
+            num = tile.frame_x // 36
             base_option = num if 0 <= num <= 2 else 0
         elif tile_type in (28, 653):
-            fy = tile_cache.frame_y
+            fy = tile.frame_y
             if fy < 144:
                 base_option = 0
             elif fy < 252:
@@ -347,13 +378,13 @@ class MapHelper:
             else:
                 base_option = 7
         elif tile_type == 27:
-            base_option = 1 if tile_cache.frame_y < 34 else 0
+            base_option = 1 if tile.frame_y < 34 else 0
         elif tile_type in (31, 696):
-            base_option = 1 if tile_cache.frame_x >= 36 else 0
+            base_option = 1 if tile.frame_x >= 36 else 0
         elif tile_type in (26, 695):
-            base_option = 1 if tile_cache.frame_x >= 54 else 0
+            base_option = 1 if tile.frame_x >= 54 else 0
         elif tile_type == 137:
-            fy_div = tile_cache.frame_y // 18
+            fy_div = tile.frame_y // 18
             if fy_div in (1, 2, 3, 4):
                 base_option = 1
             elif fy_div == 5:
@@ -361,7 +392,7 @@ class MapHelper:
             else:
                 base_option = 0
         elif tile_type in (82, 83, 84):
-            fx = tile_cache.frame_x
+            fx = tile.frame_x
             if fx < 18:
                 base_option = 0
             elif fx < 36:
@@ -377,9 +408,9 @@ class MapHelper:
             else:
                 base_option = 6
         elif tile_type == 591:
-            base_option = tile_cache.frame_x // 36
+            base_option = tile.frame_x // 36
         elif tile_type == 105:
-            fx = tile_cache.frame_x
+            fx = tile.frame_x
             if 1548 <= fx <= 1654:
                 base_option = 1
             elif 1656 <= fx <= 1798:
@@ -387,13 +418,13 @@ class MapHelper:
             else:
                 base_option = 0
         elif tile_type == 133:
-            base_option = 0 if tile_cache.frame_x < 52 else 1
+            base_option = 0 if tile.frame_x < 52 else 1
         elif tile_type == 134:
-            base_option = 0 if tile_cache.frame_x < 28 else 1
+            base_option = 0 if tile.frame_x < 28 else 1
         elif tile_type == 149:
             base_option = y % 3
         elif tile_type in (165, 693, 694):
-            fx = tile_cache.frame_x
+            fx = tile.frame_x
             if fx < 54:
                 base_option = 0
             elif fx < 106:
@@ -405,7 +436,7 @@ class MapHelper:
             else:
                 base_option = 3
         elif tile_type == 178:
-            fx = tile_cache.frame_x
+            fx = tile.frame_x
             if fx < 18:
                 base_option = 0
             elif fx < 36:
@@ -421,7 +452,7 @@ class MapHelper:
             else:
                 base_option = 6
         elif tile_type == 184:
-            fx = tile_cache.frame_x
+            fx = tile.frame_x
             if fx < 22:
                 base_option = 0
             elif fx < 44:
@@ -445,7 +476,7 @@ class MapHelper:
             elif fx < 242:
                 base_option = 10
         elif tile_type == 650:
-            num = tile_cache.frame_x // 18
+            num = tile.frame_x // 18
             if num < 6 or num in (28, 29, 30, 31, 32):
                 base_option = 0
             elif num < 12 or num in (33, 34, 35):
@@ -463,8 +494,8 @@ class MapHelper:
             elif num < 78:
                 base_option = 11
         elif tile_type == 649:
-            num = tile_cache.frame_x // 36
-            num6 = tile_cache.frame_y // 18 - 1
+            num = tile.frame_x // 36
+            num6 = tile.frame_y // 18 - 1
             num += num6 * 18
             if num < 6 or num in (19, 20, 21, 22, 23, 24, 33, 38, 39, 40):
                 base_option = 0
@@ -483,8 +514,8 @@ class MapHelper:
             elif num < 65:
                 base_option = 11
         elif tile_type == 185:
-            if tile_cache.frame_y < 18:
-                num = tile_cache.frame_x // 18
+            if tile.frame_y < 18:
+                num = tile.frame_x // 18
                 if num < 6 or num in (28, 29, 30, 31, 32):
                     base_option = 0
                 elif num < 12 or num in (33, 34, 35):
@@ -502,8 +533,8 @@ class MapHelper:
                 elif num < 78:
                     base_option = 11
             else:
-                num = tile_cache.frame_x // 36
-                num12 = tile_cache.frame_y // 18 - 1
+                num = tile.frame_x // 36
+                num12 = tile.frame_y // 18 - 1
                 num += num12 * 18
                 if num < 6 or num in (19, 20, 21, 22, 23, 24, 33, 38, 39, 40):
                     base_option = 0
@@ -522,7 +553,7 @@ class MapHelper:
                 elif num < 65:
                     base_option = 11
         elif tile_type in (186, 647):
-            num = tile_cache.frame_x // 54
+            num = tile.frame_x // 54
             if num < 7:
                 base_option = 2
             elif num < 22 or num in (33, 34, 35):
@@ -534,8 +565,8 @@ class MapHelper:
             elif num < 32:
                 base_option = 3
         elif tile_type in (187, 648):
-            num = tile_cache.frame_x // 54
-            num7 = tile_cache.frame_y // 36
+            num = tile.frame_x // 54
+            num7 = tile.frame_y // 36
             num += num7 * 36
             if num < 3 or num in (14, 15, 16):
                 base_option = 0
@@ -562,12 +593,12 @@ class MapHelper:
             elif num < 55:
                 base_option = 2
         elif tile_type == 227:
-            base_option = tile_cache.frame_x // 34
+            base_option = tile.frame_x // 34
         elif tile_type == 129:
-            base_option = 1 if tile_cache.frame_x >= 324 else 0
+            base_option = 1 if tile.frame_x >= 324 else 0
         elif tile_type == 240:
-            num = tile_cache.frame_x // 54
-            num14 = tile_cache.frame_y // 54
+            num = tile.frame_x // 54
+            num14 = tile.frame_y // 54
             num += num14 * 36
             if (0 <= num <= 11) or (47 <= num <= 53) or num in (72, 73, 75):
                 base_option = 0
@@ -583,31 +614,31 @@ class MapHelper:
             else:
                 base_option = 1
         elif tile_type == 242:
-            num = tile_cache.frame_y // 72
-            base_option = 1 if tile_cache.frame_x // 106 == 0 and 22 <= num <= 24 else 0
+            num = tile.frame_y // 72
+            base_option = 1 if tile.frame_x // 106 == 0 and 22 <= num <= 24 else 0
         elif tile_type == 440:
-            num = tile_cache.frame_x // 54
+            num = tile.frame_x // 54
             base_option = min(num, 6)
         elif tile_type == 457:
-            num = tile_cache.frame_x // 36
+            num = tile.frame_x // 36
             base_option = min(num, 4)
         elif tile_type == 453:
-            num = tile_cache.frame_x // 36
+            num = tile.frame_x // 36
             base_option = min(num, 2)
         elif tile_type == 419:
-            num = tile_cache.frame_x // 18
+            num = tile.frame_x // 18
             base_option = min(num, 2)
         elif tile_type == 428:
-            num = tile_cache.frame_y // 18
+            num = tile.frame_y // 18
             base_option = min(num, 3)
         elif tile_type == 420:
-            num = tile_cache.frame_y // 18
+            num = tile.frame_y // 18
             base_option = min(num, 5)
         elif tile_type == 423:
-            num = tile_cache.frame_y // 18
+            num = tile.frame_y // 18
             base_option = min(num, 6)
         elif tile_type == 493:
-            fx = tile_cache.frame_x
+            fx = tile.frame_x
             if fx < 18:
                 base_option = 0
             elif fx < 36:
@@ -621,9 +652,9 @@ class MapHelper:
             else:
                 base_option = 5
         elif tile_type == 548:
-            base_option = 0 if tile_cache.frame_x // 54 < 7 else 1
+            base_option = 0 if tile.frame_x // 54 < 7 else 1
         elif tile_type == 597:
-            num = tile_cache.frame_x // 54
+            num = tile.frame_x // 54
             base_option = num if num <= 10 else 0
         else:
             base_option = 0
@@ -631,8 +662,13 @@ class MapHelper:
         return base_option
 
     @classmethod
-    def calc_sky_gradient(cls, sky_position: int, max_sky_gradients: int, y: int) -> int:
-        world_surface = World.world_surface
+    def calc_sky_gradient(cls, world, sky_position: int, max_sky_gradients: int, y: int) -> int:
+        from terrex.world.world import World
+
+        if not isinstance(world, World):
+            raise TypeError("world must be a World instance")
+
+        world_surface = world.world_surface
         num = int((max_sky_gradients - 1) * (y / world_surface))
         num = min(255, num)  # byte
         return sky_position + num

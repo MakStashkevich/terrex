@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from terrex.id.LiquidID import LiquidID
 from terrex.id import LiquidID
 from terrex.net.tile_npc_data import TileNPCData
-from terrex.net.streamer import Reader, Writer
+from terrex.net.streamer import Reader
 from terrex.world.world import World
 
 tile_data = TileNPCData()
@@ -24,7 +24,7 @@ class Tile:
     frame_y: int = 0  # short
 
     @classmethod
-    def deserialize_packed(cls, reader: Reader, world: World, tile_x: int, tile_y: int) -> tuple["Tile", int]:
+    def read(cls, reader: Reader, world: World, tile_x: int, tile_y: int) -> tuple["Tile", int]:
         tile = world.tiles.get(tile_x, tile_y)
         if tile and isinstance(tile, Tile):
             tile.clear_everything()
@@ -93,7 +93,7 @@ class Tile:
 
         # Shape
         shape = (flags_bytes[1] & 0x70) >> 4
-        if shape != 0:  # and World.tileSolid[tile.type]
+        if shape != 0 and tile_data.tileSolid[tile.type]:
             if shape != 1:
                 tile.slope = int(shape - 1)
             else:

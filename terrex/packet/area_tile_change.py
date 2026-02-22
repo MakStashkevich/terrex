@@ -8,13 +8,13 @@ from terrex.world.world import World
 class AreaTileChange(SyncPacket):
     id = MessageID.AreaTileChange
 
-    def __init__(self, tile_y: int = 0, tile_x: int = 0, height: int = 0, width: int = 0, change_type: TileChangeType = TileChangeType.NoneValue, tiles: list[Tile] = None):
-        self.tile_y = tile_y
-        self.tile_x = tile_x
-        self.height = height
-        self.width = width
-        self.change_type = change_type
-        self.tiles = tiles or []
+    def __init__(self, tile_y: int = 0, tile_x: int = 0, height: int = 0, width: int = 0, change_type: TileChangeType = TileChangeType.NoneValue, tiles: list | None = None):
+        self.tile_y: int = tile_y
+        self.tile_x: int = tile_x
+        self.height: int = height
+        self.width: int = width
+        self.change_type: TileChangeType = change_type
+        self.tiles: list[Tile] = tiles or []
 
     def read(self, reader: Reader):
         self.tile_y = reader.read_short()
@@ -22,11 +22,16 @@ class AreaTileChange(SyncPacket):
         self.height = reader.read_byte()
         self.width = reader.read_byte()
         self.change_type = TileChangeType(reader.read_byte())
+        self.tile_reader = reader
+
+    async def handle(self, world, player, evman):
+        if not self.tile_reader:
+            return
+
         tiles = []
         needed = self.width * self.height
         while len(tiles) < needed:
-            # todo: add props world
-            tile, rle = Tile.deserialize_packed(reader, World, self.tile_x, self.tile_y)
+            tile, rle = Tile.read(self.tile_reader, world, self.tile_x, self.tile_y)
             tiles.extend([tile] * (rle + 1))
         self.tiles = tiles[:needed]
 
@@ -36,5 +41,6 @@ class AreaTileChange(SyncPacket):
         writer.write_byte(self.height)
         writer.write_byte(self.width)
         writer.write_byte(self.change_type)
-        for tile in self.tiles:
-            tile.write(writer)
+        # todo: add write tile logic
+        # for tile in self.tiles:
+        #     tile.write(writer)

@@ -48,10 +48,16 @@ class ChatEvent(RegexEvent):
         self.chat_command_id: ChatCommand = chat_command_id
 
 
-class TileSectionUpdateEvent(BaseEvent):
-    def __init__(self, packet, tiles: List[Any]):
+class WorldSectionUpdateEvent(BaseEvent):
+    def __init__(self, packet, section):
         super().__init__(packet)
-        self.tiles: List[Any] = tiles
+
+        from terrex.net.structure.world_section import WorldSection
+
+        if not isinstance(section, WorldSection):
+            return
+
+        self.section = section
 
 
 class ItemOwnerChangedEvent(BaseEvent):
