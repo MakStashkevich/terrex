@@ -38,9 +38,10 @@ async def draw_map_image(client: Terrex) -> Image.Image:
     for section_y in sections_y:
         for section_x in sections_x:
             # teleport to center section
-            secton_center = Vec2.from_tile_pos(section_x - (SectionSize.Width / 2), section_y - (SectionSize.Height / 2))
-            await client.teleport(secton_center)
+            section_center = Vec2.from_tile_pos(section_x - (SectionSize.Width / 2), section_y - (SectionSize.Height / 2))
+            await client.teleport(section_center)
             await asyncio.sleep(0.1)
+
             processed_sections += 1
             current_time = time.time()
             if current_time - last_scan_message >= 5.0:
@@ -71,6 +72,7 @@ async def draw_map_image(client: Terrex) -> Image.Image:
                 print(mt)
                 color = Rgb.get_Red()
             pixels[x, y] = (color.r, color.g, color.b)
+
             processed_pixels += 1
             current_time = time.time()
             if current_time - last_draw_message >= 5.0:
@@ -82,7 +84,7 @@ async def draw_map_image(client: Terrex) -> Image.Image:
 
 
 async def main() -> None:
-    """Main entry point demonstrating sync handler with heavy computation."""
+    """Main entry point to the draw map example."""
     host: str = "127.0.0.1"
     port: int = 8888
     password: str = "4444"
