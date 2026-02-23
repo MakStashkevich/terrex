@@ -158,7 +158,7 @@ class Client:
                 except Exception as e:
                     print(traceback.format_exc())
                     print(f"Error read packet by client: {e}")
-                    break
+                    continue
         except asyncio.CancelledError:
             self.running = False
 
