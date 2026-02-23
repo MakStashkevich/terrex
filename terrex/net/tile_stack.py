@@ -19,5 +19,17 @@ class TileStack:
 
         self._tiles[(x, y)] = tile
 
+    def values(self):
+        return self._tiles.values()
+
+    def items(self):
+        return self._tiles.items()
+
+    def keys(self):
+        return self._tiles.keys()
+
     def __len__(self) -> int:
         return len(self._tiles)
+
+    def __iter__(self):
+        return iter(self._tiles.values())
