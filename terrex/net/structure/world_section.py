@@ -32,10 +32,15 @@ class WorldSection:
                     self.tiles.set(x, y, tile)
                 else:
                     rle -= 1
-                    new_tile = world.tiles.get(x, y) or Tile()
-                    new_tile.copy_from(tile)
-                    world.tiles.set(x, y, new_tile)
-                    self.tiles.set(x, y, tile)
+                    copied_tile = world.tiles.get(x, y)
+                    if copied_tile is None:
+                        copied_tile = Tile()
+                    copied_tile.copy_from(tile)
+                    world.tiles.set(x, y, copied_tile)
+                    self.tiles.set(x, y, copied_tile)
+
+        if rle != 0:
+            raise ValueError("WARNING: RLE not exhausted:", rle)
 
         n_chests = reader.read_short()
         for _ in range(n_chests):
