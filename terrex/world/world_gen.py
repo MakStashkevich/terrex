@@ -4,6 +4,8 @@ from terrex.net.tile_npc_data import TileNPCData
 from terrex.world.shape.base import Point
 from terrex.world.shape.rectangle import Rectangle
 
+tile_data = TileNPCData()
+
 
 class WorldGen:
     ocean_distance: int = 250
@@ -53,7 +55,9 @@ class WorldGen:
         return white
 
     @classmethod
-    def get_biome_influence(cls, world, start_x: int, end_x: int, start_y: int, end_y: int) -> tuple[int, int, int]:
+    def get_biome_influence(
+        cls, world, start_x: int, end_x: int, start_y: int, end_y: int
+    ) -> tuple[int, int, int]:
         from terrex.world.world import World
 
         if not isinstance(world, World):
@@ -77,7 +81,9 @@ class WorldGen:
         return corrupt_count, crimson_count, hallowed_count
 
     @classmethod
-    def get_cactus_type(cls, world, tile_x: int, tile_y: int, frame_x: int, frame_y: int) -> tuple[bool, bool, bool]:
+    def get_cactus_type(
+        cls, world, tile_x: int, tile_y: int, frame_x: int, frame_y: int
+    ) -> tuple[bool, bool, bool]:
         from terrex.world.world import World
 
         if not isinstance(world, World):
@@ -108,7 +114,9 @@ class WorldGen:
         if tile.type == 80 and tile.active:
             flag = True
 
-        while tile is not None and (not tile.active or not TileNPCData.tileSolid[tile.type] or not flag):
+        while tile is not None and (
+            not tile.active or not tile_data.tileSolid[tile.type] or not flag
+        ):
             if tile.type == 80 and tile.active:
                 flag = True
             y += 1
@@ -137,7 +145,12 @@ class WorldGen:
         if not isinstance(world, World):
             raise TypeError("world must be a World instance")
 
-        if x < fluff or x >= world.max_tiles_x - fluff or y < fluff or y >= world.max_tiles_y - fluff:
+        if (
+            x < fluff
+            or x >= world.max_tiles_x - fluff
+            or y < fluff
+            or y >= world.max_tiles_y - fluff
+        ):
             return False
         return True
 
@@ -153,6 +166,11 @@ class WorldGen:
         max_x = rect.x + rect.width
         max_y = rect.y + rect.height
 
-        if x < fluff or max_x >= world.max_tiles_x - fluff or y < fluff or max_y >= world.max_tiles_y - fluff:
+        if (
+            x < fluff
+            or max_x >= world.max_tiles_x - fluff
+            or y < fluff
+            or max_y >= world.max_tiles_y - fluff
+        ):
             return False
         return True
