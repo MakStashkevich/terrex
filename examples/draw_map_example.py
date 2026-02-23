@@ -1,5 +1,6 @@
 import asyncio
 import time
+import traceback
 
 from PIL import Image
 
@@ -40,7 +41,7 @@ async def draw_map_image(client: Terrex) -> Image.Image:
             # teleport to center section
             section_center = Vec2.from_tile_pos(section_x - (SectionSize.Width / 2), section_y - (SectionSize.Height / 2))
             await client.teleport(section_center)
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.01)
 
             processed_sections += 1
             current_time = time.time()
@@ -50,7 +51,7 @@ async def draw_map_image(client: Terrex) -> Image.Image:
                 last_scan_message = current_time
 
     # wait latest sections
-    await asyncio.sleep(3)
+    await asyncio.sleep(1)
 
     # return to spawn
     await client.teleport(Vec2.from_tile_pos(world.spawn_x, world.spawn_y))
@@ -64,13 +65,8 @@ async def draw_map_image(client: Terrex) -> Image.Image:
     pixels = img.load()
     for y in range(height):
         for x in range(width):
-            try:
-                mt = MapHelper.create_map_tile(world, x, y, 255)
-                color = MapHelper.get_map_tile_xna_color(mt)
-            except Exception as e:
-                print(e)
-                print(mt)
-                color = Rgb.get_Red()
+            mt = MapHelper.create_map_tile(world, x, y, 255)
+            color = MapHelper.get_map_tile_xna_color(mt)
             pixels[x, y] = (color.r, color.g, color.b)
 
             processed_pixels += 1
