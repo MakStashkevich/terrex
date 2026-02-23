@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from terrex.id.LiquidID import LiquidID
-from terrex.id import LiquidID
+from terrex.id import LiquidID, TileID
 from terrex.net.tile_npc_data import TileNPCData
 from terrex.net.streamer import Reader
 from terrex.world.world import World
@@ -26,110 +26,132 @@ class Tile:
     @classmethod
     def read(cls, reader: Reader, world: World, tile_x: int, tile_y: int) -> tuple["Tile", int]:
         tile = world.tiles.get(tile_x, tile_y)
-        if tile and isinstance(tile, Tile):
-            tile.clear_everything()
-        else:
+        if tile is None:
             tile = cls()
             world.tiles.set(tile_x, tile_y, tile)
+        else:
+            tile.clear_everything()
 
-        flags_bytes = [reader.read_byte(), 0, 0]
-        if flags_bytes[0] & 0x01:
-            flags_bytes[1] = reader.read_byte()
-            if flags_bytes[1] & 0x01:
-                flags_bytes[2] = reader.read_byte()
-                if flags_bytes[2] & 0x01:
-                    flags_bytes.append(reader.read_byte())  # num4
+        # --- flag bytes ---
+        b4 = reader.read_byte()
 
-        # ACTIVE tile
-        is_active = tile.active
-        if flags_bytes[0] & 0x02:
+        b = 0
+        b2 = 0
+        b3 = 0
+
+        has_b = False
+        if (b4 & 1) == 1:
+            has_b = True
+            b = reader.read_byte()
+
+        has_b2 = False
+        if has_b and (b & 1) == 1:
+            has_b2 = True
+            b2 = reader.read_byte()
+
+        if has_b2 and (b2 & 1) == 1:
+            b3 = reader.read_byte()
+
+        # --- ACTIVE ---
+        was_active = tile.active
+
+        if (b4 & 0x02) == 0x02:
             tile.active = True
             old_tile_type = tile.type
-            if flags_bytes[0] & 0x20:
-                low = reader.read_byte()
-                high = reader.read_byte()
-                ty_val = (high << 8) | low
+            
+            # print(f"old_tile_type={old_tile_type} x={tile_x} y={tile_y} b4={b4:#04x} b={b:#04x} b2={b2:#04x} b3={b3:#04x} reader_offset={reader.index}")
+
+            if (b4 & 0x20) == 0x20:
+                ty_val = reader.read_ushort()
             else:
                 ty_val = reader.read_byte()
+
             tile.type = ty_val
+            
+            # print(f"old_tile_type={old_tile_type} ty_val={ty_val}")
+
+            if ty_val > TileID.Count:
+                raise ValueError(f"Corrupted tile type {ty_val}")
 
             if tile_data.tileFrameImportant[ty_val]:
                 tile.frame_x = reader.read_short()
                 tile.frame_y = reader.read_short()
-            elif not is_active or tile.type != old_tile_type:
+            elif not was_active or tile.type != old_tile_type:
                 tile.frame_x = -1
                 tile.frame_y = -1
 
-            if len(flags_bytes) > 3 and flags_bytes[3] & 0x08:
+            if (b2 & 0x08) == 0x08:
                 tile.color = reader.read_byte()
 
-        # WALL
-        if flags_bytes[0] & 0x04:
+        # --- WALL ---
+        if (b4 & 0x04) == 0x04:
             tile.wall = reader.read_byte()
-            if len(flags_bytes) > 3 and flags_bytes[3] & 0x10:
+            if (b2 & 0x10) == 0x10:
                 tile.wall_color = reader.read_byte()
 
-        # LIQUID
-        liquid_code = (flags_bytes[0] & 0x18) >> 3
+        # --- LIQUID ---
+        liquid_code = (b4 & 0x18) >> 3
         if liquid_code != 0:
             tile.liquid = reader.read_byte()
-            if len(flags_bytes) > 3 and flags_bytes[3] & 0x80:
+
+            if (b2 & 0x80) == 0x80:
                 tile.shimmer = True
             elif liquid_code > 1:
-                if liquid_code != 2:
-                    tile.honey = True
-                else:
+                if liquid_code == 2:
                     tile.lava = True
+                else:
+                    tile.honey = True
 
-        # Wires
-        if flags_bytes[1] & 0x02:
-            tile.wire = True
-        if flags_bytes[1] & 0x04:
-            tile.wire2 = True
-        if flags_bytes[1] & 0x08:
-            tile.wire3 = True
-        if flags_bytes[2] & 0x20:
-            tile.wire4 = True
+        # --- b flags ---
+        if b > 1:
+            if (b & 0x02) == 0x02:
+                tile.wire = True
+            if (b & 0x04) == 0x04:
+                tile.wire2 = True
+            if (b & 0x08) == 0x08:
+                tile.wire3 = True
 
-        # Shape
-        shape = (flags_bytes[1] & 0x70) >> 4
-        if shape != 0 and tile_data.tileSolid[tile.type]:
-            if shape != 1:
-                tile.slope = int(shape - 1)
-            else:
-                tile.half_brick = True
+            shape = (b & 0x70) >> 4
+            if shape != 0 and tile_data.tileSolid[tile.type]:
+                if shape == 1:
+                    tile.half_brick = True
+                else:
+                    tile.slope = shape - 1
 
-        if flags_bytes[2] & 0x02:
-            tile.actuator = True
-        if flags_bytes[2] & 0x04:
-            tile.inactive = True
+        # --- b2 flags ---
+        if b2 > 1:
+            if (b2 & 0x02) == 0x02:
+                tile.actuator = True
+            if (b2 & 0x04) == 0x04:
+                tile.inactive = True
+            if (b2 & 0x20) == 0x20:
+                tile.wire4 = True
+            if (b2 & 0x40) == 0x40:
+                high_wall_byte = reader.read_byte()
+                tile.wall = (high_wall_byte << 8) | tile.wall
 
-        # Wall high byte
-        if flags_bytes[2] & 0x40:
-            tile.wall = (reader.read_byte() << 8) | tile.wall
-
-        # num4 flags (extra)
-        num4 = flags_bytes[3] if len(flags_bytes) > 3 else 0
-        if num4 > 1:
-            if num4 & 0x02:
+        # --- b3 flags ---
+        if b3 > 1:
+            if (b3 & 0x02) == 0x02:
                 tile.invisible_block = True
-            if num4 & 0x04:
+            if (b3 & 0x04) == 0x04:
                 tile.invisible_wall = True
-            if num4 & 0x08:
+            if (b3 & 0x08) == 0x08:
                 tile.fullbright_block = True
-            if num4 & 0x10:
+            if (b3 & 0x10) == 0x10:
                 tile.fullbright_wall = True
 
-        # RLE
-        rle_code = (flags_bytes[0] & 0xC0) >> 6
+        # --- RLE ---
+        rle_code = (b4 & 0xC0) >> 6
+
         if rle_code == 0:
             rle = 0
         elif rle_code == 1:
             rle = reader.read_byte()
-        else:  # 2 or 3
+        else:
             rle = reader.read_short()
 
-        return (tile, rle)
+        return tile, rle
 
     def copy_from(self, from_tile: 'Tile') -> None:
         self.type = from_tile.type
@@ -271,7 +293,9 @@ class Tile:
 
     @slope.setter
     def slope(self, value: int) -> None:
-        self.s_tile_header = (self.s_tile_header & 0b1000111111111111) | ((value & 7) << 12)  # 36863
+        self.s_tile_header = (self.s_tile_header & 0b1000111111111111) | (
+            (value & 7) << 12
+        )  # 36863
         self.s_tile_header &= 0xFFFF
 
     @property
