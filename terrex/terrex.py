@@ -10,6 +10,11 @@ from terrex.client import Client
 from terrex.event.dispatcher import Dispatcher
 from terrex.event.filter.base import EventFilter
 from terrex.net import module
+from terrex.net.enum.teleport_pylon_operation import TeleportPylonOperation
+from terrex.net.enum.teleport_pylon_type import TeleportPylonType
+from terrex.net.enum.teleport_request_type import TeleportRequestType
+from terrex.net.enum.teleport_type import TeleportType
+from terrex.net.structure.vec2 import Vec2
 from terrex.player.player import Player
 from terrex.net.protocol import PROTOCOLS
 from terrex.net.enum.chat_command import ChatCommand
@@ -61,16 +66,94 @@ class Terrex:
         self.client = Client(ip, port, protocol, server_password, self)
 
     async def send_message(self, text: str, wait: bool = False):
-        if self.player.logged_in:
-            await self.client.send(
-                packet.NetModules(
-                    module=module.NetTextModule(
-                        chat_command_id=ChatCommand.SayChat,
-                        text=text,
-                    ),
+        """
+        Send a chat message to the server.
+
+        Args:
+            text (str): The message text to send.
+            wait (bool, optional): Whether to wait for the packet to be sent. Defaults to False.
+
+        Example:
+            await terrex.send_message("Hello, world!")
+        """
+        if not self.player.logged_in:
+            return
+        await self.client.send(
+            packet.NetModules(
+                module=module.NetTextModule(
+                    chat_command_id=ChatCommand.SayChat,
+                    text=text,
                 ),
-                wait=wait,
-            )
+            ),
+            wait=wait,
+        )
+
+    async def teleport(self, position: Vec2, type: TeleportType = TeleportType.RecallPotion, pylon_type: TeleportPylonType | None = None) -> None:
+        """
+        Teleport the player to a specific position using various teleport methods.
+
+        Args:
+            position (Vec2): The target position to teleport to.
+            type (TeleportType, optional): The type of teleport. Defaults to RecallPotion.
+            pylon_type (TeleportPylonType | None, optional): Required for TeleportationPylon type.
+
+        Raises:
+            NotImplementedError: For unsupported teleport types like TeleporterTile, Portal, etc.
+            ValueError: If pylon_type is None for TeleportationPylon.
+
+        Example:
+            # Recall potion teleport
+            await terrex.teleport(Vec2(100, 200))
+
+            # Pylon teleport
+            await terrex.teleport(Vec2(100, 200), TeleportType.TeleportationPylon, TeleportPylonType.Forest)
+        """
+        if not self.player.logged_in:
+            return
+        match type:
+            case TeleportType.TeleporterTile:
+                raise NotImplementedError("Use HitSwitch() packet to enable portal tile")
+            case TeleportType.RodOfDiscord:
+                # todo: not tested
+                await self.client._teleport_entity(position, type, player_teleport=True)
+                return
+            case TeleportType.TeleportationPotion:
+                await self.client._request_teleport(type=TeleportRequestType.TeleportationPotion)
+                return
+            case TeleportType.RecallPotion:
+                await self.client._teleport_entity(position, type, player_teleport=True)
+                return
+            case TeleportType.Portal:
+                raise NotImplementedError("Deprecated, use TeleportPlayerThroughPortal() packet")
+            case TeleportType.MagicConch:
+                await self.client._request_teleport(type=TeleportRequestType.MagicConch)
+                return
+            case TeleportType.DebugTeleport:
+                raise NotImplementedError("Never used")
+            case TeleportType.DemonConch:
+                await self.client._request_teleport(type=TeleportRequestType.DemonConch)
+                return
+            case TeleportType.PotionOfReturn:
+                # todo: not tested
+                await self.client._teleport_entity(position, type, player_teleport=True)
+                return
+            case TeleportType.TeleportationPylon:
+                if not pylon_type:
+                    raise ValueError("Pylon type is required")
+                await self.client._request_teleport_pylon(position.x, position.y, pylon_type)
+                return
+            case TeleportType.QueenSlimeHook:
+                await self.client._teleport_entity(position, type, player_teleport=False)  # hook is not player teleporter
+                return
+            case TeleportType.ShellphoneSpawn:
+                await self.client._request_teleport(type=TeleportRequestType.Shellphone_Spawn)
+                return
+            case TeleportType.ShimmerTownNPCTransform:
+                raise NotImplementedError("Only for NPC server logic")
+            case TeleportType.MysticFrog:
+                raise NotImplementedError("Only for NPC server logic")
+            case TeleportType.NoEffect:
+                raise NotImplementedError("Only for NPC server logic")
 
     def get_event_manager(self):
         return self.evman

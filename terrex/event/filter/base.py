@@ -10,7 +10,7 @@ E = TypeVar("E", bound=BaseEvent)
 class EventFilter(Generic[E]):
     _event_type: Type[E]
 
-    async def matches(self, ctx: EventContext) -> E | None:
+    def matches(self, ctx: EventContext) -> E | None:
         raise NotImplementedError
 
     def __and__(self, other: "EventFilter[E]") -> "EventFilter[E]":
@@ -28,7 +28,7 @@ class EventTypeFilter(EventFilter[E]):
     def __init__(self, event_type: Type[E]):
         self._event_type = event_type
 
-    async def matches(self, ctx: EventContext) -> E | None:
+    def matches(self, ctx: EventContext) -> E | None:
         if isinstance(ctx.event, self._event_type):
             return ctx.event
         return None

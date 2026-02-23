@@ -1,3 +1,4 @@
+import asyncio
 from collections.abc import Callable
 from typing import Awaitable
 from .filter.base import EventFilter
@@ -16,8 +17,9 @@ class EventManager:
 
         return decorator
 
-    async def raise_event(self, event: BaseEvent):
-        await self._dispatcher.dispatch(event)
+    def raise_event(self, event: BaseEvent):
+        loop = asyncio.get_running_loop()
+        loop.create_task(self._dispatcher.dispatch(event))
 
     def stop(self):
         self._dispatcher.shutdown()

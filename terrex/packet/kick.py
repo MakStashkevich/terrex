@@ -15,4 +15,4 @@ class Kick(ServerPacket):
         self.reason = NetworkText.read(reader)
 
     async def handle(self, world, player, evman):
-        await evman.raise_event(BlockedEvent(self, self.reason))
+        evman.raise_event(BlockedEvent(self, self.reason))

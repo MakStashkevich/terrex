@@ -21,4 +21,4 @@ class ItemOwner(SyncPacket):
 
     async def handle(self, world, player, evman):
         world.item_owner_index[self.item_id] = self.player_id
-        await evman.raise_event(ItemOwnerChangedEvent(self, self.item_id, self.player_id))
+        evman.raise_event(ItemOwnerChangedEvent(self, self.item_id, self.player_id))

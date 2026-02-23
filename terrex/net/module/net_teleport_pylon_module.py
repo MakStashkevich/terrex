@@ -1,16 +1,12 @@
 from dataclasses import dataclass
 from enum import IntEnum
 
+from terrex.net.enum.teleport_pylon_operation import TeleportPylonOperation
 from terrex.net.enum.teleport_pylon_type import TeleportPylonType
 from terrex.net.streamer import Reader, Writer
+from terrex.net.structure.vec2 import Vec2
 
 from .net_module import NetSyncModule
-
-
-class TeleportPylonOperation(IntEnum):
-    AddForClient = 0
-    RemoveForClient = 1
-    HandleTeleportRequest = 2
 
 
 @dataclass()

@@ -4,6 +4,12 @@ import time
 import traceback
 
 from terrex import packet
+from terrex.net import module
+from terrex.net.enum.teleport_pylon_operation import TeleportPylonOperation
+from terrex.net.enum.teleport_pylon_type import TeleportPylonType
+from terrex.net.enum.teleport_request_type import TeleportRequestType
+from terrex.net.enum.teleport_type import TeleportType
+from terrex.net.structure.vec2 import Vec2
 from terrex.packet.base import Packet, packet_registry
 from terrex.net.creative_power.spawn_rate_slider_per_player_power import (
     SpawnRateSliderPerPlayerPower,
@@ -157,6 +163,9 @@ class Client:
             self.running = False
 
     async def _handle_server_packet(self, pkt: Packet) -> bool:
+        if not self.running:
+            return False
+
         if pkt.id == MessageID.Ping:
             await self.on_ping_received()
             return False
@@ -166,7 +175,7 @@ class Client:
             await self.stop()
             return False
 
-        if self.running and not self.connected_to_server:
+        if not self.connected_to_server:
             # server req password
             if pkt.id == MessageID.RequestPassword:
                 pkt = packet.SendPassword(self.server_password)
@@ -367,6 +376,20 @@ class Client:
                 for i in range(29):
                     await self.send(packet.UniqueTownNPCInfoSyncRequest(npc_id=i, name=None, town_npc_variation_idx=None))
 
+        if pkt.id == MessageID.TeleportEntity and isinstance(pkt, packet.TeleportEntity) and pkt.flags.need_sync:
+            # updating player position and notifying the server about the successful teleportation
+            self.player.position = pkt.position
+            await self.send(
+                packet.TeleportEntity(
+                    server_synced=True,
+                    player_teleport=True,
+                    player_id=pkt.player_id,
+                    position=Vec2(0, 0),
+                    type=TeleportType.TeleporterTile,
+                    pylon_type=TeleportPylonType.SurfacePurity,
+                )
+            )
+
         return True
 
     async def _writer_loop(self) -> None:
@@ -503,3 +526,20 @@ class Client:
         for t in tasks:
             if t and not t.done():
                 t.cancel()
+
+    async def _request_teleport(self, type: TeleportRequestType) -> None:
+        await self.send(packet.RequestTeleportationByServer(type=type))
+
+    async def _teleport_entity(self, position: Vec2, type: TeleportType, player_teleport: bool = True) -> None:
+        await self.send(
+            packet.TeleportEntity(
+                server_synced=False,
+                player_teleport=player_teleport,
+                player_id=self.player.id,
+                position=position,
+                type=type,
+            )
+        )
+
+    async def _request_teleport_pylon(self, x: int, y: int, type: TeleportPylonType) -> None:
+        await self.send(packet.NetModules(module=module.NetTeleportPylonModule.create(operation=TeleportPylonOperation.HandleTeleportRequest, x=x, y=y, pylon_type=type)))

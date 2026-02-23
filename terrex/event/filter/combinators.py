@@ -24,10 +24,10 @@ class AndFilter(EventFilter[E], Generic[E]):
 
         self._event_type = event_type
 
-    async def matches(self, ctx: EventContext) -> E | None:
+    def matches(self, ctx: EventContext) -> E | None:
         result: E | None = None
         for f in self.filters:
-            result = await f.matches(ctx)
+            result = f.matches(ctx)
             if result is None:
                 return None
         return result
@@ -57,9 +57,9 @@ class OrFilter(EventFilter[E], Generic[E]):
 
         self._event_type = event_type
 
-    async def matches(self, ctx: EventContext) -> E | None:
+    def matches(self, ctx: EventContext) -> E | None:
         for f in self.filters:
-            result = await f.matches(ctx)
+            result = f.matches(ctx)
             if result is not None:
                 return result
         return None

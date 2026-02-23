@@ -11,7 +11,7 @@ class NewMessage(EventFilter[ChatEvent]):
     def __init__(self, pattern: str | None = None):
         self.pattern = re.compile(pattern) if pattern else None
 
-    async def matches(self, ctx: EventContext) -> ChatEvent | None:
+    def matches(self, ctx: EventContext) -> ChatEvent | None:
         event = ctx.event
         if not isinstance(event, ChatEvent):
             return None

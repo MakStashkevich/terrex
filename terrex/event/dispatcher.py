@@ -39,7 +39,7 @@ class Dispatcher:
         ctx = EventContext(self._terrex, event)
 
         for _, filter, callback in self._handlers.get(type(event), []):
-            matched_event = await filter.matches(ctx)
+            matched_event = filter.matches(ctx)
             if matched_event is None:
                 continue
             

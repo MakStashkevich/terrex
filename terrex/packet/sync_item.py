@@ -41,9 +41,9 @@ class SyncItem(SyncPacket):
         item = Item(self.item_id, self.item_net_id, self.pos, self.vel, self.prefix, self.stack_size)
 
         if self.item_id in world.items:
-            await evman.raise_event(ItemDropUpdateEvent(self, item))
+            evman.raise_event(ItemDropUpdateEvent(self, item))
         else:
             world.items[self.item_id] = item
             if self.item_id not in world.item_owner_index:
                 world.item_owner_index[self.item_id] = 255
-            await evman.raise_event(ItemDroppedEvent(self, item))
+            evman.raise_event(ItemDroppedEvent(self, item))

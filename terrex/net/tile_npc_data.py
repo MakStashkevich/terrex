@@ -32,7 +32,6 @@ class TileNPCData:
     tileSolid: list[bool] = []
     tileMergeDirt: list[bool] = []
     tileBrick: list[bool] = []
-    tileSolid: list[bool] = []
     tileLavaDeath: list[bool] = []
     tileWaterDeath: list[bool] = []
     tileBlockLight: list[bool] = []

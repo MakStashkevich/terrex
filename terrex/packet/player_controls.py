@@ -31,8 +31,8 @@ class PlayerControls(SyncPacket):
         self.action = action
         self.sleep_info = sleep_info
         self.selected_item = selected_item
-        self.pos = pos or Vec2(0.0, 0.0)
-        self.vel = vel
+        self.world_position = pos or Vec2(0.0, 0.0)
+        self.velocity = vel
         self.original_and_home_pos = original_and_home_pos
 
     def read(self, reader: Reader) -> None:
@@ -42,11 +42,11 @@ class PlayerControls(SyncPacket):
         self.action = reader.read_byte()
         self.sleep_info = reader.read_byte()
         self.selected_item = reader.read_byte()
-        self.pos = Vec2.read(reader)
+        self.world_position = Vec2.read(reader)
 
-        self.vel = None
+        self.velocity = None
         if self.pulley & PULLEY_HAS_VEL:
-            self.vel = Vec2.read(reader)
+            self.velocity = Vec2.read(reader)
 
         self.original_and_home_pos = None
         if self.action & PLAYER_ACTION_HAS_ORIG_AND_HOME_POS:
@@ -59,7 +59,7 @@ class PlayerControls(SyncPacket):
         writer.write_byte(self.keys)
 
         pulley_flags = self.pulley
-        if self.vel is not None:
+        if self.velocity is not None:
             pulley_flags |= PULLEY_HAS_VEL
         writer.write_byte(pulley_flags)
 
@@ -70,10 +70,10 @@ class PlayerControls(SyncPacket):
 
         writer.write_byte(self.sleep_info)
         writer.write_byte(self.selected_item)
-        self.pos.write(writer)
+        self.world_position.write(writer)
 
-        if self.vel is not None:
-            self.vel.write(writer)
+        if self.velocity is not None:
+            self.velocity.write(writer)
 
         if self.original_and_home_pos is not None:
             self.original_and_home_pos[0].write(writer)

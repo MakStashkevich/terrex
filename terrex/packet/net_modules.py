@@ -40,4 +40,4 @@ class NetModules(SyncPacket):
             # ignore client chat commands
             and self.module.chat_command_id is None
         ):
-            await evman.raise_event(ChatEvent(self, self.module.author_id, self.module.text.text, self.module.chat_command_id))
+            evman.raise_event(ChatEvent(self, self.module.author_id, self.module.text.text, self.module.chat_command_id))

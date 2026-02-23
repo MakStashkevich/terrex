@@ -93,9 +93,6 @@ class MapHelper:
         if not isinstance(tile, Tile):
             return MapTile(0, 0, 0)
 
-        if not tile.active:
-            print(f"x={x}, y={y}, tile={tile}")
-
         color = 0
         light = base_light
         base_type = 0

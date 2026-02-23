@@ -11,10 +11,10 @@ class BitsByte:
         if not 0 <= index < 8:
             raise IndexError("Index must be 0-7")
         if val:
-            self.value |= (1 << index)
+            self.value |= 1 << index
         else:
             self.value &= ~(1 << index)
-            
+
     def __int__(self) -> int:
         return self.value
 

@@ -11,7 +11,7 @@ class PlayerFilter(EventFilter[E]):
         self._event_type = event_type
         self.predicate = predicate
 
-    async def matches(self, ctx: EventContext) -> E | None:
+    def matches(self, ctx: EventContext) -> E | None:
         event = ctx.event
         if not isinstance(event, self._event_type):
             return None

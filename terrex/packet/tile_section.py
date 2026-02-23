@@ -35,4 +35,4 @@ class TileSection(ServerPacket):
 
         print(f"Loaded {section}")
 
-        await evman.raise_event(WorldSectionUpdateEvent(self, section))
+        evman.raise_event(WorldSectionUpdateEvent(self, section))

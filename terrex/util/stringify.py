@@ -3,6 +3,7 @@ from enum import Enum
 from typing import Any
 
 from terrex.localization.network_text import NetworkText
+from terrex.net.bits_byte import BitsByte
 
 
 def stringify_network_text(value: Any, depth: int = 0, max_depth: int = 20, seen: set = None) -> dict[str, Any]:
@@ -56,6 +57,8 @@ def stringify_value(value: Any, depth: int = 0, max_depth: int = 20, seen: set =
             return f"{value.name}({value.value})"
         if isinstance(value, dict):
             return {str(key): stringify_value(item, depth + 1, max_depth, seen) for key, item in value.items()}
+        if isinstance(value, BitsByte):
+            return str(value)
         if isinstance(value, (bytes, bytearray)):
             return value.hex()
         if isinstance(value, list):
