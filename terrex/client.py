@@ -1,7 +1,6 @@
 import asyncio
 import struct
 import time
-import traceback
 
 from terrex import packet
 from terrex.net import module
@@ -156,7 +155,6 @@ class Client:
                 except ConnectionError:
                     break
                 except Exception as e:
-                    print(traceback.format_exc())
                     print(f"Error read packet by client: {e}")
                     continue
         except asyncio.CancelledError:
@@ -423,7 +421,6 @@ class Client:
                 except ConnectionError:
                     break
                 except Exception as e:
-                    print(traceback.format_exc())
                     print(f"Error send packet by client: {e}")
                     break
         except asyncio.CancelledError:
@@ -480,7 +477,6 @@ class Client:
                 except asyncio.TimeoutError:
                     continue
                 except Exception as e:
-                    print(traceback.format_exc())
                     print(f"Error handle packet: {e}")
                     break
         except asyncio.CancelledError:

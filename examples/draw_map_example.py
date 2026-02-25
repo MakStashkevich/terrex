@@ -1,6 +1,5 @@
 import asyncio
 import time
-import traceback
 
 from PIL import Image
 

@@ -1,5 +1,4 @@
 import struct
-import traceback
 
 from terrex.packet.base import Packet, packet_registry
 from terrex.id import MessageID
@@ -62,7 +61,6 @@ class IncrementalParser:
             try:
                 packet.read(reader)
             except Exception as e:
-                print(traceback.format_exc())
                 try:
                     name = MessageID(packet_id).name
                 except ValueError:

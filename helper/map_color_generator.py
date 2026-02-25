@@ -1,8 +1,6 @@
 import re
-from collections import defaultdict
 from pathlib import Path
-import traceback
-from typing import Dict, List, Tuple
+from typing import List
 
 CS_FILE = Path(__file__).parent / '../terrex/world/MapHelper.cs'
 
@@ -358,7 +356,6 @@ def main():
             f.write('\n'.join(code_lines))
         print('Success! Created `terrex/world/map_colors.py`.')
     except Exception as e:
-        print(traceback.format_exc())
         print(f'Error: {e}')
 
 
