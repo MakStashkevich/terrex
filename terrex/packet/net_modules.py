@@ -11,9 +11,9 @@ from terrex.packet.base import SyncPacket
 
 class NetModules(SyncPacket):
     id = MessageID.NetModules
-    module: NetModule
+    module: NetModule | None = None
 
-    def __init__(self, module: NetModule):
+    def __init__(self, module: NetModule | None = None):
         self.module = module
 
     def read(self, reader: Reader) -> None:
@@ -28,6 +28,8 @@ class NetModules(SyncPacket):
         self.module = module
 
     def write(self, writer: Writer) -> None:
+        if self.module is None:
+            raise ValueError("NetModules module is None during write")
         writer.write_ushort(self.module.id)
         self.module.write(writer)
 
