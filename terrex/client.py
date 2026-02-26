@@ -3,21 +3,21 @@ import struct
 import time
 
 from terrex import packet
+from terrex.id import MessageID
+from terrex.localization.localization import get_translation
 from terrex.net import module
+from terrex.net.creative_power.spawn_rate_slider_per_player_power import (
+    SpawnRateSliderPerPlayerPower,
+)
+from terrex.net.enum.mode import NetMode
 from terrex.net.enum.teleport_pylon_operation import TeleportPylonOperation
 from terrex.net.enum.teleport_pylon_type import TeleportPylonType
 from terrex.net.enum.teleport_request_type import TeleportRequestType
 from terrex.net.enum.teleport_type import TeleportType
+from terrex.net.module import NetCreativePowersModule
+from terrex.net.streamer import Reader, Writer
 from terrex.net.structure.vec2 import Vec2
 from terrex.packet.base import Packet, packet_registry
-from terrex.net.creative_power.spawn_rate_slider_per_player_power import (
-    SpawnRateSliderPerPlayerPower,
-)
-from terrex.net.module import NetCreativePowersModule
-from terrex.id import MessageID
-from terrex.net.enum.mode import NetMode
-from terrex.localization.localization import get_translation
-from terrex.net.streamer import Reader, Writer
 
 PLAYER_UUID = "01032c81-623f-4435-85e5-e0ec816b09ca"
 
@@ -48,8 +48,8 @@ class Client:
 
         self.reader: asyncio.StreamReader | None = None
         self.writer: asyncio.StreamWriter | None = None
-        self.send_queue = asyncio.Queue()
-        self.recv_queue = asyncio.Queue()
+        self.send_queue: asyncio.Queue = asyncio.Queue()
+        self.recv_queue: asyncio.Queue = asyncio.Queue()
         self.running = False
         self.connected_to_server = False
         self.reader_task: asyncio.Task | None = None
@@ -60,7 +60,7 @@ class Client:
         self._ping_last_sent = 0.0
         self._ping_start_time = 0.0
 
-        self.handle_queue = asyncio.Queue()
+        self.handle_queue: asyncio.Queue = asyncio.Queue()
         self.handle_task: asyncio.Task | None = None
 
     async def connect(self) -> None:
@@ -96,21 +96,27 @@ class Client:
     async def recv(self) -> Packet | None:
         """Get a (blocking) package."""
         try:
-            return await self.recv_queue.get()
+            pkt = await self.recv_queue.get()
+            if not isinstance(pkt, Packet):
+                return None
+            return pkt
         except asyncio.TimeoutError:
             return None
 
     async def try_recv(self) -> Packet | None:
         """Get a non-blocking package."""
         try:
-            return await self.recv_queue.get_nowait()
+            pkt = await self.recv_queue.get_nowait()
+            if not isinstance(pkt, Packet):
+                return None
+            return pkt
         except asyncio.QueueEmpty:
             return None
 
     async def _read_exact(self, n: int) -> bytes:
         """Read exactly n bytes."""
         data = b""
-        while len(data) < n:
+        while len(data) < n and self.reader is not None:
             chunk = await self.reader.read(n - len(data))
             if len(chunk) == 0:
                 raise ConnectionError("The connection is closed")
@@ -131,7 +137,9 @@ class Client:
                     packet_cls = packet_registry.get(packet_id)
                     if packet_cls:
                         packet = packet_cls()
-                        reader = Reader(payload, protocol_version=self.protocol, net_mode=NetMode.SERVER)
+                        reader = Reader(
+                            payload, protocol_version=self.protocol, net_mode=NetMode.SERVER
+                        )
                         packet.read(reader)
 
                         if not self.running:
@@ -169,7 +177,7 @@ class Client:
             return False
 
         if pkt.id == MessageID.Kick and isinstance(pkt, packet.Kick):
-            print(f"Disconnect with reason: {get_translation(packet.reason)}")
+            print(f"Disconnect with reason: {get_translation(pkt.reason)}")
             await self.stop()
             return False
 
@@ -180,7 +188,11 @@ class Client:
                 await self.send(pkt)
 
             # server accept password and receive player info
-            if pkt.id == MessageID.PlayerInfo and isinstance(pkt, packet.PlayerInfo) and not pkt.is_server:
+            if (
+                pkt.id == MessageID.PlayerInfo
+                and isinstance(pkt, packet.PlayerInfo)
+                and not pkt.is_server
+            ):
                 # save server player id
                 self.world.my_player_id = self.player.id = pkt.player_id
                 self.world.players[pkt.player_id] = self.player
@@ -317,7 +329,9 @@ class Client:
                 )
                 await self.send(
                     packet.NetModules(
-                        module=NetCreativePowersModule.create(power=SpawnRateSliderPerPlayerPower.create(value=0.0)),
+                        module=NetCreativePowersModule.create(
+                            power=SpawnRateSliderPerPlayerPower.create(value=0.0)
+                        ),
                     )
                 )
                 self.player.logged_in = True
@@ -347,7 +361,9 @@ class Client:
                         # todo: add all zone flags
                     )
                 )
-                await self.send(packet.PlayerBuffs(player_id=self.player.id, buffs=[0] * 22))  # repeat???
+                await self.send(
+                    packet.PlayerBuffs(player_id=self.player.id, buffs=[0] * 22)
+                )  # repeat???
 
                 # ---0x0D UPDATE_PLAYER (0x0D) ---
                 # {'player_id': 0, 'keys': 64, 'pulley': 16, 'action': 10, 'sleep_info': 0, 'selected_item': 0, 'pos': {'x': 67166.0, 'y': 6742.0, 'TILE_TO_POS_SCALE': 16.0}, 'vel': None, 'original_and_home_pos': None}
@@ -372,9 +388,17 @@ class Client:
                 )
                 # Update npc names from 0 to 29
                 for i in range(29):
-                    await self.send(packet.UniqueTownNPCInfoSyncRequest(npc_id=i, name=None, town_npc_variation_idx=None))
+                    await self.send(
+                        packet.UniqueTownNPCInfoSyncRequest(
+                            npc_id=i, name=None, town_npc_variation_idx=None
+                        )
+                    )
 
-        if pkt.id == MessageID.TeleportEntity and isinstance(pkt, packet.TeleportEntity) and pkt.flags.need_sync:
+        if (
+            pkt.id == MessageID.TeleportEntity
+            and isinstance(pkt, packet.TeleportEntity)
+            and pkt.flags.need_sync
+        ):
             # updating player position and notifying the server about the successful teleportation
             self.player.position = pkt.position
             await self.send(
@@ -396,7 +420,7 @@ class Client:
         Pulls packets from queue and writes them to the socket.
         """
         try:
-            while self.running:
+            while self.running and self.writer is not None:
                 try:
                     item = await self.send_queue.get()
                     if item is None:
@@ -526,7 +550,9 @@ class Client:
     async def _request_teleport(self, type: TeleportRequestType) -> None:
         await self.send(packet.RequestTeleportationByServer(type=type))
 
-    async def _teleport_entity(self, position: Vec2, type: TeleportType, player_teleport: bool = True) -> None:
+    async def _teleport_entity(
+        self, position: Vec2, type: TeleportType, player_teleport: bool = True
+    ) -> None:
         await self.send(
             packet.TeleportEntity(
                 server_synced=False,
@@ -538,4 +564,13 @@ class Client:
         )
 
     async def _request_teleport_pylon(self, x: int, y: int, type: TeleportPylonType) -> None:
-        await self.send(packet.NetModules(module=module.NetTeleportPylonModule.create(operation=TeleportPylonOperation.HandleTeleportRequest, x=x, y=y, pylon_type=type)))
+        await self.send(
+            packet.NetModules(
+                module=module.NetTeleportPylonModule.create(
+                    operation=TeleportPylonOperation.HandleTeleportRequest,
+                    x=x,
+                    y=y,
+                    pylon_type=type,
+                )
+            )
+        )

@@ -79,6 +79,8 @@ class NetBannersModule(NetServerModule):
             self.granted = reader.read_bool()
 
     def write(self, writer: Writer) -> None:
+        if self.msg_type is None:
+            raise ValueError("msg_type must not be None")
         writer.write_byte(self.msg_type.value)
         if self.msg_type == BannersMessageType.FullState:
             if self.kill_counts is not None:
@@ -90,15 +92,25 @@ class NetBannersModule(NetServerModule):
                 for cb in self.claimable_banners:
                     writer.write_ushort(cb)
         elif self.msg_type == BannersMessageType.KillCountUpdate:
+            if self.banner_id is None or self.kill_count is None:
+                raise ValueError("banner_id and kill_count must not be None for KillCountUpdate")
             writer.write_short(self.banner_id)
             writer.write_int(self.kill_count)
         elif self.msg_type == BannersMessageType.ClaimCountUpdate:
+            if self.banner_id is None or self.claimable_count is None:
+                raise ValueError(
+                    "banner_id and claimable_count must not be None for ClaimCountUpdate"
+                )
             writer.write_short(self.banner_id)
             writer.write_ushort(self.claimable_count)
         elif self.msg_type == BannersMessageType.ClaimRequest:
+            if self.banner_id is None or self.amount is None:
+                raise ValueError("banner_id and amount must not be None for ClaimRequest")
             writer.write_short(self.banner_id)
             writer.write_ushort(self.amount)
         elif self.msg_type == BannersMessageType.ClaimResponse:
+            if self.banner_id is None or self.amount is None or self.granted is None:
+                raise ValueError("banner_id, amount, granted must not be None for ClaimResponse")
             writer.write_short(self.banner_id)
             writer.write_ushort(self.amount)
             writer.write_bool(self.granted)

@@ -16,7 +16,9 @@ class Chest:
     _items_got_set: bool = False
 
     @classmethod
-    def create(cls, index: int = 0, x: int = 0, y: int = 0, bank: bool = False, max_items: int = 40) -> 'Chest':
+    def create(
+        cls, index: int = 0, x: int = 0, y: int = 0, bank: bool = False, max_items: int = 40
+    ) -> 'Chest':
         chest = cls(index=index, x=x, y=y, bank_chest=bank, max_items=max_items)
         chest.fill_with_empty_instances()
         return chest

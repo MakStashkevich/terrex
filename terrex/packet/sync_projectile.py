@@ -1,7 +1,7 @@
-from terrex.packet.base import SyncPacket
 from terrex.id import MessageID
-from terrex.net.structure.vec2 import Vec2
 from terrex.net.streamer import Reader, Writer
+from terrex.net.structure.vec2 import Vec2
+from terrex.packet.base import SyncPacket
 
 
 class SyncProjectile(SyncPacket):
@@ -15,7 +15,7 @@ class SyncProjectile(SyncPacket):
         owner: int = 0,
         ty: int = 0,
         flags: int = 0,
-        ai: list[float] = None,
+        ai: list[float] | None = None,
         damage: int | None = None,
         knockback: float | None = None,
         original_damage: int | None = None,

@@ -1,5 +1,5 @@
-from terrex.packet.base import ClientPacket
 from terrex.id import MessageID
+from terrex.packet.base import ClientPacket
 
 
 class AnglerQuestFinished(ClientPacket):

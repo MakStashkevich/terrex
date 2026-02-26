@@ -1,20 +1,19 @@
 from terrex.event.types import ChatEvent
-from terrex.packet.base import SyncPacket
+from terrex.id import MessageID
 from terrex.net.module import (
     NetTextModule,
     net_module_registry,
 )
 from terrex.net.module.net_module import NetModule
-from terrex.id import MessageID
 from terrex.net.streamer import Reader, Writer
+from terrex.packet.base import SyncPacket
 
 
 class NetModules(SyncPacket):
     id = MessageID.NetModules
-
     module: NetModule
 
-    def __init__(self, module: NetModule = None):
+    def __init__(self, module: NetModule):
         self.module = module
 
     def read(self, reader: Reader) -> None:
@@ -36,8 +35,15 @@ class NetModules(SyncPacket):
         if (
             isinstance(self.module, NetTextModule)
             and self.module.author_id is not None
-            and self.module.text is not None
+            and self.module.net_text is not None
             # ignore client chat commands
             and self.module.chat_command_id is None
         ):
-            evman.raise_event(ChatEvent(self, self.module.author_id, self.module.text.text, self.module.chat_command_id))
+            evman.raise_event(
+                ChatEvent(
+                    self,
+                    self.module.author_id,
+                    self.module.net_text.text,
+                    self.module.chat_command_id,
+                )
+            )

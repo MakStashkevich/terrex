@@ -3,12 +3,9 @@ import time
 
 from PIL import Image
 
-from typing import Any
-
 from terrex import Terrex
 from terrex.event.filter import IncomingMessage, NewMessage
 from terrex.net.enum.section_size import SectionSize
-from terrex.net.structure.rgb import Rgb
 from terrex.net.structure.vec2 import Vec2
 from terrex.world.map_helper import MapHelper
 from terrex.world.world import World
@@ -38,14 +35,18 @@ async def draw_map_image(client: Terrex) -> Image.Image:
     for section_y in sections_y:
         for section_x in sections_x:
             # teleport to center section
-            section_center = Vec2.from_tile_pos(section_x - (SectionSize.Width / 2), section_y - (SectionSize.Height / 2))
+            section_center = Vec2.from_tile_pos(
+                section_x - (SectionSize.Width / 2), section_y - (SectionSize.Height / 2)
+            )
             await client.teleport(section_center)
             await asyncio.sleep(0.01)
 
             processed_sections += 1
             current_time = time.time()
             if current_time - last_scan_message >= 5.0:
-                percent_done = (processed_sections / total_sections) * 100 if total_sections > 0 else 100.0
+                percent_done = (
+                    (processed_sections / total_sections) * 100 if total_sections > 0 else 100.0
+                )
                 await client.send_message(f"Map scanning progress: {percent_done:.1f}%", wait=True)
                 last_scan_message = current_time
 
@@ -62,6 +63,8 @@ async def draw_map_image(client: Terrex) -> Image.Image:
     # draw all tiles on image
     img = Image.new("RGB", (width, height))
     pixels = img.load()
+    if pixels is None:
+        raise ValueError("Failed to load pixel access")
     for y in range(height):
         for x in range(width):
             mt = MapHelper.create_map_tile(world, x, y, 255)
@@ -71,8 +74,12 @@ async def draw_map_image(client: Terrex) -> Image.Image:
             processed_pixels += 1
             current_time = time.time()
             if current_time - last_draw_message >= 5.0:
-                percent_done = (processed_pixels / total_pixels) * 100 if total_pixels > 0 else 100.0
-                await client.send_message(f"Image creation progress: {percent_done:.1f}%", wait=True)
+                percent_done = (
+                    (processed_pixels / total_pixels) * 100 if total_pixels > 0 else 100.0
+                )
+                await client.send_message(
+                    f"Image creation progress: {percent_done:.1f}%", wait=True
+                )
                 last_draw_message = current_time
     img.save("world.png", compress_level=0)
     return img

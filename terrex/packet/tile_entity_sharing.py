@@ -1,6 +1,6 @@
-from terrex.packet.base import ServerPacket
 from terrex.id import MessageID
 from terrex.net.streamer import Reader, Writer
+from terrex.packet.base import ServerPacket
 
 
 class TileEntitySharing(ServerPacket):
@@ -22,4 +22,6 @@ class TileEntitySharing(ServerPacket):
             self.y = reader.read_short()
 
     def write(self, writer: Writer) -> None:
-        raise NotImplementedError("Server does not send UpdateTileEntity (client-bound packet only)")
+        raise NotImplementedError(
+            "Server does not send UpdateTileEntity (client-bound packet only)"
+        )

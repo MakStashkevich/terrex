@@ -1,6 +1,6 @@
-from terrex.packet.base import ServerPacket
 from terrex.id import MessageID
 from terrex.net.streamer import Reader
+from terrex.packet.base import ServerPacket
 
 
 class SyncRevengeMarker(ServerPacket):
@@ -41,4 +41,3 @@ class SyncRevengeMarker(ServerPacket):
         self.coin_value = reader.read_int()
         self.base_value = reader.read_float()
         self.spawned_from_statue = reader.read_bool()
-

@@ -2,10 +2,10 @@ import inspect
 from abc import ABC, abstractmethod
 from typing import Any
 
-from terrex.player.player import Player
 from terrex.event.manager import EventManager
 from terrex.net.enum.mode import NetMode
 from terrex.net.streamer import Reader, Writer
+from terrex.player.player import Player
 from terrex.util.stringify import stringify_value
 from terrex.world.world import World
 
@@ -59,7 +59,9 @@ class ServerPacket(Packet, ABC):
         pass
 
     def write(self, writer: Writer) -> None:
-        raise NotImplementedError(f"Client does not send {self.__class__.__name__} (server-only packet)")
+        raise NotImplementedError(
+            f"Client does not send {self.__class__.__name__} (server-only packet)"
+        )
 
 
 class ClientPacket(Packet, ABC):
@@ -72,7 +74,9 @@ class ClientPacket(Packet, ABC):
         pass
 
     def read(self, reader: Reader) -> None:
-        raise NotImplementedError(f"Client does not read {self.__class__.__name__} (server-bound packet only)")
+        raise NotImplementedError(
+            f"Client does not read {self.__class__.__name__} (server-bound packet only)"
+        )
 
 
 class SyncPacket(Packet, ABC):

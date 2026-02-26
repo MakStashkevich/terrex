@@ -1,7 +1,5 @@
 import asyncio
 
-from typing import Any
-
 from terrex import Terrex
 from terrex.event.filter import (
     IncomingMessage,

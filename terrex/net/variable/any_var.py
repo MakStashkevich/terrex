@@ -37,7 +37,10 @@ class AnyVar:
         # int, str, MyClass
         if origin is None:
             if not isinstance(value, self._expected_type):
-                raise TypeError(f"{self.get_field_name()} must be {self._expected_type.__name__}, " f"got {type(value).__name__}")
+                raise TypeError(
+                    f"{self.get_field_name()} must be {self._expected_type.__name__}, "
+                    f"got {type(value).__name__}"
+                )
             return
 
         # Union / Optional / int | None
@@ -46,12 +49,16 @@ class AnyVar:
                 if value is None and type(None) in args:
                     return
                 allowed = ", ".join(t.__name__ for t in args)
-                raise TypeError(f"{self.get_field_name()} must be one of ({allowed}), got {type(value).__name__}")
+                raise TypeError(
+                    f"{self.get_field_name()} must be one of ({allowed}), got {type(value).__name__}"
+                )
             return
 
         # Containers: list[int], set[str], tuple[...]
         if not isinstance(value, origin):
-            raise TypeError(f"{self.get_field_name()} must be {origin.__name__}, got {type(value).__name__}")
+            raise TypeError(
+                f"{self.get_field_name()} must be {origin.__name__}, got {type(value).__name__}"
+            )
 
     def __get__(self, instance, owner):
         if instance is None:

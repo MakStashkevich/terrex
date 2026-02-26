@@ -1,13 +1,14 @@
-from collections.abc import Callable
-from typing import Any, Awaitable, Dict, List, Tuple
+import asyncio
+import concurrent.futures
+import inspect
+from collections.abc import Awaitable, Callable
+from functools import partial
+from typing import Any
 
 from terrex.event.context import EventContext
-from .types import BaseEvent
-import asyncio
-import inspect
-import concurrent.futures
 
 from .filter.base import EventFilter, StopPropagation
+from .types import BaseEvent
 
 
 class Dispatcher:
@@ -18,13 +19,20 @@ class Dispatcher:
             raise TypeError("terrex must be a Terrex instance")
 
         self._terrex = terrex
-        self._handlers: Dict[type[BaseEvent], List[Tuple[int, EventFilter[Any], Callable[[Any], Awaitable[None]]]]] = {}
+        self._handlers: dict[
+            type[BaseEvent],
+            list[
+                tuple[
+                    int, EventFilter[Any], Callable[[Any], Awaitable[None]] | Callable[[Any], None]
+                ]
+            ],
+        ] = {}
         self._executor = concurrent.futures.ThreadPoolExecutor(max_workers=20)
 
     def register(
         self,
         filter: EventFilter,
-        callback: Callable[[BaseEvent], Awaitable[None]] | Callable[[BaseEvent], None],
+        callback: Callable[[Any], Awaitable[None]] | Callable[[Any], None],
         priority: int = 0,
     ) -> None:
         key = filter._event_type
@@ -42,16 +50,16 @@ class Dispatcher:
             matched_event = filter.matches(ctx)
             if matched_event is None:
                 continue
-            
+
             try:
                 sig = inspect.signature(callback)
                 params = sig.parameters
                 args = [matched_event] if len(params) == 1 else []
-    
+
                 if inspect.iscoroutinefunction(callback):
                     await callback(*args)
                 else:
-                    await loop.run_in_executor(self._executor, lambda: callback(*args))
+                    await loop.run_in_executor(self._executor, partial(callback, *args))
             except StopPropagation:
                 break
 

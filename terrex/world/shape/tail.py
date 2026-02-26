@@ -44,10 +44,12 @@ class Tail(GenShape):
     def perform(self, origin: Point, action: GenAction) -> bool:
         # Compute tile coordinates (offsets are in world units? but scaled to tiles)
         start_tile = origin
-        end_tile_x = int(origin.X + self._endOffset.X)
-        end_tile_y = int(origin.Y + self._endOffset.Y)
+        end_tile_x = int(origin.x + self._endOffset.X)
+        end_tile_y = int(origin.y + self._endOffset.Y)
 
-        points = self._bresenham_thick(start_tile.X, start_tile.Y, end_tile_x, end_tile_y, self._width)
+        points = self._bresenham_thick(
+            start_tile.x, start_tile.y, end_tile_x, end_tile_y, self._width
+        )
 
         # Fast-path for vectorized actions
         if isinstance(action, GenActionBulk) and not self._quitOnFail:
@@ -61,7 +63,9 @@ class Tail(GenShape):
                 return False
         return True
 
-    def _bresenham_thick(self, x0: int, y0: int, x1: int, y1: int, width: float) -> list[tuple[int, int]]:
+    def _bresenham_thick(
+        self, x0: int, y0: int, x1: int, y1: int, width: float
+    ) -> list[tuple[int, int]]:
         """
         Bresenham line algorithm with thickness.
         width: thickness radius (full width ≈ 2*width + 1)

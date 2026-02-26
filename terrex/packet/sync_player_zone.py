@@ -1,7 +1,7 @@
-from terrex.packet.base import SyncPacket
-from terrex.net.bits_byte import BitsByte
 from terrex.id import MessageID
+from terrex.net.bits_byte import BitsByte
 from terrex.net.streamer import Reader, Writer
+from terrex.packet.base import SyncPacket
 
 
 class SyncPlayerZone(SyncPacket):
@@ -44,4 +44,6 @@ class SyncPlayerZone(SyncPacket):
         writer.write_byte(self.town_npc_count)
 
     async def handle(self, world, player, evman):
-        player.zone.update(zone1=self.zone1, zone2=self.zone2, zone3=self.zone3, zone4=self.zone4, zone5=self.zone5)
+        player.zone.update(
+            zone1=self.zone1, zone2=self.zone2, zone3=self.zone3, zone4=self.zone4, zone5=self.zone5
+        )

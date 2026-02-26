@@ -1,5 +1,5 @@
-from typing import List
 from dataclasses import dataclass
+
 from terrex.net.structure.rgb import Rgb as Color
 from terrex.world.world_gen import WorldGen
 
@@ -17,11 +17,11 @@ class MapTile:
 class MapHelper:
     # tile_colors: Dict[int, List[Color]] = {}
     # wall_colors: Dict[int, List[Color]] = {}
-    color_lookup: List[Color] = []
-    tile_option_counts: List[Color] = {}
-    wall_option_counts: List[Color] = {}
-    tile_lookup: List[Color] = {}
-    wall_lookup: List[Color] = {}
+    color_lookup: list[Color] = []
+    tile_option_counts: list[int] = []
+    wall_option_counts: list[int] = []
+    tile_lookup: list[int] = []
+    wall_lookup: list[int] = []
     tile_position: int = 0
     wall_position: int = 0
     wall_range_start: int = 0
@@ -31,7 +31,7 @@ class MapHelper:
     dirt_position: int = 0
     rock_position: int = 0
     hell_position: int = 0
-    snow_types: List[Color] = []
+    snow_types: list[int] = []
 
     @classmethod
     def initialize(cls):
@@ -55,7 +55,7 @@ class MapHelper:
 
         if color_type == 29:
             factor = b * 0.3
-            new_color = Color(float(paint.r * factor), float(paint.g * factor), float(paint.b * factor))
+            new_color = Color(int(paint.r * factor), int(paint.g * factor), int(paint.b * factor))
         elif color_type == 30:
             # invert
             new_r = 255 - old_color.r
@@ -82,7 +82,9 @@ class MapHelper:
         return Color(int(color.r * light), int(color.g * light), int(color.b * light))
 
     @classmethod
-    def create_map_tile(cls, world, x: int, y: int, base_light: int, background_override: int = 0) -> MapTile:
+    def create_map_tile(
+        cls, world, x: int, y: int, base_light: int, background_override: int = 0
+    ) -> MapTile:
         from terrex.net.structure.tile import Tile
         from terrex.world.world import World
 
@@ -97,9 +99,13 @@ class MapHelper:
         light = base_light
         base_type = 0
         base_option = 0
-        color, light, base_type, base_option = cls.get_tile_type(world, x, y, tile, color, light, base_type, base_option)
+        color, light, base_type, base_option = cls.get_tile_type(
+            world, x, y, tile, color, light, base_type, base_option
+        )
         if base_type == 0:
-            color, light, base_type, base_option = cls.get_wall_type(x, y, tile, color, light, base_type, base_option)
+            color, light, base_type, base_option = cls.get_wall_type(
+                x, y, tile, color, light, base_type, base_option
+            )
         if base_type == 0:
             color = 0
             light = base_light
@@ -110,7 +116,17 @@ class MapHelper:
         return MapTile(base_type + base_option, color, light)
 
     @classmethod
-    def get_tile_type(cls, world, x: int, y: int, tile, new_color: int, new_light: int, base_type: int, base_option: int) -> tuple[int, int, int, int]:
+    def get_tile_type(
+        cls,
+        world,
+        x: int,
+        y: int,
+        tile,
+        new_color: int,
+        new_light: int,
+        base_type: int,
+        base_option: int,
+    ) -> tuple[int, int, int, int]:
         from terrex.net.structure.tile import Tile
         from terrex.world.world import World
 
@@ -161,9 +177,11 @@ class MapHelper:
         return new_color, new_light, base_type, base_option
 
     @classmethod
-    def get_wall_type(cls, x: int, y: int, tile, new_color: int, new_light: int, base_type: int, base_option: int) -> tuple[int, int, int, int]:
-        from terrex.net.structure.tile import Tile
+    def get_wall_type(
+        cls, x: int, y: int, tile, new_color: int, new_light: int, base_type: int, base_option: int
+    ) -> tuple[int, int, int, int]:
         from terrex.id import WallID
+        from terrex.net.structure.tile import Tile
 
         if not isinstance(tile, Tile):
             raise TypeError("tile must be a Tile instance")
@@ -226,7 +244,7 @@ class MapHelper:
                     for y1 in range(y - 36, y + 31, 10):
                         # type = Main.Map[x1, y1].Type  # minimap type, stub
                         map_tile = world.tiles.get(x1, y1)
-                        map_type = map_tile.type if not map_tile is None else 0
+                        map_type = map_tile.type if map_tile is not None else 0
                         for snow_type in cls.snow_types:
                             if snow_type == map_type:
                                 num = 255
@@ -240,7 +258,9 @@ class MapHelper:
         return cls.rock_position + num, light
 
     @classmethod
-    def get_tile_base_option(cls, world, x: int, y: int, tile_type: int, tile, base_option: int) -> int:
+    def get_tile_base_option(
+        cls, world, x: int, y: int, tile_type: int, tile, base_option: int
+    ) -> int:
         from terrex.net.structure.tile import Tile
         from terrex.world.world import World
 
@@ -285,10 +305,17 @@ class MapHelper:
                 base_option = 0
         elif tile_type == 529:
             num9 = y + 1
-            corrupt_count2, crimson_count2, hallowed_count2 = WorldGen.get_biome_influence(world, x, x, num9, num9)
+            corrupt_count2, crimson_count2, hallowed_count2 = WorldGen.get_biome_influence(
+                world, x, x, num9, num9
+            )
             num10 = max(corrupt_count2, crimson_count2, hallowed_count2)
             if corrupt_count2 == 0 and crimson_count2 == 0 and hallowed_count2 == 0:
-                base_option = 1 if x < WorldGen.beach_distance or x > world.max_tiles_x - WorldGen.beach_distance else 0
+                base_option = (
+                    1
+                    if x < WorldGen.beach_distance
+                    or x > world.max_tiles_x - WorldGen.beach_distance
+                    else 0
+                )
             elif hallowed_count2 == num10:
                 base_option = 2
             elif crimson_count2 != num10:
@@ -298,7 +325,9 @@ class MapHelper:
         elif tile_type == 530:
             num2 = y - (tile.frame_y % 36) // 18 + 2
             num3 = x - (tile.frame_x % 54) // 18
-            corrupt_count, crimson_count, hallowed_count = WorldGen.get_biome_influence(world, num3, num3 + 3, num2, num2)
+            corrupt_count, crimson_count, hallowed_count = WorldGen.get_biome_influence(
+                world, num3, num3 + 3, num2, num2
+            )
             num4 = max(corrupt_count, crimson_count, hallowed_count)
             if corrupt_count != 0 or crimson_count != 0 or hallowed_count != 0:
                 if hallowed_count == num4:

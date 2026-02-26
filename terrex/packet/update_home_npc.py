@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
-from terrex.packet.base import SyncPacket
 from terrex.id import MessageID
 from terrex.net.streamer import Reader, Writer
+from terrex.packet.base import SyncPacket
 
 
 @dataclass
@@ -34,5 +34,5 @@ class UpdateHomeNPC(SyncPacket):
     def read(self, reader: Reader) -> None:
         self.data = SetNpcHome.read(reader)
 
-    def write(self, writer: Writer, data: SetNpcHome) -> None:
-        data.write(writer)
+    def write(self, writer: Writer) -> None:
+        self.data.write(writer)

@@ -1,7 +1,7 @@
-from enum import StrEnum
+from enum import Enum
 
 
-class ChatCommand(StrEnum):
+class ChatCommand(str, Enum):
     SayChat = "Say"
     Roll = "Roll"
     RockPaperScissors = "RPS"

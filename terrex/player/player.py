@@ -6,28 +6,28 @@ from terrex.net.variable.const_var import ConstVar
 from terrex.net.variable.float_var import FloatVar
 from terrex.net.variable.int_var import IntVar
 from terrex.net.variable.str_var import StrVar
-from terrex.world.shape.rectangle import Rectangle
 from terrex.net.world_zone import WorldZone
+from terrex.world.shape.rectangle import Rectangle
 
 
 class Player(Entity):
-    name: str = StrVar("", max_len=20)
+    name: StrVar = StrVar("", max_len=20)
 
     # const
-    DEFAULT_WIDTH: int = ConstVar(20)
-    DEFAULT_HEIGHT: int = ConstVar(42)
+    DEFAULT_WIDTH: ConstVar = ConstVar(20)
+    DEFAULT_HEIGHT: ConstVar = ConstVar(42)
 
     # size
-    width: int = IntVar(int(DEFAULT_WIDTH))
-    height: int = IntVar(int(DEFAULT_HEIGHT))
+    width: IntVar = IntVar(int(DEFAULT_WIDTH))
+    height: IntVar = IntVar(int(DEFAULT_HEIGHT))
 
     # frame
     body_frame: Rectangle = Rectangle()
     leg_frame: Rectangle = Rectangle()
 
     # connection flags
-    initialized: bool = BoolVar(False)
-    logged_in: bool = BoolVar(False)
+    initialized: BoolVar = BoolVar(False)
+    logged_in: BoolVar = BoolVar(False)
 
     # inventory
     inventory: list = []
@@ -36,13 +36,13 @@ class Player(Entity):
     zone: WorldZone = WorldZone()
 
     # skin
-    skin_variant: int = IntVar(0)
-    voice_variant: int = IntVar(1)
-    voice_pitch_offset: float = FloatVar(0.0)
-    hair: int = IntVar(0, min=0, max=228)
-    hair_dye: int = IntVar(255, min=0, max=255)
-    accessory_visibility: int = IntVar(0)
-    hide_misc: bool = BoolVar(False)
+    skin_variant: IntVar = IntVar(0)
+    voice_variant: IntVar = IntVar(1)
+    voice_pitch_offset: FloatVar = FloatVar(0.0)
+    hair: IntVar = IntVar(0, min=0, max=228)
+    hair_dye: IntVar = IntVar(255, min=0, max=255)
+    accessory_visibility: IntVar = IntVar(0)
+    hide_misc: BoolVar = BoolVar(False)
 
     # skin colors
     hair_color: Rgb = Rgb(151, 100, 69)
@@ -54,44 +54,44 @@ class Player(Entity):
     shoe_color: Rgb = Rgb(160, 105, 60)
 
     # difficulty flag
-    difficulty: int = IntVar(1)
+    difficulty: IntVar = IntVar(1)
 
     # biome torch flags
-    using_biome_torches: bool = BoolVar(False)
-    happy_fun_torch_time: bool = BoolVar(False)
-    unlocked_biome_torches: bool = BoolVar(False)
-    unlocked_super_cart: bool = BoolVar(False)
-    enabled_super_cart: bool = BoolVar(False)
+    using_biome_torches: BoolVar = BoolVar(False)
+    happy_fun_torch_time: BoolVar = BoolVar(False)
+    unlocked_biome_torches: BoolVar = BoolVar(False)
+    unlocked_super_cart: BoolVar = BoolVar(False)
+    enabled_super_cart: BoolVar = BoolVar(False)
 
     # consumables flags
-    used_aegis_crystal: bool = BoolVar(False)
-    used_aegis_fruit: bool = BoolVar(False)
-    used_arcane_crystal: bool = BoolVar(False)
-    used_galaxy_pearl: bool = BoolVar(False)
-    used_gummy_worm: bool = BoolVar(False)
-    used_ambrosia: bool = BoolVar(False)
-    ate_artisan_bread: bool = BoolVar(False)
+    used_aegis_crystal: BoolVar = BoolVar(False)
+    used_aegis_fruit: BoolVar = BoolVar(False)
+    used_arcane_crystal: BoolVar = BoolVar(False)
+    used_galaxy_pearl: BoolVar = BoolVar(False)
+    used_gummy_worm: BoolVar = BoolVar(False)
+    used_ambrosia: BoolVar = BoolVar(False)
+    ate_artisan_bread: BoolVar = BoolVar(False)
 
     # health
-    maxHP: int = IntVar(100, min=0, max=500)
-    currHP: int = IntVar(100, min=0, max=500)
+    maxHP: IntVar = IntVar(100, min=0, max=500)
+    currHP: IntVar = IntVar(100, min=0, max=500)
 
     # mana
-    maxMana: int = IntVar(20, min=0, max=200)
-    currMana: int = IntVar(20, min=0, max=400)
+    maxMana: IntVar = IntVar(20, min=0, max=200)
+    currMana: IntVar = IntVar(20, min=0, max=400)
 
     # luck factors
-    ladybug_luck_time_left: int = IntVar(0)
-    torch_luck: float = FloatVar(0.0)
-    luck_potion: int = IntVar(0)
-    has_garden_gnome_nearby: bool = BoolVar(False)
-    broken_mirror_bad_luck: bool = BoolVar(False)
-    equipment_based_luck_bonus: float = FloatVar(0.0)
-    coin_luck: float = FloatVar(0.0)
-    kite_luck_level: int = IntVar(0)
+    ladybug_luck_time_left: IntVar = IntVar(0)
+    torch_luck: FloatVar = FloatVar(0.0)
+    luck_potion: IntVar = IntVar(0)
+    has_garden_gnome_nearby: BoolVar = BoolVar(False)
+    broken_mirror_bad_luck: BoolVar = BoolVar(False)
+    equipment_based_luck_bonus: FloatVar = FloatVar(0.0)
+    coin_luck: FloatVar = FloatVar(0.0)
+    kite_luck_level: IntVar = IntVar(0)
 
     # effects
-    stinky: bool = BoolVar(False)
+    stinky: BoolVar = BoolVar(False)
 
     def __init__(self, name: str = "terrex"):
         self.name = name
@@ -114,9 +114,9 @@ class Player(Entity):
     def get_ladybug_luck(self) -> float:
         """Calculates ladybug luck contribution (-1..1)."""
         if self.ladybug_luck_time_left > 0:
-            return self.ladybug_luck_time_left / NPC.lady_bug_good_luck_time
+            return float(self.ladybug_luck_time_left) / NPC.lady_bug_good_luck_time
         elif self.ladybug_luck_time_left < 0:
-            return -self.ladybug_luck_time_left / NPC.lady_bug_bad_luck_time
+            return -float(self.ladybug_luck_time_left) / NPC.lady_bug_bad_luck_time
         return 0.0
 
     def calculate_coin_luck(self) -> float:
@@ -143,7 +143,7 @@ class Player(Entity):
 
     def calculate_total_luck(self) -> float:
         """Returns the total current luck of the player (-0.4..1.0)."""
-        luck = 0.0
+        luck: float = 0.0
         luck += self.get_ladybug_luck() * 0.2
         luck += self.torch_luck * 0.2
 

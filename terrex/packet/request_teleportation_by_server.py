@@ -1,9 +1,7 @@
-from enum import Enum
-
 from terrex.id import MessageID
-
 from terrex.net.enum import TeleportRequestType
 from terrex.net.streamer import Reader, Writer
+
 from .base import SyncPacket
 
 

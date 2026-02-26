@@ -7,7 +7,7 @@ from terrex.net.streamer import Reader, Writer
 @dataclass()
 class FreezeTimePower(CreativePower):
     id: int = 0
-    enabled: bool | None = None
+    enabled: bool = False
 
     @classmethod
     def create(cls, enabled: bool = False) -> "FreezeTimePower":

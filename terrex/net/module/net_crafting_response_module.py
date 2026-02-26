@@ -8,7 +8,7 @@ from .net_module import NetClientModule
 @dataclass()
 class NetCraftingResponseModule(NetClientModule):
     id: int = 11
-    approved: bool | None = None
+    approved: bool = False
 
     @classmethod
     def create(cls, approved: bool) -> 'NetCraftingResponseModule':

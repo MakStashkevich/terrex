@@ -8,12 +8,12 @@ from .net_module import NetServerModule
 @dataclass()
 class NetCreativePowerPermissionsModule(NetServerModule):
     id: int = 9
-    zero: int | None = None
-    power_id: int | None = None
-    level: int | None = None
+    zero: int = 0
+    power_id: int = 0
+    level: int = 0
 
     @classmethod
-    def create(cls, zero: int, power_id: int | None = None, level: int | None = None) -> "NetCreativePowerPermissionsModule":
+    def create(cls, zero: int, power_id: int, level: int) -> "NetCreativePowerPermissionsModule":
         obj = cls()
         obj.zero = zero
         obj.power_id = power_id

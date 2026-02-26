@@ -7,7 +7,7 @@ from terrex.net.streamer import Reader, Writer
 @dataclass()
 class StopBiomeSpreadPower(CreativePower):
     id: int = 13
-    enabled: bool | None = None
+    enabled: bool = False
 
     @classmethod
     def create(cls, enabled: bool = False) -> "StopBiomeSpreadPower":

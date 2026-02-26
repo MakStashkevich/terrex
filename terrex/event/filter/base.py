@@ -1,14 +1,14 @@
-from typing import Type, TypeVar, Generic, Awaitable
+from typing import Generic, TypeVar
 
 from terrex.event.context import EventContext
-from ..types import BaseEvent
 
+from ..types import BaseEvent
 
 E = TypeVar("E", bound=BaseEvent)
 
 
 class EventFilter(Generic[E]):
-    _event_type: Type[E]
+    _event_type: type[E]
 
     def matches(self, ctx: EventContext) -> E | None:
         raise NotImplementedError
@@ -25,7 +25,7 @@ class EventFilter(Generic[E]):
 
 
 class EventTypeFilter(EventFilter[E]):
-    def __init__(self, event_type: Type[E]):
+    def __init__(self, event_type: type[E]):
         self._event_type = event_type
 
     def matches(self, ctx: EventContext) -> E | None:

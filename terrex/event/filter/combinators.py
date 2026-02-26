@@ -1,6 +1,8 @@
-from typing import List, Generic
+from typing import Generic
+
 from terrex.event.context import EventContext
-from .base import EventFilter, E
+
+from .base import E, EventFilter
 
 
 class AndFilter(EventFilter[E], Generic[E]):
@@ -8,7 +10,7 @@ class AndFilter(EventFilter[E], Generic[E]):
         if not filters:
             raise ValueError("AndFilter requires at least one filter")
 
-        self.filters: List[EventFilter[E]] = []
+        self.filters: list[EventFilter[E]] = []
 
         # flatten nested AndFilter
         for f in filters:
@@ -41,7 +43,7 @@ class OrFilter(EventFilter[E], Generic[E]):
         if not filters:
             raise ValueError("OrFilter requires at least one filter")
 
-        self.filters: List[EventFilter[E]] = []
+        self.filters: list[EventFilter[E]] = []
 
         # flatten nested OrFilter
         for f in filters:

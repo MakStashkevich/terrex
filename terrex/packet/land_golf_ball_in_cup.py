@@ -1,12 +1,14 @@
-from terrex.packet.base import SyncPacket
 from terrex.id import MessageID
 from terrex.net.streamer import Reader, Writer
+from terrex.packet.base import SyncPacket
 
 
 class LandGolfBallInCup(SyncPacket):
     id = MessageID.LandGolfBallInCup
 
-    def __init__(self, player_id: int = 0, x: int = 0, y: int = 0, number_of_hits: int = 0, proj_id: int = 0):
+    def __init__(
+        self, player_id: int = 0, x: int = 0, y: int = 0, number_of_hits: int = 0, proj_id: int = 0
+    ):
         self.player_id = player_id
         self.x = x
         self.y = y

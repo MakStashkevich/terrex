@@ -4,6 +4,8 @@ Ported from Terraria source: Terraria.WorldBuilding.Shapes.Mound
 Parabolic mound/hill shape.
 """
 
+from typing import cast
+
 import numpy as np
 
 from .base import GenAction, GenActionBulk, GenShape, Point
@@ -30,18 +32,21 @@ class Mound(GenShape):
             num2 = int(-((self._height + 1) / (half_w * half_w)) * ((i + half_w) * (i - half_w)))
             num2 = max(0, min(self._height, num2))
             if use_bulk:
-                xs = np.full(num2, origin.X + i)
-                ys = np.arange(origin.Y - num2, origin.Y)
+                xs = np.full(num2, origin.x + i)
+                ys = np.arange(origin.y - num2, origin.y)
                 xs_all.append(xs)
                 ys_all.append(ys)
             else:
                 for j in range(num2):
-                    if not self.unit_apply(action, origin, origin.X + i, origin.Y - j) and self._quitOnFail:
+                    if (
+                        not self.unit_apply(action, origin, origin.x + i, origin.y - j)
+                        and self._quitOnFail
+                    ):
                         return False
 
         if use_bulk and xs_all:
             xs = np.concatenate(xs_all)
             ys = np.concatenate(ys_all)
-            return action.apply_bulk(xs, ys)
+            return cast(bool, cast(GenActionBulk, action).apply_bulk(xs, ys))
 
         return True

@@ -1,12 +1,11 @@
+from terrex.id import MessageID, TileChangeType, TileID
 from terrex.net.bits_byte import BitsByte
 from terrex.net.enum.mode import NetMode
+from terrex.net.streamer import Reader, Writer
+from terrex.net.structure.tile import Tile
 from terrex.net.tile_npc_data import TileNPCData
 from terrex.net.tile_stack import TileStack
 from terrex.packet.base import SyncPacket
-from terrex.id import MessageID, TileChangeType, TileID
-from terrex.net.structure.tile import Tile
-from terrex.net.streamer import Reader, Writer
-from terrex.world.world import World
 
 tile_data = TileNPCData()
 

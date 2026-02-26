@@ -1,12 +1,14 @@
-from terrex.packet.base import SyncPacket
 from terrex.id import MessageID
 from terrex.net.streamer import Reader, Writer
+from terrex.packet.base import SyncPacket
 
 
 class UniqueTownNPCInfoSyncRequest(SyncPacket):
     id = MessageID.UniqueTownNPCInfoSyncRequest
 
-    def __init__(self, npc_id: int = 0, name: str | None = None, town_npc_variation_idx: int | None = None):
+    def __init__(
+        self, npc_id: int = 0, name: str | None = None, town_npc_variation_idx: int | None = None
+    ):
         self.npc_id = npc_id
         self.name = name
         self.town_npc_variation_idx = town_npc_variation_idx

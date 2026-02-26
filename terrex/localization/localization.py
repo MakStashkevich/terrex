@@ -14,7 +14,9 @@ class LocaleType(Enum):
     TOWN = "Town"
 
 
-def get_translation(net_text: NetworkText, lang: str = "en-US", locale_type: LocaleType = LocaleType.LEGACY) -> str:
+def get_translation(
+    net_text: NetworkText, lang: str = "en-US", locale_type: LocaleType = LocaleType.LEGACY
+) -> str:
     """
     Translates NetString.text as a localization key with substitutions support.
     Example: "LegacyMultiplayer.1" -> "Incorrect password"

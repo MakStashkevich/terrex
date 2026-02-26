@@ -1,3 +1,6 @@
+from terrex.net.tile_stack import TileStack
+
+
 class World:
     time: int = 0
     day_info: int = 0
@@ -11,8 +14,8 @@ class World:
     world_id: int = 0
     world_name: str = ""
     game_mode: int = 0
-    world_unique_id: list[int] = None
-    world_generator_version: list[int] = None
+    world_unique_id: list[int] = []
+    world_generator_version: list[int] = []
     moon_type: int = 0
     tree_background: int = 0
     corruption_background: int = 0
@@ -22,17 +25,17 @@ class World:
     crimson_background: int = 0
     desert_background: int = 0
     ocean_background: int = 0
-    unknown_background: list[int] = None
+    unknown_background: list[int] = []
     ice_back_style: int = 0
     jungle_back_style: int = 0
     hell_back_style: int = 0
     wind_speed_set: float = 0.0
     cloud_number: int = 0
-    trees: list[int] = None
-    tree_styles: list[int] = None
-    cave_backs: list[int] = None
-    cave_back_styles: list[int] = None
-    forest_tree_top_styles: list[int] = None
+    trees: list[int] = []
+    tree_styles: list[int] = []
+    cave_backs: list[int] = []
+    cave_back_styles: list[int] = []
+    forest_tree_top_styles: list[int] = []
     corruption_tree_top_style: int = 0
     jungle_tree_top_style: int = 0
     snow_tree_top_style: int = 0
@@ -44,7 +47,7 @@ class World:
     underworld_tree_top_style: int = 0
     rain: float = 0.0
     event_info: int = 0
-    ore_tiers_tiles: list[int] = None
+    ore_tiers_tiles: list[int] = []
     invasion_type: int = 0
     lobby_id: int = 0
     sandstorm_severity: float = 0.0
@@ -53,7 +56,7 @@ class World:
     items: object = {}
     item_owner_index: object = {}
 
-    tiles: object | None = None
+    tiles: TileStack
     chests: dict = {}
     signs: dict = {}
     tile_entities: list = []
@@ -82,10 +85,10 @@ class World:
     dual_dungeons_seed: bool = False
 
     def __init__(self):
-        from terrex.net.tile_stack import TileStack
         from terrex.entity.tile_entity.tile_entity import TileEntity
         from terrex.net.structure.chest import Chest
         from terrex.net.structure.sign import Sign
+        from terrex.net.tile_stack import TileStack
         from terrex.player.player import Player
 
         self.tiles: TileStack = TileStack()

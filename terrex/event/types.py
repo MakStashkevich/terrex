@@ -1,5 +1,4 @@
 from re import Match
-from typing import Any, List
 
 from terrex.net.enum.chat_command import ChatCommand
 
@@ -41,11 +40,13 @@ class InitializedEvent(BaseEvent):
 
 
 class ChatEvent(RegexEvent):
-    def __init__(self, packet, player_id: int, text: str, chat_command_id: ChatCommand):
+    def __init__(
+        self, packet, player_id: int, text: str, chat_command_id: ChatCommand | None = None
+    ):
         super().__init__(packet)
         self.player_id: int = player_id
         self.text: str = text
-        self.chat_command_id: ChatCommand = chat_command_id
+        self.chat_command_id: ChatCommand | None = chat_command_id
 
 
 class WorldSectionUpdateEvent(BaseEvent):

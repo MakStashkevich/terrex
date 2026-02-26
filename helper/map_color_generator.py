@@ -1,11 +1,10 @@
 import re
 from pathlib import Path
-from typing import List
 
 CS_FILE = Path(__file__).parent / '../terrex/world/MapHelper.cs'
 
 
-def generate_color_code(cs_content: str, code_lines: List[str]):
+def generate_color_code(cs_content: str, code_lines: list[str]):
     # color[287][0] = new Color(79, 128, 17);
     # colorArray2[158][0] = new Color(107, 49, 154);
     set_color_to_list_pattern = re.compile(
@@ -19,13 +18,20 @@ def generate_color_code(cs_content: str, code_lines: List[str]):
 
     # color[628][0] = color[627][1]
     # color[628][j] = color[627][j]
-    set_ref_var_pattern = re.compile(r'color\s*\[\s*(\w+)\s*\]\s*\[\s*(\w+)\s*\]\s*=\s*color\s*\[\s*(\w+)\s*\]\s*\[\s*(\w+)\s*\]\s*;', re.MULTILINE)
+    set_ref_var_pattern = re.compile(
+        r'color\s*\[\s*(\w+)\s*\]\s*\[\s*(\w+)\s*\]\s*=\s*color\s*\[\s*(\w+)\s*\]\s*\[\s*(\w+)\s*\]\s*;',
+        re.MULTILINE,
+    )
 
     # for (int j = 0; j < (int)color[628].Length; j++)
-    loop_var_len_pattern = re.compile(r'for\s*\(\s*int\s+(\w+)\s*=\s*(\d+)\s*;\s*\1\s*<\s*\(int\)\s*color\[(\d+)\]\.Length\s*;\s*\1\+\+\s*\)')
+    loop_var_len_pattern = re.compile(
+        r'for\s*\(\s*int\s+(\w+)\s*=\s*(\d+)\s*;\s*\1\s*<\s*\(int\)\s*color\[(\d+)\]\.Length\s*;\s*\1\+\+\s*\)'
+    )
 
     # color1 = new Color(122, 217, 232);
-    set_color_to_var_pattern = re.compile(r'(\w+)\s*=\s*new\s*Color\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)\s*;')
+    set_color_to_var_pattern = re.compile(
+        r'(\w+)\s*=\s*new\s*Color\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)\s*;'
+    )
 
     # color1 = color[53][0];
     set_var_to_var_pattern = re.compile(r'(\w+)\s*=\s*color\[\s*(\d+)\s*\]\[\s*(\d+)\s*\]\s*;')
@@ -34,32 +40,47 @@ def generate_color_code(cs_content: str, code_lines: List[str]):
     set_list_to_var_pattern = re.compile(r'(\w+)\s*=\s*color\[\s*(\d+)\s*\]\s*;')
 
     # for (int p = 0; p < (int)colorArray.Length; p++)
-    loop_list_len_pattern = re.compile(r'for\s*\(\s*int\s+(\w+)\s*=\s*0\s*;\s*\1\s*<\s*\(int\)\s*(\w+)\.Length\s*;\s*\1\+\+\s*\)')
+    loop_list_len_pattern = re.compile(
+        r'for\s*\(\s*int\s+(\w+)\s*=\s*0\s*;\s*\1\s*<\s*\(int\)\s*(\w+)\.Length\s*;\s*\1\+\+\s*\)'
+    )
 
     # for (int s = 0; s < 13; s++)
     loop_int_pattern = re.compile(r'for\s*\(\s*int\s+(\w+)\s*=\s*\d+\s*;\s*\1\s*<\s*(\d+)\s*;.*\)')
 
     # for (int i = 0; i < TileID.Count; i++)
-    loop_class_count_pattern = re.compile(r'for\s*\(\s*int\s+(\w+)\s*=\s*0\s*;\s*\1\s*<\s*(\w+)\.Count\s*;\s*\1\+\+\s*\)')
+    loop_class_count_pattern = re.compile(
+        r'for\s*\(\s*int\s+(\w+)\s*=\s*0\s*;\s*\1\s*<\s*(\w+)\.Count\s*;\s*\1\+\+\s*\)'
+    )
 
     # colorArray[o] = color[186][o];
-    set_var_to_color_array_pattern = re.compile(r'(\w+)\s*\[\s*(\w+)\s*\]\s*=\s*(\w+)\s*\[\s*(\w+)\s*\]\s*\[\s*(\w+)\s*\]\s*;')
+    set_var_to_color_array_pattern = re.compile(
+        r'(\w+)\s*\[\s*(\w+)\s*\]\s*=\s*(\w+)\s*\[\s*(\w+)\s*\]\s*\[\s*(\w+)\s*\]\s*;'
+    )
 
     # Color[] colorArray = color[647];
     array_assign_pattern = re.compile(r'(\w+\[\])\s+(\w+)\s*=\s*(\w+)\s*\[\s*(\d+)\s*\]\s*;')
 
     # Color color3 = new Color(250, 100, 50);
-    color_assign_pattern = re.compile(r'Color\s+(\w+)\s*=\s*new\s*Color\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)\s*;')
+    color_assign_pattern = re.compile(
+        r'Color\s+(\w+)\s*=\s*new\s*Color\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)\s*;'
+    )
 
     # color[751][0] = Color.get_Gray();
-    color_method_pattern = re.compile(r'(\w+)\s*\[\s*(\d+)\s*\]\[\s*(\d+)\s*\]\s*=\s*(\w+\.\w+\(\s*\))\s*;')
+    color_method_pattern = re.compile(
+        r'(\w+)\s*\[\s*(\d+)\s*\]\[\s*(\d+)\s*\]\s*=\s*(\w+\.\w+\(\s*\))\s*;'
+    )
 
     # color[749][0] = color[138][0] * 0.95f;
-    mul_pattern = re.compile(r'(\w+)\s*\[\s*(\d+)\s*\]\[\s*(\d+)\s*\]\s*=\s*' r'(\w+)\s*\[\s*(\d+)\s*\]\[\s*(\d+)\s*\]\s*\*\s*([0-9.]+)f\s*;')
+    mul_pattern = re.compile(
+        r'(\w+)\s*\[\s*(\d+)\s*\]\[\s*(\d+)\s*\]\s*=\s*'
+        r'(\w+)\s*\[\s*(\d+)\s*\]\[\s*(\d+)\s*\]\s*\*\s*([0-9.]+)f\s*;'
+    )
 
     # Color[][] color = new Color[TileID.Count][];
     # Color[][] colorArray2 = new Color[WallID.Count][];
-    wall_color_array_pattern = re.compile(r'Color\[\]\[\]\s+(\w+)\s*=\s*new\s+Color\[\s*(\w+)\.Count\s*\]\[\];')
+    wall_color_array_pattern = re.compile(
+        r'Color\[\]\[\]\s+(\w+)\s*=\s*new\s+Color\[\s*(\w+)\.Count\s*\]\[\];'
+    )
 
     # color[i] = new Color[13];
     color_i_new_color = re.compile(r'(\w+)\[(\w+)\]\s*=\s*new\s*Color\[(\d+)\]')
@@ -88,8 +109,7 @@ def generate_color_code(cs_content: str, code_lines: List[str]):
             is_loop = False
             continue
         if in_init and line_stripped == 'float single = 0.5f;':
-            code_lines.append(
-                """
+            code_lines.append("""
     single = 0.5
     colorArray2[351][0] = color[734][0] * single
     colorArray2[352][0] = color[735][0] * single
@@ -222,8 +242,7 @@ def generate_color_code(cs_content: str, code_lines: List[str]):
         MapHelper.tile_lookup[147], MapHelper.tile_lookup[161], MapHelper.tile_lookup[162],
         MapHelper.tile_lookup[163], MapHelper.tile_lookup[164], MapHelper.tile_lookup[200]
     ]
-"""
-            )
+""")
             # print('stop')
             break
         if not in_init:
@@ -268,12 +287,16 @@ def generate_color_code(cs_content: str, code_lines: List[str]):
         m = set_var_to_color_array_pattern.search(line_clean)
         if m:
             target_array, target_index, source_array, source_index1, source_index2 = m.groups()
-            code_lines.append(f"{spacer}{target_array}[{target_index}] = {source_array}[{source_index1}][{source_index2}]")
+            code_lines.append(
+                f"{spacer}{target_array}[{target_index}] = {source_array}[{source_index1}][{source_index2}]"
+            )
             continue
         m = wall_color_array_pattern.match(line_clean)
         if m:
             array_name, length_source = m.groups()
-            code_lines.append(f"{spacer}{array_name} = [[] for _ in range({length_source}.Count)]")
+            code_lines.append(
+                f"{spacer}{array_name}: list[list] = [[] for _ in range({length_source}.Count)]"
+            )
             continue
         m = array_assign_pattern.match(line_clean)
         if m:
@@ -310,14 +333,16 @@ def generate_color_code(cs_content: str, code_lines: List[str]):
             postfix, tile, opt, r, g, b = m.groups()
             # if line_clean == 'colorArray2[158][0] = new Color(107, 49, 154);':
             #     break
-            code_lines.append(f'{spacer}color{postfix if postfix else ''}[{tile}][{opt}] = Color({r}, {g}, {b})')
+            postfix_extra = postfix if postfix else ''
+            code_lines.append(f'{spacer}color{postfix_extra}[{tile}][{opt}] = Color({r}, {g}, {b})')
             continue
         m = set_ref_list_pattern.search(line_clean)
         if m:
             # if line_clean == 'colorArray2[1][0] = color1;':
             #     break
             postfix, tile, opt, var_name = m.groups()
-            code_lines.append(f'{spacer}color{postfix if postfix else ''}[{tile}][{opt}] = {var_name}')
+            postfix_extra = postfix if postfix else ''
+            code_lines.append(f'{spacer}color{postfix_extra}[{tile}][{opt}] = {var_name}')
             continue
         m = set_ref_var_pattern.search(line_clean)
         if m:
@@ -332,13 +357,15 @@ def generate_color_code(cs_content: str, code_lines: List[str]):
         m = color_i_new_color.search(line_clean)
         if m:
             array_name, index_var, size = m.groups()
-            code_lines.append(f'{spacer}{array_name}[{index_var}] = [Color() for _ in range({size})]')
+            code_lines.append(
+                f'{spacer}{array_name}[{index_var}] = [Color() for _ in range({size})]'
+            )
             continue
 
 
 def main():
     try:
-        with open(CS_FILE, 'r', encoding='utf-8') as f:
+        with open(CS_FILE, encoding='utf-8') as f:
             cs_content = f.read()
         code_lines = [
             '"""Auto-generated map colors from the decoded code of the Terraria game"""',

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from terrex.net.structure.vec2 import Vec2
 from terrex.net.streamer import Reader, Writer
+from terrex.net.structure.vec2 import Vec2
 
 from .net_module import NetSyncModule
 
@@ -21,4 +21,6 @@ class NetPingModule(NetSyncModule):
         self.pos = Vec2.read(reader)
 
     def write(self, writer: Writer) -> None:
+        if self.pos is None:
+            raise ValueError("pos must be Vec2 and not None")
         self.pos.write(writer)

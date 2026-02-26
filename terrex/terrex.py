@@ -1,23 +1,21 @@
 import asyncio
-from collections.abc import Callable
+import concurrent
 import inspect
 import threading
-from typing import Awaitable, ParamSpec, TypeVar, Union
-
-import concurrent
+from collections.abc import Awaitable, Callable, Coroutine
+from typing import Any, ParamSpec, TypeVar, cast
 
 from terrex.client import Client
 from terrex.event.dispatcher import Dispatcher
 from terrex.event.filter.base import EventFilter
 from terrex.net import module
-from terrex.net.enum.teleport_pylon_operation import TeleportPylonOperation
+from terrex.net.enum.chat_command import ChatCommand
 from terrex.net.enum.teleport_pylon_type import TeleportPylonType
 from terrex.net.enum.teleport_request_type import TeleportRequestType
 from terrex.net.enum.teleport_type import TeleportType
+from terrex.net.protocol import PROTOCOLS
 from terrex.net.structure.vec2 import Vec2
 from terrex.player.player import Player
-from terrex.net.protocol import PROTOCOLS
-from terrex.net.enum.chat_command import ChatCommand
 from terrex.world.world import World
 
 from . import packet
@@ -80,7 +78,7 @@ class Terrex:
             return
         await self.client.send(
             packet.NetModules(
-                module=module.NetTextModule(
+                module=module.NetTextModule.create(
                     chat_command_id=ChatCommand.SayChat,
                     text=text,
                 ),
@@ -88,7 +86,12 @@ class Terrex:
             wait=wait,
         )
 
-    async def teleport(self, position: Vec2, type: TeleportType = TeleportType.RecallPotion, pylon_type: TeleportPylonType | None = None) -> None:
+    async def teleport(
+        self,
+        position: Vec2,
+        type: TeleportType = TeleportType.RecallPotion,
+        pylon_type: TeleportPylonType | None = None,
+    ) -> None:
         """
         Teleport the player to a specific position using various teleport methods.
 
@@ -140,10 +143,14 @@ class Terrex:
             case TeleportType.TeleportationPylon:
                 if not pylon_type:
                     raise ValueError("Pylon type is required")
-                await self.client._request_teleport_pylon(position.x, position.y, pylon_type)
+                await self.client._request_teleport_pylon(
+                    int(position.x), int(position.y), pylon_type
+                )
                 return
             case TeleportType.QueenSlimeHook:
-                await self.client._teleport_entity(position, type, player_teleport=False)  # hook is not player teleporter
+                await self.client._teleport_entity(
+                    position, type, player_teleport=False
+                )  # hook is not player teleporter
                 return
             case TeleportType.ShellphoneSpawn:
                 await self.client._request_teleport(type=TeleportRequestType.Shellphone_Spawn)
@@ -179,7 +186,7 @@ class Terrex:
 
     def call_async(
         self,
-        func: Callable[P, Union[T, Awaitable[T]]],
+        func: Callable[P, T | Awaitable[T]],
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> concurrent.futures.Future[T]:
@@ -194,8 +201,11 @@ class Terrex:
         if not self.client.running:
             raise RuntimeError("Client is not running")
 
-        loop: asyncio.AbstractEventLoop = self.loop
-        loop_thread_id: int = self._loop_thread_id
+        loop = self.loop
+        if not isinstance(loop, asyncio.AbstractEventLoop):
+            raise ValueError("loop must be instance AbstractEventLoop")
+
+        loop_thread_id: int = self._loop_thread_id or -1
         current_thread_id: int = threading.get_ident()
 
         if current_thread_id == loop_thread_id:
@@ -206,11 +216,13 @@ class Terrex:
         else:
 
             async def wrapper() -> T:
-                return func(*args, **kwargs)
+                return cast(T, func(*args, **kwargs))
 
             coro = wrapper()
 
-        future: concurrent.futures.Future[T] = asyncio.run_coroutine_threadsafe(coro, loop)
+        future: concurrent.futures.Future[T] = asyncio.run_coroutine_threadsafe(
+            cast(Coroutine[Any, Any, T], coro), loop
+        )
         return future
 
     async def stop(self):

@@ -7,7 +7,7 @@ from terrex.net.streamer import Reader, Writer
 @dataclass()
 class FreezeWindDirectionAndStrengthPower(CreativePower):
     id: int = 10
-    enabled: bool | None = None
+    enabled: bool = False
 
     @classmethod
     def create(cls, enabled: bool = False) -> "FreezeWindDirectionAndStrengthPower":

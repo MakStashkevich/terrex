@@ -1,7 +1,9 @@
 from dataclasses import dataclass, field
+from typing import cast
 
 from terrex.item.item import Item
 from terrex.net.streamer import Reader, Writer
+from terrex.net.structure.vec2 import Vec2
 
 
 @dataclass
@@ -94,13 +96,25 @@ class CritterAnchor(LeashedEntityAnchorWithItem):
     item_type: int = 0
 
 
-TileEntity = TrainingDummy | ItemFrame | LogicSensor | DisplayDoll | WeaponRack | HatRack | FoodPlatter | TeleportationPylon | DeadCellsDisplayJar | KiteAnchor | CritterAnchor
+TileEntity = (
+    TrainingDummy
+    | ItemFrame
+    | LogicSensor
+    | DisplayDoll
+    | WeaponRack
+    | HatRack
+    | FoodPlatter
+    | TeleportationPylon
+    | DeadCellsDisplayJar
+    | KiteAnchor
+    | CritterAnchor
+)
 
 
-def read_tile_entity(reader: Reader) -> TileEntity:
+def read_tile_entity(reader: Reader) -> TileEntity | None:
     typ = reader.read_byte()
     if typ < 0:
-        return
+        return None
     id_ = reader.read_int()
     x = reader.read_short()
     y = reader.read_short()
@@ -138,33 +152,61 @@ def read_tile_entity(reader: Reader) -> TileEntity:
             has_item = bool(bits_byte2 & 2)
             bits_byte2 &= ~2
         num_equip = bits_byte | (256 if (bits_byte2 & 2) else 0)
-        equip = [None] * 9
+        equip: list[Item | None] = cast(list[Item | None], [None] * 9)
         for i in range(9):
             if num_equip & (1 << i):
                 item_id = reader.read_ushort()
                 prefix = reader.read_byte()
                 stack = reader.read_ushort()
-                equip[i] = Item(item_id=item_id, prefix=prefix, stacks=stack, net_id=0, position=None, velocity=None)
+                equip[i] = Item(
+                    item_id=item_id,
+                    prefix=prefix,
+                    stacks=stack,
+                    net_id=0,
+                    position=Vec2(0, 0),
+                    velocity=Vec2(0, 0),
+                )
         num_dyes = bits_byte1 | (256 if (bits_byte2 & 4) else 0)
-        dyes = [None] * 9
+        dyes: list[Item | None] = cast(list[Item | None], [None] * 9)
         for j in range(9):
             if num_dyes & (1 << j):
                 item_id = reader.read_ushort()
                 prefix = reader.read_byte()
                 stack = reader.read_ushort()
-                dyes[j] = Item(item_id=item_id, prefix=prefix, stacks=stack, net_id=0, position=None, velocity=None)
-        misc = [None] * 8
+                dyes[j] = Item(
+                    item_id=item_id,
+                    prefix=prefix,
+                    stacks=stack,
+                    net_id=0,
+                    position=Vec2(0, 0),
+                    velocity=Vec2(0, 0),
+                )
+        misc: list[Item | None] = cast(list[Item | None], [None] * 8)
         for k in range(8):
             if bits_byte2 & (1 << k):
                 item_id = reader.read_ushort()
                 prefix = reader.read_byte()
                 stack = reader.read_ushort()
-                misc[k] = Item(item_id=item_id, prefix=prefix, stacks=stack, net_id=0, position=None, velocity=None)
+                misc[k] = Item(
+                    item_id=item_id,
+                    prefix=prefix,
+                    stacks=stack,
+                    net_id=0,
+                    position=Vec2(0, 0),
+                    velocity=Vec2(0, 0),
+                )
         if has_item:
             item_id = reader.read_ushort()
             prefix = reader.read_byte()
             stack = reader.read_ushort()
-            equip[8] = Item(item_id=item_id, prefix=prefix, stacks=stack, net_id=0, position=None, velocity=None)
+            equip[8] = Item(
+                item_id=item_id,
+                prefix=prefix,
+                stacks=stack,
+                net_id=0,
+                position=Vec2(0, 0),
+                velocity=Vec2(0, 0),
+            )
         return DisplayDoll(type=typ, id=id_, x=x, y=y, pose=pose, equip=equip, dyes=dyes, misc=misc)
     elif typ == 4:
         item_type = reader.read_ushort()
@@ -181,21 +223,35 @@ def read_tile_entity(reader: Reader) -> TileEntity:
         )
     elif typ == 5:
         flags = reader.read_byte()
-        items = [None, None]
-        dyes = [None, None]
+        items: list[Item | None] = cast(list[Item | None], [None] * 2)
+        hatrack_dyes: list[Item | None] = cast(list[Item | None], [None] * 2)
         for i in range(2):
             if flags & (1 << i):
                 item_id = reader.read_ushort()
                 prefix = reader.read_byte()
                 stack = reader.read_ushort()
-                items[i] = Item(item_id=item_id, prefix=prefix, stacks=stack, net_id=0, position=None, velocity=None)
+                items[i] = Item(
+                    item_id=item_id,
+                    prefix=prefix,
+                    stacks=stack,
+                    net_id=0,
+                    position=Vec2(0, 0),
+                    velocity=Vec2(0, 0),
+                )
         for j in range(2):
             if flags & (1 << (j + 2)):
                 item_id = reader.read_ushort()
                 prefix = reader.read_byte()
                 stack = reader.read_ushort()
-                dyes[j] = Item(item_id=item_id, prefix=prefix, stacks=stack, net_id=0, position=None, velocity=None)
-        return HatRack(type=typ, id=id_, x=x, y=y, items=items, dyes=dyes)
+                hatrack_dyes[j] = Item(
+                    item_id=item_id,
+                    prefix=prefix,
+                    stacks=stack,
+                    net_id=0,
+                    position=Vec2(0, 0),
+                    velocity=Vec2(0, 0),
+                )
+        return HatRack(type=typ, id=id_, x=x, y=y, items=items, dyes=hatrack_dyes)
     elif typ == 6:
         item_type = reader.read_ushort()
         item_prefix = reader.read_byte()
@@ -232,8 +288,8 @@ def read_tile_entity(reader: Reader) -> TileEntity:
         item_type = reader.read_ushort()
         return CritterAnchor(type=typ, id=id_, x=x, y=y, item_type=item_type)
     else:
-        # raise ValueError
         print(f"Unknown TileEntity type: {typ}")
+        return None
 
 
 def write_tile_entity(entity: TileEntity, writer: Writer) -> None:

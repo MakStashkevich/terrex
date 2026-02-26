@@ -31,5 +31,7 @@ class NetCreativePowersModule(NetSyncModule):
         self.power.read(reader)
 
     def write(self, writer: Writer) -> None:
+        if self.power is None:
+            raise ValueError("power must not be None")
         writer.write_byte(self.power.id)
         self.power.write(writer)

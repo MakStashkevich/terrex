@@ -1,12 +1,18 @@
-from terrex.packet.base import ServerPacket
 from terrex.id import MessageID
 from terrex.net.streamer import Reader
+from terrex.packet.base import ServerPacket
 
 
 class TamperWithNPC(ServerPacket):
     id = MessageID.TamperWithNPC
 
-    def __init__(self, npc_id: int = 0, set_npc_immunity: bool = False, immunity_time: int = 0, immunity_player_id: int = 0):
+    def __init__(
+        self,
+        npc_id: int = 0,
+        set_npc_immunity: bool = False,
+        immunity_time: int = 0,
+        immunity_player_id: int = 0,
+    ):
         self.npc_id = npc_id
         self.set_npc_immunity = set_npc_immunity
         self.immunity_time = immunity_time
@@ -18,4 +24,3 @@ class TamperWithNPC(ServerPacket):
         if self.set_npc_immunity:
             self.immunity_time = reader.read_int()
             self.immunity_player_id = reader.read_short()
-

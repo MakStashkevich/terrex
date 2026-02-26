@@ -1,7 +1,7 @@
 import re
 import sys
 from datetime import datetime, timezone
-from enum import StrEnum
+from enum import Enum
 from pathlib import Path
 
 from terrex.terrex import TERRARIA_VERSION
@@ -10,7 +10,7 @@ GENERATOR_VERSION = "1.1.3"
 GENERATOR_AUTHOR = "Maksim Stashkevich"
 
 
-class TerrariaPath(StrEnum):
+class TerrariaPath(str, Enum):
     ID = "Terraria.ID"
 
 
@@ -97,7 +97,7 @@ class CsToPyParser:
         self.current_class = ""
         self.top_class: str | None = None
         self.classes: dict[str, dict[str, str]] = {}
-        self.class_stack: list[str] = []
+        self.class_stack: list[tuple[str, int]] = []
         self.current_constants: dict[str, str] = {}
         self.constants: dict[str, str] = {}
         self.count_value: int | None = None
@@ -110,7 +110,7 @@ class CsToPyParser:
         self.current_old_comments: dict[str, str] = {}
         self.old_comments_classes: dict[str, dict[str, str]] = {}
         self.is_enum = False
-        self.sets_by_class: dict[str, dict[str, str]] = {}
+        self.sets_by_class: dict[str, list[tuple[str, str]]] = {}
         self.current_sets_owner: str | None = None
         self.factory_count_ref: dict[str, str] = {}
 
@@ -193,7 +193,7 @@ class CsToPyParser:
                     # ignore: public const int Count = 1;
                     if name != "Count":
                         self.current_constants[name] = val
-                        if self.pending_old_comment:
+                        if self.pending_old_comment is not None:
                             self.current_old_comments[name] = self.pending_old_comment
                             self.pending_old_comment = None
                 if name == "Count":
@@ -233,6 +233,8 @@ class CsToPyParser:
 
             if stripped == "}":
                 if self.is_enum and not self.class_stack:
+                    if self.top_class is None:
+                        raise ValueError("top_class is None during enum class assignment")
                     self.classes[self.top_class] = self.current_constants.copy()
                     self.is_enum = False
                     self.current_constants.clear()
@@ -241,11 +243,18 @@ class CsToPyParser:
                     i += 1
                     continue
                 if self.class_stack and indent == self.class_stack[-1][1]:
-                    popped_name, _ = self.class_stack.pop()
-                    current_path = ".".join(name for name, _ in self.class_stack) + ("." + popped_name if self.class_stack else popped_name)
-                    self.classes[current_path] = self.current_constants.copy()
-                    self.removed_classes[current_path] = self.current_removed_constants.copy()
-                    self.old_comments_classes[current_path] = self.current_old_comments.copy()
+                    tmp = self.class_stack.pop()
+                    popped_name = str(tmp[0] or "")
+                    _ = tmp[1]
+                    current_path = ".".join(str(name) for name, _ in self.class_stack)
+                    if self.class_stack:
+                        current_path += "." + popped_name
+                    else:
+                        current_path = popped_name
+                    if current_path:
+                        self.classes[current_path] = self.current_constants.copy()
+                        self.removed_classes[current_path] = self.current_removed_constants.copy()
+                        self.old_comments_classes[current_path] = self.current_old_comments.copy()
                     self.current_old_comments.clear()
                     self.current_removed_constants.clear()
                     if self.count_value is not None:
@@ -262,11 +271,16 @@ class CsToPyParser:
                     stripped,
                 )
                 if m:
-                    owner = m.group(1)
+                    owner = m.group(1) or ""
                     self.current_sets_owner = owner
                     m_count = re.search(r"(\w+(?:\.\w+)*)\.Count", m.group(2))
                     sub_name_key = owner.split(".")[-1]
-                    self.factory_count_ref[sub_name_key] = m_count.group(1) if m_count else self.top_class
+                    if m_count:
+                        self.factory_count_ref[sub_name_key] = str(m_count.group(1))
+                    elif self.top_class is not None:
+                        self.factory_count_ref[sub_name_key] = self.top_class
+                    else:
+                        raise ValueError("top_class is None and no m_count in SetFactory")
                 i += 1
                 continue
 
@@ -279,7 +293,9 @@ class CsToPyParser:
                     set_name = left.rsplit(".", 1)[-1]
                     if set_name.__len__() > 1:
                         right = parts[1].strip()
-                        m_create = re.search(r"Factory.Create([A-Z][a-z]+)Set\s*\(\s*([^)]+)\)\s*", right)
+                        m_create = re.search(
+                            r"Factory.Create([A-Z][a-z]+)Set\s*\(\s*([^)]+)\)\s*", right
+                        )
                         if m_create:
                             set_type = m_create.group(1)
                             args_str = m_create.group(2)
@@ -290,7 +306,10 @@ class CsToPyParser:
                 continue
 
             # new int[] or bool[]
-            if re.search(r"new\s+(int|byte|short|sbyte|ushort|bool)\s*\[", line) and self.current_sets_owner:
+            if (
+                re.search(r"new\s+(int|byte|short|sbyte|ushort|bool)\s*\[", line)
+                and self.current_sets_owner
+            ):
                 parts = re.split(r"\s*=\s*", line.strip(), maxsplit=1)
                 if len(parts) == 2:
                     left = parts[0].strip()
@@ -311,7 +330,9 @@ class CsToPyParser:
             raise ValueError("Namespace not found")
         supported = [e.value for e in TerrariaPath]
         if self.namespace not in supported:
-            raise ValueError(f"Namespace '{self.namespace}' not supported. Supported: {', '.join(supported)}")
+            raise ValueError(
+                f"Namespace '{self.namespace}' not supported. Supported: {', '.join(supported)}"
+            )
         if not self.top_class:
             raise ValueError("Class not found")
         self.current_class = self.top_class
@@ -355,10 +376,10 @@ class CsToPyParser:
         items = [x.strip() for x in args_str.split(",") if x.strip()]
 
         if set_type == "Bool":
+            default_bool = False
             ids_list = items[:]
-            default = False
             if ids_list and ids_list[0].lower() in ("true", "false"):
-                default = ids_list[0].lower() == "true"
+                default_bool = ids_list[0].lower() == "true"
                 ids_list = ids_list[1:]
             if ids_list:
                 parts = []
@@ -371,20 +392,24 @@ class CsToPyParser:
                     # TileID.Sets.RoomNeeds.CountsAsDoorTypes (example from TileID)
                     chunks = item.split(".")
 
-                    if len(chunks) >= 3 and chunks[1] == "Sets" and all(c.isidentifier() for c in chunks):
+                    if (
+                        len(chunks) >= 3
+                        and chunks[1] == "Sets"
+                        and all(c.isidentifier() for c in chunks)
+                    ):
                         item = f"*{chunks[-1]}"  # last name after dot with * for unpack list[]
 
                     parts.append(item)
 
                 py_args = ", ".join(parts)
-                return f"factory.create_bool_set({default}, {py_args})"
+                return f"factory.create_bool_set({default_bool}, {py_args})"
             else:
-                return f"factory.create_bool_set({default})"
+                return f"factory.create_bool_set({default_bool})"
         elif set_type == "Int":
-            default = -1
+            default_int = -1
             pairs = []
             if items and all(c.replace("-", "").isdigit() for c in items[:2] if items[:2]):
-                default = int(items[0])
+                default_int = int(items[0])
                 pairs = items[1:]
             else:
                 pairs = []
@@ -399,8 +424,8 @@ class CsToPyParser:
             pairs_str = ", ".join(pairs)
             if not pairs_str:
                 # create empty int set
-                return f"factory.create_int_set({default})"
-            return f"factory.create_int_set({default}, {pairs_str})"
+                return f"factory.create_int_set({default_int})"
+            return f"factory.create_int_set({default_int}, {pairs_str})"
         return None
 
     def _store_set(self, left: str, py_code: str):
@@ -426,7 +451,9 @@ class CsToPyParser:
             if not content:
                 return "[]"
             # Find all subarray calls
-            sub_pattern = r"new\s+(?:int|byte|short|sbyte|ushort|bool)\s*\[\s*[^]]*\s*\]\s*\{([^}]+)\}"
+            sub_pattern = (
+                r"new\s+(?:int|byte|short|sbyte|ushort|bool)\s*\[\s*[^]]*\s*\]\s*\{([^}]+)\}"
+            )
             inner_contents = re.findall(sub_pattern, content)
             py_subs = []
             for inner_content in inner_contents:
@@ -454,7 +481,14 @@ class CsToPyParser:
             else:
                 vals = []
             if arr_type == "bool":
-                py_vals = [("True" if v.lower().strip() == "true" else "False" if v.lower().strip() == "false" else v) for v in vals]
+                py_vals = [
+                    (
+                        "True"
+                        if v.lower().strip() == "true"
+                        else "False" if v.lower().strip() == "false" else v
+                    )
+                    for v in vals
+                ]
                 return "[" + ", ".join(py_vals) + "]"
             else:
                 return "[" + ", ".join(vals) + "]"
@@ -477,7 +511,7 @@ class CsToPyParser:
         def is_pure_enum(consts):
             return consts and all(val.lstrip("-").isdigit() for val in consts.values())
 
-        top_path = self.top_class
+        top_path = self.top_class or ""
         top_consts = self.classes.get(top_path, {})
         top_is_pure = is_pure_enum(top_consts)
         max_count = max(self.class_counts.values()) if self.class_counts else 0
@@ -490,11 +524,19 @@ class CsToPyParser:
 
             imports_out.extend(imports)
             out.append("")
-            class_def = f"class {self.current_class}(IntEnum):" if top_is_pure else f"class {self.current_class}:"
+            class_def = (
+                f"class {self.current_class}(IntEnum):"
+                if top_is_pure
+                else f"class {self.current_class}:"
+            )
             out.append(class_def)
-            top_old_comments = self.old_comments_classes.get(top_path, {})
+            top_old_comments = self.old_comments_classes.get(top_path or "", {})
             top_removed = self.removed_classes.get(top_path, {})
-            const_items = [(int(val), name, val, False) for name, val in top_consts.items() if val.lstrip("-").isdigit()]
+            const_items = [
+                (int(val), name, val, False)
+                for name, val in top_consts.items()
+                if val.lstrip("-").isdigit()
+            ]
             removed_items = [(int(val), name, val, True) for name, val in top_removed.items()]
             all_items = sorted(const_items + removed_items)
             for _, name, val, is_removed in all_items:
@@ -511,9 +553,13 @@ class CsToPyParser:
             out.append("")
             enum_type = "IntEnum" if is_pure_enum(top_consts) else "auto"
             out.append(f"class {self.current_class}({enum_type}):")
-            top_old_comments = self.old_comments_classes.get(top_path, {})
+            top_old_comments = self.old_comments_classes.get(top_path or "", {})
             top_removed = self.removed_classes.get(top_path, {})
-            const_items = [(int(val), name, val, False) for name, val in top_consts.items() if val.lstrip("-").isdigit()]
+            const_items = [
+                (int(val), name, val, False)
+                for name, val in top_consts.items()
+                if val.lstrip("-").isdigit()
+            ]
             removed_items = [(int(val), name, val, True) for name, val in top_removed.items()]
             all_items = sorted(const_items + removed_items)
             for _, name, val, is_removed in all_items:
@@ -527,7 +573,8 @@ class CsToPyParser:
         out.append("")
 
         # sub classes
-        sub_classes = [p for p in self.classes if p.startswith(self.top_class + ".")]
+        self.top_class_str = self.top_class or ""
+        sub_classes = [p for p in self.classes if p.startswith(self.top_class_str + ".")]
         for path in sorted(sub_classes, key=lambda p: p.split(".")[-1]):
             sub_name = path.split(".")[-1]
             consts = self.classes[path]
@@ -538,7 +585,11 @@ class CsToPyParser:
                 continue
             enum_type = "IntEnum" if is_pure_enum(consts) else "auto"
             out.append(f"    class {sub_name}({enum_type}):")
-            const_items = [(int(val), name, val, False) for name, val in consts.items() if val.lstrip("-").isdigit()]
+            const_items = [
+                (int(val), name, val, False)
+                for name, val in consts.items()
+                if val.lstrip("-").isdigit()
+            ]
             removed_items = [(int(val), name, val, True) for name, val in sub_removed.items()]
             all_items = sorted(const_items + removed_items)
             for _, name, val, is_removed in all_items:
@@ -572,7 +623,7 @@ class CsToPyParser:
                 else:
                     sub_name_key = sub_parts[-2]
             else:
-                sub_name_key = sub_parts[-1]
+                sub_name_key = str(sub_parts[-1])
             sets_map[sub_name_key] = sets_dict
         if has_sets:
             out.append(f"class {self.current_class}Sets:")
@@ -583,7 +634,9 @@ class CsToPyParser:
                     base_const_class = parent_ref.split(".", 1)[0]
                     # if Class.const != base class name try import him
                     if base_const_class != self.current_class:
-                        imports_out.append(f"from terrex.id.{base_const_class} import {base_const_class}")
+                        imports_out.append(
+                            f"from terrex.id.{base_const_class} import {base_const_class}"
+                        )
                 else:
                     parent_ref = self.factory_count_ref.get(sub_name, self.current_class)
                 out.append(f"    class {sub_name}:")
@@ -659,8 +712,13 @@ if __name__ == "__main__":
             namespace_path = PATH_MAPPING[TerrariaPath(parser_obj.namespace)]
             class_name = parser_obj.current_class
             terraria_path = TerrariaPath(parser_obj.namespace)
-            if terraria_path in ALLOWED_CLASSES and class_name not in ALLOWED_CLASSES[terraria_path]:
-                print(f"Skipping {cs_path.name} ({class_name}.py) - not in allowed list for {terraria_path.value}")
+            if (
+                terraria_path in ALLOWED_CLASSES
+                and class_name not in ALLOWED_CLASSES[terraria_path]
+            ):
+                print(
+                    f"Skipping {cs_path.name} ({class_name}.py) - not in allowed list for {terraria_path.value}"
+                )
                 continue
             snake_name = class_name + ".py"
             output_dir = Path(namespace_path)

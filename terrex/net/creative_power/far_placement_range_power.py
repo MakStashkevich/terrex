@@ -7,7 +7,7 @@ from terrex.net.streamer import Reader, Writer
 @dataclass()
 class FarPlacementRangePower(CreativePower):
     id: int = 11
-    enabled: bool | None = None
+    enabled: bool = False
 
     @classmethod
     def create(cls, enabled: bool = False) -> "FarPlacementRangePower":

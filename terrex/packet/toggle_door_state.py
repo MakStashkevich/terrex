@@ -1,8 +1,8 @@
 from enum import IntEnum
 
-from terrex.packet.base import SyncPacket
 from terrex.id import MessageID
 from terrex.net.streamer import Reader, Writer
+from terrex.packet.base import SyncPacket
 
 
 class DoorAction(IntEnum):
@@ -24,7 +24,13 @@ class DoorAction(IntEnum):
 class ToggleDoorState(SyncPacket):
     id = MessageID.ToggleDoorState
 
-    def __init__(self, action: DoorAction = DoorAction.OPEN_DOOR, tile_x: int = 0, tile_y: int = 0, direction: int = 0):
+    def __init__(
+        self,
+        action: DoorAction = DoorAction.OPEN_DOOR,
+        tile_x: int = 0,
+        tile_y: int = 0,
+        direction: int = 0,
+    ):
         self.action = action
         self.tile_x = tile_x
         self.tile_y = tile_y

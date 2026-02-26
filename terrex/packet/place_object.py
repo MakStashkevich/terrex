@@ -1,12 +1,21 @@
-from terrex.packet.base import SyncPacket
 from terrex.id import MessageID
 from terrex.net.streamer import Reader, Writer
+from terrex.packet.base import SyncPacket
 
 
 class PlaceObject(SyncPacket):
     id = MessageID.PlaceObject
 
-    def __init__(self, x: int = 0, y: int = 0, ty: int = 0, style: int = 0, alternate: int = 0, random: int = 0, direction: bool = False):
+    def __init__(
+        self,
+        x: int = 0,
+        y: int = 0,
+        ty: int = 0,
+        style: int = 0,
+        alternate: int = 0,
+        random: int = 0,
+        direction: bool = False,
+    ):
         self.x = x
         self.y = y
         self.ty = ty

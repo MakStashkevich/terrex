@@ -1,8 +1,8 @@
 from enum import IntEnum
 
-from terrex.packet.base import ClientPacket
 from terrex.id import MessageID
 from terrex.net.streamer import Reader, Writer
+from terrex.packet.base import ClientPacket
 
 
 class TileEntityType(IntEnum):
@@ -21,7 +21,12 @@ class TileEntityType(IntEnum):
 class TileEntityPlacement(ClientPacket):
     id = MessageID.TileEntityPlacement
 
-    def __init__(self, x: int = 0, y: int = 0, tile_entity_type: TileEntityType = TileEntityType.TRAINING_DUMMY):
+    def __init__(
+        self,
+        x: int = 0,
+        y: int = 0,
+        tile_entity_type: TileEntityType = TileEntityType.TRAINING_DUMMY,
+    ):
         self.x = x
         self.y = y
         self.tile_entity_type = tile_entity_type

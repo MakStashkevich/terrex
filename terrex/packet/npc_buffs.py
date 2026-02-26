@@ -1,6 +1,6 @@
 from terrex.id import MessageID
-
 from terrex.net.streamer import Reader, Writer
+
 from .base import ServerPacket
 
 

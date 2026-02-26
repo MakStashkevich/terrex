@@ -1,6 +1,6 @@
-from terrex.packet.base import ClientPacket
 from terrex.id import MessageID
 from terrex.net.streamer import Reader, Writer
+from terrex.packet.base import ClientPacket
 
 
 class PlayerSpawn(ClientPacket):
@@ -9,8 +9,8 @@ class PlayerSpawn(ClientPacket):
     def __init__(
         self,
         player_id: int = 0,
-        spawn_x: float = -1.0,
-        spawn_y: float = -1.0,
+        spawn_x: int = -1,
+        spawn_y: int = -1,
         respawn_time_remaining: int = 0,
         number_of_deaths_pve: int = 0,
         number_of_deaths_pvp: int = 0,

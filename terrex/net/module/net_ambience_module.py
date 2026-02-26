@@ -14,7 +14,9 @@ class NetAmbienceModule(NetServerModule):
     sky_entity_type: SkyEntityType | None = None
 
     @classmethod
-    def create(cls, player_id: int, rand_next_num: int, sky_entity_type: SkyEntityType) -> "NetAmbienceModule":
+    def create(
+        cls, player_id: int, rand_next_num: int, sky_entity_type: SkyEntityType
+    ) -> "NetAmbienceModule":
         obj = cls()
         obj.player_id = player_id
         obj.rand_next_num = rand_next_num
@@ -27,6 +29,8 @@ class NetAmbienceModule(NetServerModule):
         self.sky_entity_type = SkyEntityType(reader.read_byte())
 
     def write(self, writer: Writer) -> None:
+        if self.player_id is None or self.rand_next_num is None or self.sky_entity_type is None:
+            raise ValueError("player_id, rand_next_num, sky_entity_type must not be None")
         writer.write_byte(self.player_id)
         writer.write_int(self.rand_next_num)
         writer.write_byte(self.sky_entity_type.value)

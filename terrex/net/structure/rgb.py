@@ -10,7 +10,9 @@ class Rgb:
     b: int = 0
     a: int = 0
 
-    def __init__(self, r: int | None = None, g: int | None = None, b: int | None = None, a: int | None = None) -> None:
+    def __init__(
+        self, r: int | None = None, g: int | None = None, b: int | None = None, a: int | None = None
+    ) -> None:
         # new Color()
         if r is None and g is None and b is None and a is None:
             self.r = 0

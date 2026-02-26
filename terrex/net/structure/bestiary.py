@@ -20,7 +20,9 @@ class Bestiary:
     def read(cls, reader: Reader) -> 'Bestiary':
         unlock_type = BestiaryUnlockType(reader.read_byte())
         npc_net_id = reader.read_short()
-        kill_count = reader.read_7bit_encoded_int() if unlock_type == BestiaryUnlockType.Kill else None
+        kill_count = (
+            reader.read_7bit_encoded_int() if unlock_type == BestiaryUnlockType.Kill else None
+        )
         return cls(unlock_type, npc_net_id, kill_count)
 
     def write(self, writer: Writer) -> None:

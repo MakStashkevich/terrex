@@ -1,12 +1,19 @@
-from terrex.packet.base import SyncPacket
 from terrex.id import MessageID
 from terrex.net.streamer import Reader, Writer
+from terrex.packet.base import SyncPacket
 
 
 class SyncChestItem(SyncPacket):
     id = MessageID.SyncChestItem
 
-    def __init__(self, chest_id: int = 0, item_slot: int = 0, stack: int = 0, prefix: int = 0, item_net_id: int = 0):
+    def __init__(
+        self,
+        chest_id: int = 0,
+        item_slot: int = 0,
+        stack: int = 0,
+        prefix: int = 0,
+        item_net_id: int = 0,
+    ):
         self.chest_id = chest_id
         self.item_slot = item_slot
         self.stack = stack

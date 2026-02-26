@@ -9,6 +9,4 @@ __version__ = "2.0.0"
 
 from .terrex import Terrex
 
-__all__ = [
-    "Terrex"
-]
+__all__ = ["Terrex"]

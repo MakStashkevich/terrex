@@ -1,7 +1,7 @@
-from terrex.packet.base import SyncPacket
 from terrex.id import MessageID
-from terrex.net.structure.vec2 import Vec2
 from terrex.net.streamer import Reader, Writer
+from terrex.net.structure.vec2 import Vec2
+from terrex.packet.base import SyncPacket
 
 # Константы для флагов PulleyMode
 PULLEY_HAS_VEL = 0x04
@@ -21,7 +21,7 @@ class PlayerControls(SyncPacket):
         action: int = 0,
         sleep_info: int = 0,
         selected_item: int = 0,
-        pos: Vec2 = None,
+        pos: Vec2 | None = None,
         vel: Vec2 | None = None,
         original_and_home_pos: tuple[Vec2, Vec2] | None = None,
     ):

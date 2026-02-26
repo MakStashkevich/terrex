@@ -1,6 +1,6 @@
 from terrex.id import MessageID
-
 from terrex.net.streamer import Reader, Writer
+
 from .base import SyncPacket
 
 
@@ -9,7 +9,9 @@ class SpecialFX(SyncPacket):
 
     def __init__(self) -> None:
         self.player_id: int = 0
-        self.effect_type: int = 0  # 1=SpawnSkeletron, 2=SoundAtPlayer, 3=StartSundialing, 4=BigMimicSpawnSmoke, 5=RegisterTorchGodBestiary
+        self.effect_type: int = (
+            0  # 1=SpawnSkeletron, 2=SoundAtPlayer, 3=StartSundialing, 4=BigMimicSpawnSmoke, 5=RegisterTorchGodBestiary
+        )
 
     def read(self, reader: Reader) -> None:
         self.player_id = reader.read_byte()

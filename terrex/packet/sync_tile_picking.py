@@ -1,6 +1,6 @@
-from terrex.packet.base import SyncPacket
 from terrex.id import MessageID
 from terrex.net.streamer import Reader, Writer
+from terrex.packet.base import SyncPacket
 
 
 class SyncTilePicking(SyncPacket):
@@ -23,4 +23,3 @@ class SyncTilePicking(SyncPacket):
         writer.write_short(self.x)
         writer.write_short(self.y)
         writer.write_byte(self.pick_damage)
-

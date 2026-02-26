@@ -24,7 +24,9 @@ class NetModule(ABC):
             raise TypeError(f"{cls.__name__} must implement classmethod create()")
 
         if cls.id in net_module_registry:
-            raise ValueError(f"Module id {cls.id} already registered for {net_module_registry[cls.id]}")
+            raise ValueError(
+                f"Module id {cls.id} already registered for {net_module_registry[cls.id]}"
+            )
         net_module_registry[cls.id] = cls
 
     def __to_log_dict(self) -> dict[str, Any]:
@@ -36,15 +38,15 @@ class NetModule(ABC):
     @classmethod
     @abstractmethod
     def create(cls, *args, **kwargs):
-        pass
+        raise NotImplementedError(f"create() not implemented in {cls.__class__.__name__}")
 
     @abstractmethod
     def read(self, reader: Reader) -> None:
-        pass
+        raise NotImplementedError(f"read() not implemented in {self.__class__.__name__}")
 
     @abstractmethod
     def write(self, writer: Writer) -> None:
-        pass
+        raise NotImplementedError(f"_write() not implemented in {self.__class__.__name__}")
 
 
 class NetServerModule(NetModule, ABC):

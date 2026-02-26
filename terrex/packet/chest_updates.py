@@ -1,8 +1,8 @@
 from enum import IntEnum
 
-from terrex.packet.base import SyncPacket
 from terrex.id import MessageID
 from terrex.net.streamer import Reader, Writer
+from terrex.packet.base import SyncPacket
 
 
 class ChestAction(IntEnum):
@@ -24,7 +24,14 @@ class ChestAction(IntEnum):
 class ChestUpdates(SyncPacket):
     id = MessageID.ChestUpdates
 
-    def __init__(self, action: ChestAction = ChestAction.PLACE_CHEST, tile_x: int = 0, tile_y: int = 0, style: int = 0, chest_id_to_destroy: int = 0):
+    def __init__(
+        self,
+        action: ChestAction = ChestAction.PLACE_CHEST,
+        tile_x: int = 0,
+        tile_y: int = 0,
+        style: int = 0,
+        chest_id_to_destroy: int = 0,
+    ):
         self.action = action
         self.tile_x = tile_x
         self.tile_y = tile_y

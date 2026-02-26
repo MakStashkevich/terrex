@@ -3,9 +3,11 @@
 from terrex.id import TileID, WallID
 from terrex.net.structure.rgb import Rgb as Color
 
+
 def add_colors() -> None:
     from terrex.world.map_helper import MapHelper
-    color = [[] for _ in range(TileID.Count)]
+
+    color: list[list] = [[] for _ in range(TileID.Count)]
     for i in range(TileID.Count):
         color[i] = [Color() for _ in range(13)]
     color[656][0] = Color(21, 124, 212)
@@ -1044,7 +1046,7 @@ def add_colors() -> None:
     color[749][0] = color[138][0] * 0.95
     color[750][0] = color[48][0] * 0.95
     colorArray1 = [Color(9, 61, 191), Color(253, 32, 3), Color(254, 194, 20), Color(161, 127, 255)]
-    colorArray2 = [[] for _ in range(WallID.Count)]
+    colorArray2: list[list] = [[] for _ in range(WallID.Count)]
     for t in range(WallID.Count):
         colorArray2[t] = [Color() for _ in range(2)]
     colorArray2[158][0] = Color(107, 49, 154)
@@ -1436,7 +1438,7 @@ def add_colors() -> None:
         colorArray3[u] = Color(
             int(color6.get_R() * single1 + color7.get_R() * length),
             int(color6.get_G() * single1 + color7.get_G() * length),
-            int(color6.get_B() * single1 + color7.get_B() * length)
+            int(color6.get_B() * single1 + color7.get_B() * length),
         )
 
     colorArray4 = [Color() for _ in range(256)]
@@ -1448,7 +1450,7 @@ def add_colors() -> None:
         colorArray4[v] = Color(
             int(color8.get_R() * single3 + color9.get_R() * single2),
             int(color8.get_G() * single3 + color9.get_G() * single2),
-            int(color8.get_B() * single3 + color9.get_B() * single2)
+            int(color8.get_B() * single3 + color9.get_B() * single2),
         )
 
     colorArray5 = [Color() for _ in range(256)]
@@ -1460,7 +1462,7 @@ def add_colors() -> None:
         colorArray5[w] = Color(
             int(color10.get_R() * single5 + color9.get_R() * single4),
             int(color10.get_G() * single5 + color9.get_G() * single4),
-            int(color10.get_B() * single5 + color9.get_B() * single4)
+            int(color10.get_B() * single5 + color9.get_B() * single4),
         )
 
     color11 = Color(50, 44, 38)
@@ -1538,6 +1540,10 @@ def add_colors() -> None:
     MapHelper.hell_position = num3
     MapHelper.color_lookup[num3] = color11
     MapHelper.snow_types = [
-        MapHelper.tile_lookup[147], MapHelper.tile_lookup[161], MapHelper.tile_lookup[162],
-        MapHelper.tile_lookup[163], MapHelper.tile_lookup[164], MapHelper.tile_lookup[200]
+        MapHelper.tile_lookup[147],
+        MapHelper.tile_lookup[161],
+        MapHelper.tile_lookup[162],
+        MapHelper.tile_lookup[163],
+        MapHelper.tile_lookup[164],
+        MapHelper.tile_lookup[200],
     ]

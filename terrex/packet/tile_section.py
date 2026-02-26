@@ -1,9 +1,9 @@
 import zlib
 
 from terrex.event.types import WorldSectionUpdateEvent
-from terrex.packet.base import ServerPacket
 from terrex.id import MessageID
 from terrex.net.streamer import Reader
+from terrex.packet.base import ServerPacket
 
 
 class TileSection(ServerPacket):

@@ -7,7 +7,7 @@ from terrex.net.streamer import Reader, Writer
 @dataclass()
 class SpawnRateSliderPerPlayerPower(CreativePower):
     id: int = 14
-    value: float | None = None
+    value: float = 0.0
 
     @classmethod
     def create(cls, value: float = 0.0) -> "SpawnRateSliderPerPlayerPower":

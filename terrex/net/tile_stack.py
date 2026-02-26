@@ -1,12 +1,11 @@
 from __future__ import annotations
-from typing import Optional, Dict, Tuple
 
 
 class TileStack:
     def __init__(self) -> None:
         from terrex.net.structure.tile import Tile
 
-        self._tiles: Dict[Tuple[int, int], Tile] = {}
+        self._tiles: dict[tuple[int, int], Tile] = {}
 
     def get(self, x: int, y: int):
         return self._tiles.get((x, y), None)

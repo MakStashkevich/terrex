@@ -1,9 +1,8 @@
 from dataclasses import dataclass
 
-from terrex.id.LiquidID import LiquidID
 from terrex.id import LiquidID, TileID
-from terrex.net.tile_npc_data import TileNPCData
 from terrex.net.streamer import Reader
+from terrex.net.tile_npc_data import TileNPCData
 from terrex.world.world import World
 
 tile_data = TileNPCData()
@@ -58,7 +57,7 @@ class Tile:
         if (b4 & 0x02) == 0x02:
             tile.active = True
             old_tile_type = tile.type
-            
+
             # print(f"old_tile_type={old_tile_type} x={tile_x} y={tile_y} b4={b4:#04x} b={b:#04x} b2={b2:#04x} b3={b3:#04x} reader_offset={reader.index}")
 
             if (b4 & 0x20) == 0x20:
@@ -67,7 +66,7 @@ class Tile:
                 ty_val = reader.read_byte()
 
             tile.type = ty_val
-            
+
             # print(f"old_tile_type={old_tile_type} ty_val={ty_val}")
 
             if ty_val > TileID.Count:
@@ -298,11 +297,6 @@ class Tile:
         )  # 36863
         self.s_tile_header &= 0xFFFF
 
-    @property
-    def top_slope(self) -> bool:
-        s = self.slope
-        return s == 1 or s == 2
-
     # wallFrameNumber (биты 6–7 b_tile_header2)
     @property
     def wall_frame_number(self) -> int:
@@ -429,19 +423,6 @@ class Tile:
             self.s_tile_header |= 1024
         else:
             self.s_tile_header &= 0b1111101111111111  # 64511
-        self.s_tile_header &= 0xFFFF
-
-    # active (бит 5 s_tile_header)
-    @property
-    def active(self) -> bool:
-        return (self.s_tile_header & 32) == 32
-
-    @active.setter
-    def active(self, value: bool) -> None:
-        if value:
-            self.s_tile_header |= 32
-        else:
-            self.s_tile_header &= 0b1111111111011111  # 65503
         self.s_tile_header &= 0xFFFF
 
     # actuator (бит 11 s_tile_header)

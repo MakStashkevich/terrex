@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from terrex.net.structure.bestiary import Bestiary
 from terrex.net.streamer import Reader, Writer
+from terrex.net.structure.bestiary import Bestiary
 
 from .net_module import NetServerModule
 
@@ -17,8 +17,10 @@ class NetBestiaryModule(NetServerModule):
         obj.bestiary = bestiary
         return obj
 
-    def read(self, reader: Reader) -> 'NetBestiaryModule':
+    def read(self, reader: Reader) -> None:
         self.bestiary = Bestiary.read(reader)
 
     def write(self, writer: Writer) -> None:
+        if self.bestiary is None:
+            raise ValueError("bestiary must not be None")
         self.bestiary.write(writer)

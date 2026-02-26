@@ -1,15 +1,23 @@
-from typing import Type, Callable, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
+
 from terrex.event.context import EventContext
-from .base import EventFilter, E
-from terrex.event.types import BaseEvent, ItemDropUpdateEvent, ItemDroppedEvent, ItemOwnerChangedEvent
+from terrex.event.types import (
+    BaseEvent,
+    ItemDroppedEvent,
+    ItemDropUpdateEvent,
+    ItemOwnerChangedEvent,
+)
+
+from .base import EventFilter
 
 T = TypeVar("T", bound=BaseEvent)
 
 
 class ItemEventFilter(EventFilter[T]):
-    _event_type: Type[T]
+    _event_type: type[T]
 
-    def __init__(self, event_type: Type[T], predicate: Callable[[T, EventContext], bool]):
+    def __init__(self, event_type: type[T], predicate: Callable[[T, EventContext], bool]):
         self._event_type = event_type
         self.predicate = predicate
 
@@ -24,12 +32,18 @@ class ItemEventFilter(EventFilter[T]):
 
 # Fabrics
 def ItemDrop(item_id: int | None = None) -> ItemEventFilter[ItemDroppedEvent]:
-    return ItemEventFilter(ItemDroppedEvent, lambda e, ctx: True if item_id is None else e.item.item_id == item_id)
+    return ItemEventFilter(
+        ItemDroppedEvent, lambda e, ctx: True if item_id is None else e.item.item_id == item_id
+    )
 
 
 def UpdateItemDrop(item_id: int | None = None) -> ItemEventFilter[ItemDropUpdateEvent]:
-    return ItemEventFilter(ItemDropUpdateEvent, lambda e, ctx: True if item_id is None else e.item.item_id == item_id)
+    return ItemEventFilter(
+        ItemDropUpdateEvent, lambda e, ctx: True if item_id is None else e.item.item_id == item_id
+    )
 
 
 def UpdateItemOwner(item_id: int | None = None) -> ItemEventFilter[ItemOwnerChangedEvent]:
-    return ItemEventFilter(ItemOwnerChangedEvent, lambda e, ctx: True if item_id is None else e.item_id == item_id)
+    return ItemEventFilter(
+        ItemOwnerChangedEvent, lambda e, ctx: True if item_id is None else e.item_id == item_id
+    )

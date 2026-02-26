@@ -7,7 +7,7 @@ from terrex.net.streamer import Reader, Writer
 @dataclass()
 class ModifyTimeRatePower(CreativePower):
     id: int = 8
-    value: float | None = None
+    value: float = 0.0
 
     @classmethod
     def create(cls, value: float = 0.0) -> "ModifyTimeRatePower":

@@ -1,7 +1,6 @@
-from terrex.packet.base import ServerPacket
 from terrex.id import MessageID
 from terrex.net.streamer import Reader
-from terrex.world.world import World
+from terrex.packet.base import ServerPacket
 
 
 class WorldData(ServerPacket):
@@ -21,8 +20,8 @@ class WorldData(ServerPacket):
         world_id: int = 0,
         world_name: str = "",
         game_mode: int = 0,
-        world_unique_id: list[int] = None,
-        world_generator_version: list[int] = None,
+        world_unique_id: list[int] | None = None,
+        world_generator_version: list[int] | None = None,
         moon_type: int = 0,
         tree_background: int = 0,
         corruption_background: int = 0,
@@ -32,17 +31,17 @@ class WorldData(ServerPacket):
         crimson_background: int = 0,
         desert_background: int = 0,
         ocean_background: int = 0,
-        unknown_background: list[int] = None,
+        unknown_background: list[int] | None = None,
         ice_back_style: int = 0,
         jungle_back_style: int = 0,
         hell_back_style: int = 0,
         wind_speed_set: float = 0.0,
         cloud_number: int = 0,
-        trees: list[int] = None,
-        tree_styles: list[int] = None,
-        cave_backs: list[int] = None,
-        cave_back_styles: list[int] = None,
-        forest_tree_top_styles: list[int] = None,
+        trees: list[int] | None = None,
+        tree_styles: list[int] | None = None,
+        cave_backs: list[int] | None = None,
+        cave_back_styles: list[int] | None = None,
+        forest_tree_top_styles: list[int] | None = None,
         corruption_tree_top_style: int = 0,
         jungle_tree_top_style: int = 0,
         snow_tree_top_style: int = 0,
@@ -54,7 +53,7 @@ class WorldData(ServerPacket):
         underworld_tree_top_style: int = 0,
         rain: float = 0.0,
         event_info: int = 0,
-        ore_tiers_tiles: list[int] = None,
+        ore_tiers_tiles: list[int] | None = None,
         invasion_type: int = 0,
         lobby_id: int = 0,
         sandstorm_severity: float = 0.0,

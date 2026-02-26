@@ -1,10 +1,10 @@
+from terrex.id import MessageID
 from terrex.net.bits_byte import BitsByte
 from terrex.net.enum.teleport_pylon_type import TeleportPylonType
 from terrex.net.enum.teleport_type import TeleportType
-from terrex.packet.base import SyncPacket
-from terrex.id import MessageID
-from terrex.net.structure.vec2 import Vec2
 from terrex.net.streamer import Reader, Writer
+from terrex.net.structure.vec2 import Vec2
+from terrex.packet.base import SyncPacket
 
 
 class TeleportEntityFlags:
@@ -22,9 +22,9 @@ class TeleportEntityFlags:
         self.has_type_of_pylon = has_type_of_pylon
 
     @classmethod
-    def create(cls, flags: int = 0) -> None:
+    def create(cls, flags: int) -> 'TeleportEntityFlags':
         tp_entity = cls()
-        tp_entity.flags = flags
+        tp_entity.flags = BitsByte(flags)
         return cls()
 
     @property
@@ -89,7 +89,11 @@ class TeleportEntity(SyncPacket):
         type: TeleportType = TeleportType.TeleporterTile,
         pylon_type: TeleportPylonType = TeleportPylonType.SurfacePurity,
     ) -> None:
-        self.flags: TeleportEntityFlags = TeleportEntityFlags(server_synced, player_teleport, has_type_of_pylon=pylon_type != TeleportPylonType.SurfacePurity)
+        self.flags: TeleportEntityFlags = TeleportEntityFlags(
+            server_synced,
+            player_teleport,
+            has_type_of_pylon=pylon_type != TeleportPylonType.SurfacePurity,
+        )
         self.player_id: int = player_id
         self.position: Vec2 = position or Vec2(0, 0)
         self.teleport_type: int = type

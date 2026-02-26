@@ -1,12 +1,20 @@
-from terrex.packet.base import ServerPacket
 from terrex.id import MessageID
 from terrex.net.streamer import Reader
+from terrex.packet.base import ServerPacket
 
 
 class SyncEmoteBubble(ServerPacket):
     id = MessageID.SyncEmoteBubble
 
-    def __init__(self, emote_id: int = 0, anchor_type: int = 255, player_id: int = 0, emote_lifetime: int = 0, emote: int = 0, emote_metadata: int = 0):
+    def __init__(
+        self,
+        emote_id: int = 0,
+        anchor_type: int = 255,
+        player_id: int = 0,
+        emote_lifetime: int = 0,
+        emote: int = 0,
+        emote_metadata: int = 0,
+    ):
         self.emote_id = emote_id
         self.anchor_type = anchor_type
         self.player_id = player_id
@@ -23,4 +31,3 @@ class SyncEmoteBubble(ServerPacket):
             self.emote = reader.read_byte()
             if self.emote < 0:
                 self.emote_metadata = reader.read_short()
-

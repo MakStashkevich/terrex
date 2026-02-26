@@ -1,12 +1,19 @@
-from terrex.packet.base import SyncPacket
 from terrex.id import MessageID
 from terrex.net.streamer import Reader, Writer
+from terrex.packet.base import SyncPacket
 
 
 class DamageNPC(SyncPacket):
     id = MessageID.DamageNPC
 
-    def __init__(self, npc_id: int = 0, damage: int = 0, knockback: float = 0.0, hit_direction: int = 0, crit: bool = False):
+    def __init__(
+        self,
+        npc_id: int = 0,
+        damage: int = 0,
+        knockback: float = 0.0,
+        hit_direction: int = 0,
+        crit: bool = False,
+    ):
         self.npc_id = npc_id
         self.damage = damage
         self.knockback = knockback

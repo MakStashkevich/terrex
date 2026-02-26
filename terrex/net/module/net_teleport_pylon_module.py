@@ -1,10 +1,8 @@
 from dataclasses import dataclass
-from enum import IntEnum
 
 from terrex.net.enum.teleport_pylon_operation import TeleportPylonOperation
 from terrex.net.enum.teleport_pylon_type import TeleportPylonType
 from terrex.net.streamer import Reader, Writer
-from terrex.net.structure.vec2 import Vec2
 
 from .net_module import NetSyncModule
 
@@ -12,13 +10,15 @@ from .net_module import NetSyncModule
 @dataclass()
 class NetTeleportPylonModule(NetSyncModule):
     id: int = 7
-    operation: TeleportPylonOperation | None = None
-    x: int | None = None
-    y: int | None = None
-    pylon_type: TeleportPylonType | None = None
+    operation: TeleportPylonOperation = TeleportPylonOperation.HandleTeleportRequest
+    x: int = -1
+    y: int = -1
+    pylon_type: TeleportPylonType = TeleportPylonType.SurfacePurity
 
     @classmethod
-    def create(cls, operation: TeleportPylonOperation, x: int, y: int, pylon_type: TeleportPylonType) -> "NetTeleportPylonModule":
+    def create(
+        cls, operation: TeleportPylonOperation, x: int, y: int, pylon_type: TeleportPylonType
+    ) -> "NetTeleportPylonModule":
         obj = cls()
         obj.operation = operation
         obj.x = x

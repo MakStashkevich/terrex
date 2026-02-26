@@ -1,9 +1,9 @@
 import asyncio
-from collections.abc import Callable
-from typing import Awaitable
+from collections.abc import Awaitable, Callable
+
+from .dispatcher import Dispatcher
 from .filter.base import EventFilter
 from .types import BaseEvent
-from .dispatcher import Dispatcher
 
 
 class EventManager:
@@ -11,7 +11,9 @@ class EventManager:
         self._dispatcher = dispatcher
 
     def on_event(self, filter: EventFilter):
-        def decorator(func: Callable[[BaseEvent], Awaitable[None]]) -> Callable[[BaseEvent], Awaitable[None]]:
+        def decorator(
+            func: Callable[[BaseEvent], Awaitable[None]],
+        ) -> Callable[[BaseEvent], Awaitable[None]]:
             self._dispatcher.register(filter, func)
             return func
 

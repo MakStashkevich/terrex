@@ -1,9 +1,9 @@
 from enum import IntEnum
 
-from terrex.packet.base import ServerPacket
 from terrex.id import MessageID
-from terrex.net.structure.vec2 import Vec2
 from terrex.net.streamer import Reader
+from terrex.net.structure.vec2 import Vec2
+from terrex.packet.base import ServerPacket
 
 
 class SoundMode(IntEnum):
@@ -15,7 +15,9 @@ class SoundMode(IntEnum):
 class PlayLegacySound(ServerPacket):
     id = MessageID.PlayLegacySound
 
-    def __init__(self, pos: Vec2 | None = None, sound_id: int = 0, mode: SoundMode = SoundMode.STYLE):
+    def __init__(
+        self, pos: Vec2 | None = None, sound_id: int = 0, mode: SoundMode = SoundMode.STYLE
+    ):
         self.pos = pos or Vec2(0.0, 0.0)
         self.sound_id = sound_id
         self.mode = mode

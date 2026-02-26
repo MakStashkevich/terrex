@@ -18,10 +18,10 @@ class WorldSection:
     tile_entities: list = field(default_factory=lambda: [])
 
     def read(self, reader: Reader, world: World) -> None:
+        from terrex.entity.tile_entity import read_tile_entity
         from terrex.net.structure.chest import Chest
         from terrex.net.structure.sign import Sign
         from terrex.net.structure.tile import Tile
-        from terrex.entity.tile_entity import read_tile_entity
 
         tile: Tile | None = None
         rle: int = 0
@@ -64,7 +64,7 @@ class WorldSection:
 
     def __repr__(self) -> str:
         return (
-            f"WorldSection("
+            "WorldSection("
             + ", ".join(
                 [
                     f"x_start={self.x_start}",

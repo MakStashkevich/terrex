@@ -12,7 +12,9 @@ class NetCraftingRequestModule(NetServerModule):
     chests: list[int | None] | None = None
 
     @classmethod
-    def create(cls, items: list[tuple[int, int]], chests: list[int | None]) -> 'NetCraftingRequestModule':
+    def create(
+        cls, items: list[tuple[int, int]], chests: list[int | None]
+    ) -> 'NetCraftingRequestModule':
         obj = cls()
         obj.items = items
         obj.chests = chests
@@ -32,6 +34,8 @@ class NetCraftingRequestModule(NetServerModule):
             self.chests.append(None if idx < 0 else idx)
 
     def write(self, writer: Writer) -> None:
+        if self.items is None or self.chests is None:
+            raise ValueError("items and chests must not be None")
         writer.write_7bit_encoded_int(len(self.items))
         for item_id, stack in self.items:
             writer.write_int(item_id)

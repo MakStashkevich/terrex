@@ -32,6 +32,14 @@ class Rectangle(GenShape):
     def height(self, value: int) -> None:
         self._area.height = value
 
+    @property
+    def x(self) -> int:
+        return self._area.left
+
+    @property
+    def y(self) -> int:
+        return self._area.top
+
     @classmethod
     def from_size(cls, width: int, height: int, quit_on_fail: bool = False):
         """Constructor matching C#: Rectangle(int width, int height)"""
@@ -44,14 +52,14 @@ class Rectangle(GenShape):
     def perform(self, origin: Point, action: GenAction) -> bool:
         # Numpy fast path for vectorized actions
         if isinstance(action, GenActionBulk):
-            xs = np.arange(origin.X + self._area.left, origin.X + self._area.right)
-            ys = np.arange(origin.Y + self._area.top, origin.Y + self._area.bottom)
+            xs = np.arange(origin.x + self._area.left, origin.x + self._area.right)
+            ys = np.arange(origin.y + self._area.top, origin.y + self._area.bottom)
             grid_x, grid_y = np.meshgrid(xs, ys)
             return action.apply_bulk(grid_x, grid_y)
 
         # Exact C# logic
-        for i in range(origin.X + self._area.left, origin.X + self._area.right):
-            for j in range(origin.Y + self._area.top, origin.Y + self._area.bottom):
+        for i in range(origin.x + self._area.left, origin.x + self._area.right):
+            for j in range(origin.y + self._area.top, origin.y + self._area.bottom):
                 if not self.unit_apply(action, origin, i, j) and self._quitOnFail:
                     return False
         return True

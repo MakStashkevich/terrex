@@ -1,8 +1,8 @@
-from terrex.packet.base import ServerPacket
 from terrex.id import MessageID
+from terrex.net.streamer import Reader
 from terrex.net.structure.rgb import Rgb
 from terrex.net.structure.vec2 import Vec2
-from terrex.net.streamer import Reader
+from terrex.packet.base import ServerPacket
 
 
 class CombatTextInt(ServerPacket):

@@ -38,10 +38,10 @@ class TileNPCData:
     tileBouncy: list[bool] = []
     tileFrameImportant: list[bool] = []
     tileNoFail: list[bool] = []
-    tileLargeFrames: list[bool] = []
+    tileLargeFrames: list[int] = []
     tileBlendAll: list[bool] = []
     tileGlowMask: list[int] = []
-    tileShine: list[bool] = []
+    tileShine: list[int] = []
     tileShine2: list[bool] = []
     tileCut: list[bool] = []
     tileAlch: list[bool] = []
@@ -60,7 +60,7 @@ class TileNPCData:
     wallHouse: list[bool] = []
     wallLight: list[bool] = []
     wallDungeon: list[bool] = []
-    wallLargeFrames: list[bool] = []
+    wallLargeFrames: list[int] = []
 
     # buffs
     debuff: list[bool] = []

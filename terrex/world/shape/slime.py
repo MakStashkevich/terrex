@@ -5,6 +5,7 @@ Slime-like blob shape: rounded top, tapered bottom.
 """
 
 from math import sqrt
+from typing import cast
 
 import numpy as np
 
@@ -14,7 +15,9 @@ from .base import GenAction, GenActionBulk, GenShape, Point
 class Slime(GenShape):
     """Slime blob shape with scalable X/Y dimensions."""
 
-    def __init__(self, radius: int, x_scale: float = 1.0, y_scale: float = 1.0, quit_on_fail: bool = False):
+    def __init__(
+        self, radius: int, x_scale: float = 1.0, y_scale: float = 1.0, quit_on_fail: bool = False
+    ):
         super().__init__(quit_on_fail)
         self._radius = radius
         self._xScale = x_scale
@@ -29,32 +32,34 @@ class Slime(GenShape):
         ys_all = []
 
         # Upper part (full ellipse)
-        for i in range(origin.Y - int(num * self._yScale), origin.Y + 1):
-            y = (i - origin.Y) / self._yScale
+        for i in range(origin.y - int(num * self._yScale), origin.y + 1):
+            y = (i - origin.y) / self._yScale
             width = int(min(self._radius * self._xScale, self._xScale * sqrt(num1 - y * y)))
             if use_bulk:
-                xs_all.append(np.arange(origin.X - width, origin.X + width + 1))
+                xs_all.append(np.arange(origin.x - width, origin.x + width + 1))
                 ys_all.append(np.full(2 * width + 1, i))
             else:
-                for j in range(origin.X - width, origin.X + width + 1):
+                for j in range(origin.x - width, origin.x + width + 1):
                     if not self.unit_apply(action, origin, j, i) and self._quitOnFail:
                         return False
 
         # Lower part (tapered, half height)
-        for k in range(origin.Y + 1, origin.Y + int(num * self._yScale * 0.5)):
-            y1 = (k - origin.Y) * (2.0 / self._yScale)
-            width = int(min(self._radius * self._xScale, self._xScale * sqrt(max(0, num1 - y1 * y1))))
+        for k in range(origin.y + 1, origin.y + int(num * self._yScale * 0.5)):
+            y1 = (k - origin.y) * (2.0 / self._yScale)
+            width = int(
+                min(self._radius * self._xScale, self._xScale * sqrt(max(0, num1 - y1 * y1)))
+            )
             if use_bulk:
-                xs_all.append(np.arange(origin.X - width, origin.X + width + 1))
+                xs_all.append(np.arange(origin.x - width, origin.x + width + 1))
                 ys_all.append(np.full(2 * width + 1, k))
             else:
-                for a in range(origin.X - width, origin.X + width + 1):
+                for a in range(origin.x - width, origin.x + width + 1):
                     if not self.unit_apply(action, origin, a, k) and self._quitOnFail:
                         return False
 
         if use_bulk and xs_all:
             xs = np.concatenate(xs_all)
             ys = np.concatenate(ys_all)
-            return action.apply_bulk(xs, ys)
+            return cast(bool, cast(GenActionBulk, action).apply_bulk(xs, ys))
 
         return True

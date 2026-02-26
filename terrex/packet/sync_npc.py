@@ -1,7 +1,7 @@
-from terrex.packet.base import ServerPacket
 from terrex.id import MessageID
-from terrex.net.structure.vec2 import Vec2
 from terrex.net.streamer import Reader
+from terrex.net.structure.vec2 import Vec2
+from terrex.packet.base import ServerPacket
 
 
 class SyncNPC(ServerPacket):
@@ -13,7 +13,7 @@ class SyncNPC(ServerPacket):
         pos: Vec2 | None = None,
         vel: Vec2 | None = None,
         target: int = 0,
-        ai: list[float] = None,
+        ai: list[float] | None = None,
         npc_net_id: int = 0,
         player_count_scale: int | None = None,
         strength_multiplier: float | None = None,

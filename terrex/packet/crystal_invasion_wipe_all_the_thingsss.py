@@ -1,5 +1,5 @@
-from terrex.packet.base import ServerPacket
 from terrex.id import MessageID
+from terrex.packet.base import ServerPacket
 
 
 class CrystalInvasionWipeAllTheThingsss(ServerPacket):

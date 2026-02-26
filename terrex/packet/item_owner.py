@@ -1,7 +1,7 @@
 from terrex.event.types import ItemOwnerChangedEvent
-from terrex.packet.base import SyncPacket
 from terrex.id import MessageID
 from terrex.net.streamer import Reader, Writer
+from terrex.packet.base import SyncPacket
 
 
 class ItemOwner(SyncPacket):

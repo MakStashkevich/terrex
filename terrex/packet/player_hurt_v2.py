@@ -1,7 +1,7 @@
-from terrex.packet.base import ClientPacket
 from terrex.id import MessageID
-from terrex.net.structure.player_death_reason import PlayerDeathReason
 from terrex.net.streamer import Reader, Writer
+from terrex.net.structure.player_death_reason import PlayerDeathReason
+from terrex.packet.base import ClientPacket
 
 
 class PlayerHurtV2(ClientPacket):

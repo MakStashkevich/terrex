@@ -1,6 +1,6 @@
-from terrex.packet.base import Packet
 from terrex.id import MessageID
 from terrex.net.streamer import Reader, Writer
+from terrex.packet.base import Packet
 
 
 class Unknown15(Packet):

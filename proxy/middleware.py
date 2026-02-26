@@ -1,9 +1,9 @@
 import struct
 
-from terrex.packet.base import Packet
-from terrex.packet.update_player_luck_factors import UpdatePlayerLuckFactors
 from terrex.id import MessageID
 from terrex.net.streamer import Reader, Writer
+from terrex.packet.base import Packet
+from terrex.packet.update_player_luck_factors import UpdatePlayerLuckFactors
 
 
 class AnyPacket(Packet):

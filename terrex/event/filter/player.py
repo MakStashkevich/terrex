@@ -1,13 +1,15 @@
-from typing import Callable, Type
+from collections.abc import Callable
+
 from terrex.event.context import EventContext
-from .base import EventFilter, EventTypeFilter, E
-from terrex.event.types import ChatEvent, ItemOwnerChangedEvent, LoginEvent, BlockedEvent
+from terrex.event.types import BlockedEvent, ChatEvent, ItemOwnerChangedEvent, LoginEvent
+
+from .base import E, EventFilter, EventTypeFilter
 
 
 class PlayerFilter(EventFilter[E]):
-    _event_type: Type[E]
+    _event_type: type[E]
 
-    def __init__(self, event_type: Type[E], predicate: Callable[[E, EventContext], bool]):
+    def __init__(self, event_type: type[E], predicate: Callable[[E, EventContext], bool]):
         self._event_type = event_type
         self.predicate = predicate
 
@@ -26,7 +28,11 @@ def OutgoingMessage() -> PlayerFilter[ChatEvent]:
 
 
 def IncomingMessage(player_id: int | None = None) -> PlayerFilter[ChatEvent]:
-    return PlayerFilter(ChatEvent, lambda e, ctx: e.player_id != ctx.player.id and (True if player_id is None else e.player_id == player_id))
+    return PlayerFilter(
+        ChatEvent,
+        lambda e, ctx: e.player_id != ctx.player.id
+        and (True if player_id is None else e.player_id == player_id),
+    )
 
 
 def ItemOwnedByMe() -> PlayerFilter[ItemOwnerChangedEvent]:
@@ -34,7 +40,11 @@ def ItemOwnedByMe() -> PlayerFilter[ItemOwnerChangedEvent]:
 
 
 def ItemOwnedByOther(player_id: int | None = None) -> PlayerFilter[ItemOwnerChangedEvent]:
-    return PlayerFilter(ItemOwnerChangedEvent, lambda e, ctx: e.player_id != ctx.player.id and (True if player_id is None else e.player_id == player_id))
+    return PlayerFilter(
+        ItemOwnerChangedEvent,
+        lambda e, ctx: e.player_id != ctx.player.id
+        and (True if player_id is None else e.player_id == player_id),
+    )
 
 
 # Other Player Filters

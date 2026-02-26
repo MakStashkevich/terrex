@@ -1,6 +1,6 @@
-from terrex.packet.base import ServerPacket
 from terrex.id import MessageID
 from terrex.net.streamer import Reader
+from terrex.packet.base import ServerPacket
 
 
 class AchievementMessageNPCKilled(ServerPacket):
@@ -11,4 +11,3 @@ class AchievementMessageNPCKilled(ServerPacket):
 
     def read(self, reader: Reader) -> None:
         self.npc_id = reader.read_short()
-

@@ -1,8 +1,8 @@
 from enum import IntFlag
 
-from terrex.packet.base import ClientPacket
 from terrex.id import MessageID
 from terrex.net.streamer import Reader, Writer
+from terrex.packet.base import ClientPacket
 
 
 class ToolMode(IntFlag):
@@ -24,7 +24,14 @@ class ToolMode(IntFlag):
 class MassWireOperation(ClientPacket):
     id = MessageID.MassWireOperation
 
-    def __init__(self, start_x: int = 0, start_y: int = 0, end_x: int = 0, end_y: int = 0, tool_mode: ToolMode = ToolMode.RED):
+    def __init__(
+        self,
+        start_x: int = 0,
+        start_y: int = 0,
+        end_x: int = 0,
+        end_y: int = 0,
+        tool_mode: ToolMode = ToolMode.RED,
+    ):
         self.start_x = start_x
         self.start_y = start_y
         self.end_x = end_x

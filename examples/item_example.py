@@ -1,9 +1,6 @@
 import asyncio
 
-from typing import Any
-
 from terrex import Terrex
-
 from terrex.event.filter import (
     ItemDrop,
     ItemOwnedByMe,
@@ -11,7 +8,6 @@ from terrex.event.filter import (
     UpdateItemDrop,
     UpdateItemOwner,
 )
-
 from terrex.event.types import (
     ItemDroppedEvent,
     ItemDropUpdateEvent,
@@ -41,12 +37,16 @@ async def main() -> None:
         @client.on(UpdateItemOwner() & ItemOwnedByMe())
         async def on_item_owner_me_update(event: ItemOwnerChangedEvent) -> None:
             """Handles item owner changes for the current player."""
-            print(f"Update item owner for current player: item_id={event.item_id}, owner_id={event.player_id}")
+            print(
+                f"Update item owner for current player: item_id={event.item_id}, owner_id={event.player_id}"
+            )
 
         @client.on(UpdateItemOwner() & ItemOwnedByOther())
         async def on_item_owner_other_update(event: ItemOwnerChangedEvent) -> None:
             """Handles item owner changes for other players."""
-            print(f"Update item owner for other player: item_id={event.item_id}, owner_id={event.player_id}")
+            print(
+                f"Update item owner for other player: item_id={event.item_id}, owner_id={event.player_id}"
+            )
 
         await client.run_until_disconnected()
 

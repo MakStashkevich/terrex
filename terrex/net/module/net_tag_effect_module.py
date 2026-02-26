@@ -56,7 +56,11 @@ class NetTagEffectModule(NetServerModule):
             self.proc_time_sparse = self._read_sparse(reader)
         elif self.msg_type == TagEffectMessageType.ChangeActiveEffect:
             self.effect_id = reader.read_short()
-        elif self.msg_type in (TagEffectMessageType.ApplyTagToNPC, TagEffectMessageType.EnableProcOnNPC, TagEffectMessageType.ClearProcOnNPC):
+        elif self.msg_type in (
+            TagEffectMessageType.ApplyTagToNPC,
+            TagEffectMessageType.EnableProcOnNPC,
+            TagEffectMessageType.ClearProcOnNPC,
+        ):
             self.npc_index = reader.read_byte()
 
     @classmethod
@@ -71,15 +75,27 @@ class NetTagEffectModule(NetServerModule):
         return sparse
 
     def write(self, writer: Writer) -> None:
+        if self.player_id is None or self.msg_type is None:
+            raise ValueError("player_id and msg_type must be int/TagEffectMessageType and not None")
         writer.write_byte(self.player_id)
         writer.write_byte(self.msg_type.value)
         if self.msg_type == TagEffectMessageType.FullState:
+            if self.effect_id is None:
+                raise ValueError("effect_id must not be None for FullState")
             writer.write_short(self.effect_id)
             self._write_sparse(writer, self.time_left_sparse or [])
             self._write_sparse(writer, self.proc_time_sparse or [])
         elif self.msg_type == TagEffectMessageType.ChangeActiveEffect:
+            if self.effect_id is None:
+                raise ValueError("effect_id must not be None for ChangeActiveEffect")
             writer.write_short(self.effect_id)
-        elif self.msg_type in (TagEffectMessageType.ApplyTagToNPC, TagEffectMessageType.EnableProcOnNPC, TagEffectMessageType.ClearProcOnNPC):
+        elif self.msg_type in (
+            TagEffectMessageType.ApplyTagToNPC,
+            TagEffectMessageType.EnableProcOnNPC,
+            TagEffectMessageType.ClearProcOnNPC,
+        ):
+            if self.npc_index is None:
+                raise ValueError("npc_index must not be None for these types")
             writer.write_byte(self.npc_index)
 
     def _write_sparse(self, writer: Writer, sparse: list[tuple[int, int]]) -> None:

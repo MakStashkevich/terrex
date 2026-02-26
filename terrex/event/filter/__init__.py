@@ -1,7 +1,14 @@
 from .base import EventFilter, EventTypeFilter
-from .message import NewMessage
-from .player import OutgoingMessage, ItemOwnedByMe, IncomingMessage, ItemOwnedByOther, LoginPlayer, BlockPlayer
 from .item import ItemDrop, UpdateItemDrop, UpdateItemOwner
+from .message import NewMessage
+from .player import (
+    BlockPlayer,
+    IncomingMessage,
+    ItemOwnedByMe,
+    ItemOwnedByOther,
+    LoginPlayer,
+    OutgoingMessage,
+)
 from .world import UpdateTileSection
 
 __all__ = [

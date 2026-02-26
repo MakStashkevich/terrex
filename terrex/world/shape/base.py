@@ -13,8 +13,8 @@ import numpy as np
 class Point:
     """Equivalent to Microsoft.Xna.Framework.Point"""
 
-    X: int
-    Y: int
+    x: int
+    y: int
 
 
 @dataclass

@@ -1,12 +1,21 @@
-from terrex.packet.base import ServerPacket
 from terrex.id import MessageID
 from terrex.net.streamer import Reader
+from terrex.packet.base import ServerPacket
 
 
 class WiredCannonShot(ServerPacket):
     id = MessageID.WiredCannonShot
 
-    def __init__(self, damage: int = 0, knockback: float = 0.0, x: int = 0, y: int = 0, angle: int = 0, ammo: int = 0, player_id: int = 0):
+    def __init__(
+        self,
+        damage: int = 0,
+        knockback: float = 0.0,
+        x: int = 0,
+        y: int = 0,
+        angle: int = 0,
+        ammo: int = 0,
+        player_id: int = 0,
+    ):
         self.damage = damage
         self.knockback = knockback
         self.x = x
@@ -23,4 +32,3 @@ class WiredCannonShot(ServerPacket):
         self.angle = reader.read_short()
         self.ammo = reader.read_short()
         self.player_id = reader.read_byte()
-

@@ -1,7 +1,7 @@
-from terrex.packet.base import SyncPacket
 from terrex.id import MessageID
-from terrex.net.structure.rgb import Rgb
 from terrex.net.streamer import Reader, Writer
+from terrex.net.structure.rgb import Rgb
+from terrex.packet.base import SyncPacket
 
 
 class SyncPlayer(SyncPacket):
