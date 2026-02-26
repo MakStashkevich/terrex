@@ -2,13 +2,12 @@ import inspect
 import re
 import sys
 import textwrap
-from pathlib import Path
 
 sys.path.insert(0, '.')
 
-from terrex.packets import packet_registry
-from terrex.packets.base import ClientPacket, ServerPacket, SyncPacket
-from terrex.structures.id import MessageID
+from terrex.id import MessageID
+from terrex.packet import packet_registry
+from terrex.packet.base import ClientPacket, ServerPacket
 
 size_map = {
     'byte': '1',
@@ -79,7 +78,7 @@ for pid in message_ids:
 """)
                 current_version = ver
             break
-        
+
     if pid not in packet_registry:
         msg_id = MessageID(pid)
         cls_name = msg_id.name
@@ -89,7 +88,7 @@ for pid in message_ids:
 > {'The packet has not been implemented yet.' if pid > 0 else 'It will never be implemented.'}
 """)
         continue
-    
+
     cls = packet_registry[pid]
     dir_str = get_direction(cls)
 
@@ -102,12 +101,16 @@ for pid in message_ids:
         table = ''
     else:
         fields = []
-        
+
         # Hardcoded fields for packets
         if pid == 1:
-            fields.append("| ? | Version | string | 'Terraria123' where 123 is protocol version number |")
+            fields.append(
+                "| ? | Version | string | 'Terraria123' where 123 is protocol version number |"
+            )
         elif pid == 10:
-            fields.append("| ? | Compressed | raw deflate | Contains the following fields after decompression |")
+            fields.append(
+                "| ? | Compressed | raw deflate | Contains the following fields after decompression |"
+            )
             fields.append("| 4 | x_start | int32 | - |")
             fields.append("| 4 | y_start | int32 | - |")
             fields.append("| 2 | width | int16 | - |")
@@ -134,13 +137,19 @@ for pid in message_ids:
                     fields.append(f"| {size} | {field} | {typ} | - |")
 
         if fields:
-            table = '| Size (bytes) | Description | Type | Notes |\n| --- | --- | --- | --- |\n' + '\n'.join(fields) + '\n'
+            table = (
+                '| Size (bytes) | Description | Type | Notes |\n| --- | --- | --- | --- |\n'
+                + '\n'.join(fields)
+                + '\n'
+            )
         else:
             table = '> This packet not contains any data.'
 
     module_path = cls.__module__.replace(".", "/")
     file_path = f"../{module_path}.py"
-    md += f"## [{cls.__name__}]({file_path}) [{pid}]\n\n### {dir_str}{f'\n\n{packet_doc}' if packet_doc else ''}\n\n{table}\n\n"
+
+    extra_doc = f'\n\n{packet_doc}' if packet_doc else ''
+    md += f"## [{cls.__name__}]({file_path}) [{pid}]\n\n### {dir_str}{extra_doc}\n\n{table}\n\n"
 
 print(md)
 

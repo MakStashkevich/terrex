@@ -1,34 +1,55 @@
-import time
+import asyncio
 
 from terrex import Terrex
-from terrex.events import Event
-
-# Create a Terrex object
-# used with proxy on port 8888
-terrex = Terrex('127.0.0.1', 8888, server_password="4444")
-event = terrex.get_event_manager()
-
-# @event.on_event(Event.ItemOwnerChanged)
-# def logged_in(data):
-#     print(data)
-
-
-@event.on_event(Event.ItemDropped)
-def item_dropped(data):
-    print("New item dropped")
+from terrex.event.filter import (
+    ItemDrop,
+    ItemOwnedByMe,
+    ItemOwnedByOther,
+    UpdateItemDrop,
+    UpdateItemOwner,
+)
+from terrex.event.types import (
+    ItemDroppedEvent,
+    ItemDropUpdateEvent,
+    ItemOwnerChangedEvent,
+)
 
 
-@event.on_event(Event.ItemDropUpdate)
-def item_drop_update(data):
-    print("Update on item")
-    print("X: " + str(data.x) + " Y: " + str(data.y))
+async def main() -> None:
+    """Main entry point for the item example."""
+
+    host: str = "127.0.0.1"
+    port: int = 8888
+    password: str = "4444"
+
+    async with Terrex(host, port, server_password=password) as client:
+
+        @client.on(ItemDrop())
+        async def on_item_dropped(event: ItemDroppedEvent) -> None:
+            """Handles new item drops."""
+            print(f"New item dropped: {event.item}")
+
+        @client.on(UpdateItemDrop())
+        async def on_item_drop_update(event: ItemDropUpdateEvent) -> None:
+            """Handles updates to dropped items."""
+            print(f"Update drop item: {event.item}")
+
+        @client.on(UpdateItemOwner() & ItemOwnedByMe())
+        async def on_item_owner_me_update(event: ItemOwnerChangedEvent) -> None:
+            """Handles item owner changes for the current player."""
+            print(
+                f"Update item owner for current player: item_id={event.item_id}, owner_id={event.player_id}"
+            )
+
+        @client.on(UpdateItemOwner() & ItemOwnedByOther())
+        async def on_item_owner_other_update(event: ItemOwnerChangedEvent) -> None:
+            """Handles item owner changes for other players."""
+            print(
+                f"Update item owner for other player: item_id={event.item_id}, owner_id={event.player_id}"
+            )
+
+        await client.run_until_disconnected()
 
 
-terrex.start()
-
-try:
-    while terrex.client.running:
-        time.sleep(0.1)
-except KeyboardInterrupt:
-    print("Stopping bot...")
-    terrex.stop()
+if __name__ == "__main__":
+    asyncio.run(main())

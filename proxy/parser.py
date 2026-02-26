@@ -1,10 +1,9 @@
 import struct
-import traceback
 
-from terrex.packets.base import Packet, packet_registry
-from terrex.structures.id import MessageID
-from terrex.structures.net_mode import NetMode
-from terrex.util.streamer import Reader
+from terrex.id import MessageID
+from terrex.net.enum.mode import NetMode
+from terrex.net.streamer import Reader
+from terrex.packet.base import Packet, packet_registry
 
 
 class UnknownPacket(Packet):
@@ -62,7 +61,6 @@ class IncrementalParser:
             try:
                 packet.read(reader)
             except Exception as e:
-                print(traceback.format_exc())
                 try:
                     name = MessageID(packet_id).name
                 except ValueError:

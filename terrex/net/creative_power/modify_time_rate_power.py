@@ -1,0 +1,22 @@
+from dataclasses import dataclass
+
+from terrex.net.creative_power.creative_power import CreativePower
+from terrex.net.streamer import Reader, Writer
+
+
+@dataclass()
+class ModifyTimeRatePower(CreativePower):
+    id: int = 8
+    value: float = 0.0
+
+    @classmethod
+    def create(cls, value: float = 0.0) -> "ModifyTimeRatePower":
+        obj = cls()
+        obj.value = value
+        return obj
+
+    def read(self, reader: Reader) -> None:
+        self.value = reader.read_single()
+
+    def write(self, writer: Writer) -> None:
+        writer.write_single(self.value)

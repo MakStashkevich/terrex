@@ -6,3 +6,4 @@ setuptools==82.0.0
 build==1.4.0
 twine==6.2.0
 progressbar33
+Pillow==12.1.1

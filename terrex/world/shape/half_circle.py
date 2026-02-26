@@ -26,16 +26,16 @@ class HalfCircle(GenShape):
             ys_all = []
 
             if self._bottomHalf:
-                y_start, y_end = origin.Y, origin.Y + self._radius
+                y_start, y_end = origin.y, origin.y + self._radius
             else:
-                y_start, y_end = origin.Y - self._radius, origin.Y
+                y_start, y_end = origin.y - self._radius, origin.y
 
             for i in range(y_start, y_end + 1):
-                v = num - (i - origin.Y) ** 2
+                v = num - (i - origin.y) ** 2
                 if v < 0:
                     continue
                 num2 = min(self._radius, int(sqrt(v)))
-                xs = np.arange(origin.X - num2, origin.X + num2 + 1)
+                xs = np.arange(origin.x - num2, origin.x + num2 + 1)
                 ys = np.full_like(xs, i)
                 xs_all.append(xs)
                 ys_all.append(ys)
@@ -47,16 +47,16 @@ class HalfCircle(GenShape):
 
         # Standard path
         if self._bottomHalf:
-            y_start, y_end = origin.Y, origin.Y + self._radius
+            y_start, y_end = origin.y, origin.y + self._radius
         else:
-            y_start, y_end = origin.Y - self._radius, origin.Y
+            y_start, y_end = origin.y - self._radius, origin.y
 
         for i in range(y_start, y_end + 1):
-            v = num - (i - origin.Y) ** 2
+            v = num - (i - origin.y) ** 2
             if v < 0:
                 continue
             num2 = min(self._radius, int(sqrt(v)))
-            for j in range(origin.X - num2, origin.X + num2 + 1):
+            for j in range(origin.x - num2, origin.x + num2 + 1):
                 if not self.unit_apply(action, origin, j, i) and self._quitOnFail:
                     return False
 

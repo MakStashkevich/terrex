@@ -12,7 +12,9 @@ from .base import GenAction, GenActionBulk, GenShape, Point
 class Circle(GenShape):
     """Elliptical (oval) shape with independent horizontal and vertical radius."""
 
-    def __init__(self, horizontal_radius: int, vertical_radius: int = None, quit_on_fail: bool = False):
+    def __init__(
+        self, horizontal_radius: int, vertical_radius: int = 0, quit_on_fail: bool = False
+    ):
         super().__init__(quit_on_fail)
         if vertical_radius is None:
             vertical_radius = horizontal_radius
@@ -31,13 +33,13 @@ class Circle(GenShape):
         if isinstance(action, GenActionBulk):
             xs_all = []
             ys_all = []
-            for i in range(origin.Y - self._verticalRadius, origin.Y + self._verticalRadius + 1):
-                y = self._horizontalRadius / self._verticalRadius * (i - origin.Y)
+            for i in range(origin.y - self._verticalRadius, origin.y + self._verticalRadius + 1):
+                y = self._horizontalRadius / self._verticalRadius * (i - origin.y)
                 v = num - y * y
                 if v < 0:
                     continue
                 num1 = min(self._horizontalRadius, int(sqrt(v)))
-                xs = np.arange(origin.X - num1, origin.X + num1 + 1)
+                xs = np.arange(origin.x - num1, origin.x + num1 + 1)
                 ys = np.full_like(xs, i)
                 xs_all.append(xs)
                 ys_all.append(ys)
@@ -46,13 +48,13 @@ class Circle(GenShape):
             return action.apply_bulk(np.concatenate(xs_all), np.concatenate(ys_all))
 
         # Exact C# path (pixel-perfect)
-        for i in range(origin.Y - self._verticalRadius, origin.Y + self._verticalRadius + 1):
-            y = self._horizontalRadius / self._verticalRadius * (i - origin.Y)
+        for i in range(origin.y - self._verticalRadius, origin.y + self._verticalRadius + 1):
+            y = self._horizontalRadius / self._verticalRadius * (i - origin.y)
             v = num - y * y
             if v < 0:
                 continue
             num1 = min(self._horizontalRadius, int(sqrt(v)))
-            for j in range(origin.X - num1, origin.X + num1 + 1):
+            for j in range(origin.x - num1, origin.x + num1 + 1):
                 if not self.unit_apply(action, origin, j, i) and self._quitOnFail:
                     return False
         return True

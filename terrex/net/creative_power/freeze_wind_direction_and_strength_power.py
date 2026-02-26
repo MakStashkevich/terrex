@@ -1,0 +1,22 @@
+from dataclasses import dataclass
+
+from terrex.net.creative_power.creative_power import CreativePower
+from terrex.net.streamer import Reader, Writer
+
+
+@dataclass()
+class FreezeWindDirectionAndStrengthPower(CreativePower):
+    id: int = 10
+    enabled: bool = False
+
+    @classmethod
+    def create(cls, enabled: bool = False) -> "FreezeWindDirectionAndStrengthPower":
+        obj = cls()
+        obj.enabled = enabled
+        return obj
+
+    def read(self, reader: Reader) -> None:
+        self.enabled = reader.read_bool()
+
+    def write(self, writer: Writer) -> None:
+        writer.write_bool(self.enabled)

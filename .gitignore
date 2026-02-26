@@ -63,10 +63,12 @@ target/
 
 # Terrex
 venv/
-terraria-protocol/
 *.bin
 *.txt
 !LICENSE.txt
 !requirements.txt
 .ruff_cache/
 *tshock*
+*.cs
+._*
+_*/

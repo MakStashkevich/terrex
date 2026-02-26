@@ -1,0 +1,24 @@
+from terrex.event.types import ItemOwnerChangedEvent
+from terrex.id import MessageID
+from terrex.net.streamer import Reader, Writer
+from terrex.packet.base import SyncPacket
+
+
+class ItemOwner(SyncPacket):
+    id = MessageID.ItemOwner
+
+    def __init__(self, item_id: int = 0, player_id: int = 0):
+        self.item_id = item_id
+        self.player_id = player_id
+
+    def read(self, reader: Reader):
+        self.item_id = reader.read_short()
+        self.player_id = reader.read_byte()
+
+    def write(self, writer: Writer):
+        writer.write_short(self.item_id)
+        writer.write_byte(self.player_id)
+
+    async def handle(self, world, player, evman):
+        world.item_owner_index[self.item_id] = self.player_id
+        evman.raise_event(ItemOwnerChangedEvent(self, self.item_id, self.player_id))

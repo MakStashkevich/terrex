@@ -6,9 +6,9 @@ from datetime import datetime
 
 from proxy.config import config
 from proxy.parser import IncrementalParser
-from terrex.packets.base import stringify_value
-from terrex.structures.id import MessageID
-from terrex.structures.net_mode import NetMode
+from terrex.id import MessageID
+from terrex.net.enum.mode import NetMode
+from terrex.packet.base import stringify_value
 
 IGNORED_PACKET_IDS = [MessageID.TileSection]
 
@@ -58,7 +58,9 @@ def toggle_cfg_tags(dir: str, tag: str, value: bool) -> str:
                     config.dbg_in_tags[t] = value
                 if out_:
                     config.dbg_out_tags[t] = value
-                print(f"Tag {t}: in={old_in}->{value if in_ else old_in}, out={old_out}->{value if out_ else old_out}")
+                print(
+                    f"Tag {t}: in={old_in}->{value if in_ else old_in}, out={old_out}->{value if out_ else old_out}"
+                )
                 return "Success"
             return "Tag out of range"
         except ValueError:
@@ -77,8 +79,7 @@ def user_input():
             continue
         cmd = argv[0]
         if cmd == "help":
-            print(
-                """
+            print("""
 * help: show this message
 * quit: stop processing stdin
 * show <in|out|both> <all|TAG>: show the dbg repr of matching messages
@@ -86,8 +87,7 @@ def user_input():
 * list: list all tags along with the name
 * flush: flush network traffic writes to disk
 * nosave: stop saving network traffic to disk
-"""
-            )
+""")
             continue
         if cmd == "quit":
             sys.exit(0)
@@ -197,16 +197,17 @@ def forward(
                         pkt_name = f"Unknown({packet_id})"
 
                     timestamp = current_timestamp()
-                    try:
-                        log_payload = stringify_value(vars(packet))
-                    except RecursionError:
-                        log_payload = f"**recursion depth exceeded in logging** id={packet_id} ({pkt_name})"
-
-                    if packet.id in IGNORED_PACKET_IDS:
-                        continue
+                    log_payload = ""
+                    if packet.id not in IGNORED_PACKET_IDS:
+                        try:
+                            log_payload = stringify_value(vars(packet))
+                        except RecursionError:
+                            log_payload = f"**recursion depth exceeded in logging** id={packet_id} ({pkt_name})"
 
                     if tags[packet.id]:
-                        print(f"{direction}{'<' if direction == 'STC' else '>'} {packet.id} {pkt_name} {log_payload}")
+                        print(
+                            f"{direction}{'<' if direction == 'STC' else '>'} {packet.id} {pkt_name} {log_payload}"
+                        )
 
                     # Log to txt if enabled (all packets)
                     if traffic_txt is not None:
@@ -217,7 +218,9 @@ def forward(
 
                     # Log to shared both-traffic file
                     if config.both_traffic_txt is not None:
-                        config.both_traffic_txt.write(f"{direction} ---{packet_id} {pkt_name} ---\n")
+                        config.both_traffic_txt.write(
+                            f"{direction} ---{packet_id} {pkt_name} ---\n"
+                        )
                         config.both_traffic_txt.write(f"{log_payload}\n\n")
                         if config.flush_both_txt:
                             config.both_traffic_txt.flush()
