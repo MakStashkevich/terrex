@@ -52,23 +52,25 @@ pip3 install terrex
 A basic bot that connects to a server and reacts to chat messages:
 
 ```python
+import asyncio
+
 from terrex import Terrex
-from terrex.events import Events
+from terrex.event.filter import NewMessage
+from terrex.event.types import ChatEvent
 
-bot = Terrex("127.0.0.1")
-events = bot.get_event_manager()
+async def main() -> None:
+    async with Terrex("127.0.0.1", 7777) as client:
+        @client.on(NewMessage())
+        async def on_chat(event: ChatEvent) -> None:
+            print(event.text)
 
-@events.on_event(Events.Chat)
-def on_chat(event_id, message):
-    print(message)
+            if "stop" in event.text.lower():
+                await client.stop()
 
-    if "stop" in message.lower():
-        bot.stop()
+        await client.run_until_disconnected()
 
-bot.start()
-
-while bot.client.running:
-    pass
+if __name__ == "__main__":
+    asyncio.run(main())
 ```
 
 More examples are available in the `examples/` directory.
