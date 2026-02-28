@@ -73,9 +73,10 @@ def stringify_value(
         if isinstance(value, list):
             return [stringify_value(item, depth + 1, max_depth, seen) for item in value]
         if is_dataclass(value) or hasattr(value, "__dict__"):
+            keys = [k for k in dir(value) if not k.startswith('_') and not callable(getattr(value, k))]
             return {
                 str(key): stringify_value(getattr(value, key), depth + 1, max_depth, seen)
-                for key in vars(value).keys()
+                for key in keys
             }
         return repr(value)
     finally:

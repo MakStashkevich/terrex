@@ -1,7 +1,13 @@
 from collections.abc import Callable
 
 from terrex.event.context import EventContext
-from terrex.event.types import BlockedEvent, ChatEvent, ItemOwnerChangedEvent, LoginEvent
+from terrex.event.types import (
+    BlockedEvent,
+    ChatEvent,
+    ItemOwnerChangedEvent,
+    LoginEvent,
+    PlayerControlUpdateEvent,
+)
 
 from .base import E, EventFilter, EventTypeFilter
 
@@ -47,6 +53,14 @@ def ItemOwnedByOther(player_id: int | None = None) -> PlayerFilter[ItemOwnerChan
     )
 
 
+def ControlBy(player_id: int | None = None) -> PlayerFilter[PlayerControlUpdateEvent]:
+    return PlayerFilter(
+        PlayerControlUpdateEvent,
+        lambda e, ctx: e.player_id != ctx.player.id
+        and (True if player_id is None else e.player_id == player_id),
+    )
+
+
 # Other Player Filters
 def LoginPlayer() -> EventTypeFilter[LoginEvent]:
     return EventTypeFilter(LoginEvent)
@@ -54,3 +68,7 @@ def LoginPlayer() -> EventTypeFilter[LoginEvent]:
 
 def BlockPlayer() -> EventTypeFilter[BlockedEvent]:
     return EventTypeFilter(BlockedEvent)
+
+
+def ControlPlayer() -> EventTypeFilter[PlayerControlUpdateEvent]:
+    return EventTypeFilter(PlayerControlUpdateEvent)

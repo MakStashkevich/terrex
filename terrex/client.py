@@ -250,6 +250,7 @@ class Client:
                     )
                 )
                 await self.send(packet.PlayerBuffs(player_id=self.player.id, buffs=[0] * 22))
+                # buffs: '191', '201'
                 await self.send(
                     packet.SyncLoadout(
                         player_id=self.player.id,
@@ -308,9 +309,7 @@ class Client:
                         )
                     )
                 await self.send(packet.RequestWorldData())
-                # server: WORLD_INFO
                 await self.send(packet.SpawnTileData(spawn_x=-1, spawn_y=-1))
-                # server: WORLD_INFO & STATUS (load data by blocks...) & SEND_SECTION's, Unknown(0x9B) {'id': 155, 'raw': '1b012800'}, UPDATE_CHEST_ITEM's
                 self.player.initialized = True
 
             # server say: you can spawn player
@@ -324,7 +323,7 @@ class Client:
                         number_of_deaths_pve=0,
                         number_of_deaths_pvp=0,
                         team_id=2,  # todo: move to player
-                        player_spawn_context=1,
+                        player_spawn_context=1,  # todo: know more context???
                     )
                 )
                 await self.send(
@@ -335,12 +334,9 @@ class Client:
                     )
                 )
                 self.player.logged_in = True
-                # then server send: NPC_HOME_UPDATE (0-29), current ANGLER_QUEST, 6 packets of SYNC_REVENGE_MARKER
 
             # server say: you successful connected to server
             if pkt.id == MessageID.FinishedConnectingToServer:
-                # then server send: NetModules (with messages MOTD & connect success player)
-                # UPDATE_TILE_ENTITY
                 self.connected_to_server = True
 
                 if self.ping_task is None:
@@ -358,20 +354,33 @@ class Client:
                 await self.send(
                     packet.SyncPlayerZone(
                         player_id=self.player.id,
-                        # todo: add all zone flags
+                        zone1=self.player.zone.zone1,
+                        zone2=self.player.zone.zone2,
+                        zone3=self.player.zone.zone3,
+                        zone4=self.player.zone.zone4,
+                        zone5=self.player.zone.zone5,
+                        town_npc_count=8,  # todo: get town npc count???
                     )
                 )
                 await self.send(
-                    packet.PlayerBuffs(player_id=self.player.id, buffs=[0] * 22)
-                )  # repeat???
+                    packet.PlayerBuffs(
+                        player_id=self.player.id, buffs=[191, 201, 332]
+                    )  # todo: move buffs logic to player
+                )
 
-                # ---0x0D UPDATE_PLAYER (0x0D) ---
-                # {'player_id': 0, 'keys': 64, 'pulley': 16, 'action': 10, 'sleep_info': 0, 'selected_item': 0, 'pos': {'x': 67166.0, 'y': 6742.0, 'TILE_TO_POS_SCALE': 16.0}, 'vel': None, 'original_and_home_pos': None}
+                # update player position to world spawn
+                self.player.position = Vec2.from_tile_pos(self.world.spawn_x, self.world.spawn_y)
 
-                # ---0x0D UPDATE_PLAYER (0x0D) ---
-                # {'player_id': 0, 'keys': 64, 'pulley': 16, 'action': 10, 'sleep_info': 2, 'selected_item': 0, 'pos': {'x': 67166.0, 'y': 6742.0, 'TILE_TO_POS_SCALE': 16.0}, 'vel': None, 'original_and_home_pos': None}
+                self.player.control.downed_DD2_event_any_difficulty = True
+                self.player.control.inverted_gravity = True
+                self.player.control.is_void_vault_enabled = True
+                self.player.control.right_direction = True
+                await self._update_controls()
 
-                # --------- end repeated block
+                self.player.control.auto_reuse_all_weapons = True
+                await self._update_controls()
+                
+                # -------- end repeated block --------
 
                 await self.send(
                     packet.UpdatePlayerLuckFactors(
@@ -386,8 +395,8 @@ class Client:
                         kite_luck_level=self.player.kite_luck_level,
                     )
                 )
-                # Update npc names from 0 to 29
-                for i in range(29):
+                # Update npc names from 0 to 40 (todo: get max npc from server??)
+                for i in range(40):
                     await self.send(
                         packet.UniqueTownNPCInfoSyncRequest(
                             npc_id=i, name=None, town_npc_variation_idx=None
@@ -494,10 +503,7 @@ class Client:
                         continue
                     if not isinstance(packet, Packet):
                         continue
-                    try:
-                        await packet.handle(self.world, self.player, self.evman)
-                    except NotImplementedError:
-                        pass
+                    await packet.handle(self.world, self.player, self.evman)
                 except asyncio.TimeoutError:
                     continue
                 except Exception as e:
@@ -572,5 +578,21 @@ class Client:
                     y=y,
                     pylon_type=type,
                 )
+            )
+        )
+
+    async def _update_controls(self) -> None:
+        # todo: add all values to player
+        await self.send(
+            packet.PlayerControls(
+                player_id=self.player.id,
+                control=self.player.control,
+                selected_item_id=0,
+                position=self.player.position,
+                velocity=self.player.velocity,
+                mount_type=0,
+                potion_of_return_original_use_position=Vec2(),
+                potion_of_return_home_position=Vec2(),
+                net_camera_target=Vec2(),
             )
         )

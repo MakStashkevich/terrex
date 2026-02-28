@@ -1,13 +1,12 @@
+import time
+
+from terrex.event.types import PlayerControlUpdateEvent
 from terrex.id import MessageID
+from terrex.net.player_control import PlayerControl
 from terrex.net.streamer import Reader, Writer
+from terrex.net.bits_byte import BitsByte
 from terrex.net.structure.vec2 import Vec2
 from terrex.packet.base import SyncPacket
-
-# Константы для флагов PulleyMode
-PULLEY_HAS_VEL = 0x04
-
-# Константы для флагов PlayerAction
-PLAYER_ACTION_HAS_ORIG_AND_HOME_POS = 0x40
 
 
 class PlayerControls(SyncPacket):
@@ -15,66 +14,115 @@ class PlayerControls(SyncPacket):
 
     def __init__(
         self,
-        player_id: int = 0,
-        keys: int = 0,
-        pulley: int = 0,
-        action: int = 0,
-        sleep_info: int = 0,
-        selected_item: int = 0,
-        pos: Vec2 | None = None,
-        vel: Vec2 | None = None,
-        original_and_home_pos: tuple[Vec2, Vec2] | None = None,
+        player_id: int = -1,
+        control: PlayerControl | None = None,
+        selected_item_id: int = 0,
+        position: Vec2 | None = None,
+        velocity: Vec2 | None = None,
+        mount_type: int = 0,
+        potion_of_return_original_use_position: Vec2 | None = None,
+        potion_of_return_home_position: Vec2 | None = None,
+        net_camera_target: Vec2 | None = None,
     ):
         self.player_id = player_id
-        self.keys = keys
-        self.pulley = pulley
-        self.action = action
-        self.sleep_info = sleep_info
-        self.selected_item = selected_item
-        self.world_position = pos or Vec2(0.0, 0.0)
-        self.velocity = vel
-        self.original_and_home_pos = original_and_home_pos
+        self.control = control or PlayerControl()
+
+        self.selected_item_id = selected_item_id
+        self.position = position or Vec2()
+
+        self.velocity = velocity or Vec2()
+        self.control.has_velocity = self.velocity != Vec2(0, 0)
+
+        self.mount_type = mount_type
+        self.control.mount_active = self.mount_type > 0
+
+        self.potion_of_return_original_use_position = (
+            potion_of_return_original_use_position or Vec2()
+        )
+        self.potion_of_return_home_position = potion_of_return_home_position or Vec2()
+        self.control.has_potion_of_return_original_use_position = (
+            self.potion_of_return_original_use_position != Vec2(0, 0)
+        )
+
+        self.net_camera_target = net_camera_target or Vec2()
+        self.control.has_net_camera_target = self.net_camera_target != Vec2(0, 0)
 
     def read(self, reader: Reader) -> None:
         self.player_id = reader.read_byte()
-        self.keys = reader.read_byte()
-        self.pulley = reader.read_byte()
-        self.action = reader.read_byte()
-        self.sleep_info = reader.read_byte()
-        self.selected_item = reader.read_byte()
-        self.world_position = Vec2.read(reader)
 
-        self.velocity = None
-        if self.pulley & PULLEY_HAS_VEL:
+        self.control = PlayerControl()
+        self.control.keys = BitsByte(reader.read_byte())
+        self.control.pulley = BitsByte(reader.read_byte())
+        self.control.active = BitsByte(reader.read_byte())
+        self.control.sleep = BitsByte(reader.read_byte())
+
+        self.selected_item_id = reader.read_byte()
+        self.position = Vec2.read(reader)
+
+        self.velocity = Vec2()
+        if self.control.has_velocity:
             self.velocity = Vec2.read(reader)
 
-        self.original_and_home_pos = None
-        if self.action & PLAYER_ACTION_HAS_ORIG_AND_HOME_POS:
-            orig_pos = Vec2.read(reader)
-            home_pos = Vec2.read(reader)
-            self.original_and_home_pos = (orig_pos, home_pos)
+        self.mount_type = 0
+        if self.control.mount_active:
+            self.mount_type = reader.read_ushort()
+
+        self.potion_of_return_original_use_position = Vec2()
+        self.potion_of_return_home_position = Vec2()
+        if self.control.has_potion_of_return_original_use_position:
+            self.potion_of_return_original_use_position = Vec2.read(reader)
+            self.potion_of_return_home_position = Vec2.read(reader)
+
+        self.net_camera_target = Vec2()
+        if self.control.has_net_camera_target:
+            self.net_camera_target = Vec2.read(reader)
+
+    async def handle(self, world, player, evman):
+        if not self.player_id in world.players:
+            # print(f'player_id={self.player_id} moved to position={self.position} with velocity={self.velocity} left={self.control.left}, right={self.control.right}, up={self.control.up}, down={self.control.down}, jump={self.control.jump} time={time.time()}')
+            return
+
+        current_player = world.players[self.player_id]
+        current_player.position = self.position
+        current_player.velocity = self.velocity
+        current_player.control = self.control
+        # todo: update player mount, item and other
+
+        evman.raise_event(
+            PlayerControlUpdateEvent(
+                self,
+                self.player_id,
+                self.control,
+                self.selected_item_id,
+                self.position,
+                self.velocity,
+                self.mount_type,
+                self.potion_of_return_original_use_position,
+                self.potion_of_return_home_position,
+                self.net_camera_target,
+            )
+        )
 
     def write(self, writer: Writer) -> None:
         writer.write_byte(self.player_id)
-        writer.write_byte(self.keys)
 
-        pulley_flags = self.pulley
-        if self.velocity is not None:
-            pulley_flags |= PULLEY_HAS_VEL
-        writer.write_byte(pulley_flags)
+        writer.write_byte(int(self.control.keys))
+        writer.write_byte(int(self.control.pulley))
+        writer.write_byte(int(self.control.active))
+        writer.write_byte(int(self.control.sleep))
 
-        action_flags = self.action
-        if self.original_and_home_pos is not None:
-            action_flags |= PLAYER_ACTION_HAS_ORIG_AND_HOME_POS
-        writer.write_byte(action_flags)
+        writer.write_byte(self.selected_item_id)
+        self.position.write(writer)
 
-        writer.write_byte(self.sleep_info)
-        writer.write_byte(self.selected_item)
-        self.world_position.write(writer)
-
-        if self.velocity is not None:
+        if self.control.has_velocity:
             self.velocity.write(writer)
 
-        if self.original_and_home_pos is not None:
-            self.original_and_home_pos[0].write(writer)
-            self.original_and_home_pos[1].write(writer)
+        if self.control.mount_active:
+            writer.write_ushort(self.mount_type)
+
+        if self.control.has_potion_of_return_original_use_position:
+            self.potion_of_return_original_use_position.write(writer)
+            self.potion_of_return_home_position.write(writer)
+
+        if self.control.has_net_camera_target:
+            self.net_camera_target.write(writer)

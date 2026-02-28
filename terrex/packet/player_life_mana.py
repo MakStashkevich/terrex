@@ -16,6 +16,13 @@ class PlayerLifeMana(SyncPacket):
         self.hp = reader.read_ushort()
         self.max_hp = reader.read_ushort()
 
+    async def handle(self, world, player, evman):
+        if not self.player_id in world.players:
+            return
+        current_player = world.players[self.player_id]
+        current_player.currHP = self.hp
+        current_player.maxHP = self.max_hp
+
     def write(self, writer: Writer):
         writer.write_byte(self.player_id)
         writer.write_ushort(self.hp)

@@ -13,6 +13,12 @@ class TeamChange(SyncPacket):
     def read(self, reader: Reader):
         self.player_id = reader.read_byte()
         self.team = reader.read_byte()
+        
+    async def handle(self, world, player, evman):
+        if not self.player_id in world.players:
+            return
+        current_player = world.players[self.player_id]
+        current_player.team = self.team
 
     def write(self, writer: Writer):
         writer.write_byte(self.player_id)

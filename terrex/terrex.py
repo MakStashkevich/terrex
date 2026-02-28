@@ -15,6 +15,7 @@ from terrex.net.enum.teleport_request_type import TeleportRequestType
 from terrex.net.enum.teleport_type import TeleportType
 from terrex.net.protocol import PROTOCOLS
 from terrex.net.structure.vec2 import Vec2
+from terrex.net.tile_npc_data import TileNPCData
 from terrex.player.player import Player
 from terrex.world.world import World
 
@@ -27,6 +28,9 @@ TERRARIA_VERSION = (1, 4, 5, 5)
 E = TypeVar("E")
 P = ParamSpec("P")
 T = TypeVar("T")
+
+
+tile_data = TileNPCData()
 
 
 class Terrex:
@@ -56,12 +60,13 @@ class Terrex:
         protocol = PROTOCOLS[version]
 
         self.world = World()
-        self.player = player or Player()
+        self.player = player or Player(self.world)
 
         dispatcher = Dispatcher(self)
         self.evman = EventManager(dispatcher)
 
         self.client = Client(ip, port, protocol, server_password, self)
+        self._movement_task: asyncio.Task | None = None
 
     async def send_message(self, text: str, wait: bool = False):
         """
@@ -239,6 +244,7 @@ class Terrex:
         await self.client.connect()
         while not self.client.connected_to_server and self.client.running:
             await asyncio.sleep(0.05)
+        await self.start_movement_scheduler()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
@@ -253,3 +259,48 @@ class Terrex:
         finally:
             print("Stopping bot...")
             await self.stop()
+
+    def move_to(self, target: Vec2) -> None:
+        self.player._target_position = target
+
+    async def start_movement_scheduler(self) -> None:
+        if self._movement_task is not None and not self._movement_task.done():
+            return
+        self._movement_task = asyncio.create_task(self._movement_loop())
+
+    async def stop_movement_scheduler(self) -> None:
+        if self._movement_task is not None:
+            self._movement_task.cancel()
+            self._movement_task = None
+
+    async def _movement_loop(self) -> None:
+        tick = 0
+        old_position = self.player.position
+        old_velocity = self.player.velocity
+        old_control_left = self.player.control.left
+        old_control_right = self.player.control.right
+        old_control_jump = self.player.control.jump
+        old_control_down = self.player.control.down
+        old_control_up = self.player.control.up
+        while self.client.running:
+            self.player.update(tick)
+            changed = (
+                self.player.position != old_position
+                or self.player.velocity != old_velocity
+                or self.player.control.left != old_control_left
+                or self.player.control.right != old_control_right
+                or self.player.control.jump != old_control_jump
+                or self.player.control.down != old_control_down
+                or self.player.control.up != old_control_up
+            )
+            if changed:
+                await self.client._update_controls()
+                old_position = self.player.position
+                old_velocity = self.player.velocity
+                old_control_left = self.player.control.left
+                old_control_right = self.player.control.right
+                old_control_jump = self.player.control.jump
+                old_control_down = self.player.control.down
+                old_control_up = self.player.control.up
+            tick += 1
+            await asyncio.sleep(1 / 60.0)

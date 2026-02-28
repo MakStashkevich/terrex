@@ -16,6 +16,13 @@ class PlayerMana(SyncPacket):
         self.mana = reader.read_short()
         self.max_mana = reader.read_short()
 
+    async def handle(self, world, player, evman):
+        if not self.player_id in world.players:
+            return
+        current_player = world.players[self.player_id]
+        current_player.currMana = self.mana
+        current_player.maxMana = self.max_mana
+
     def write(self, writer: Writer):
         writer.write_byte(self.player_id)
         writer.write_short(self.mana)

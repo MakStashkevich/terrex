@@ -16,6 +16,13 @@ class SyncLoadout(ClientPacket):
         self.loadout_index = reader.read_byte()
         self.accessory_visibility = reader.read_ushort()
 
+    async def handle(self, world, player, evman):
+        if not self.player_id in world.players:
+            return
+        current_player = world.players[self.player_id]
+        current_player.loadout_index = self.loadout_index
+        current_player.accessory_visibility = self.accessory_visibility
+
     def write(self, writer: Writer):
         writer.write_byte(self.player_id)
         writer.write_byte(self.loadout_index)

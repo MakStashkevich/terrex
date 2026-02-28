@@ -13,3 +13,11 @@ class PlayerActive(ServerPacket):
     def read(self, reader: Reader):
         self.player_id = reader.read_byte()
         self.active = reader.read_bool()
+
+    async def handle(self, world, player, evman):
+        if not self.active:
+            return
+
+        from terrex.player import Player
+
+        world.players[self.player_id] = Player(world)

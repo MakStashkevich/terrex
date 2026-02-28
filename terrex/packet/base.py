@@ -23,7 +23,7 @@ class Packet(ABC):
 
     async def handle(self, world: World, player: Player, evman: EventManager) -> None:
         """Optional method to handle the packet"""
-        raise NotImplementedError("Method handle can be overridden if needed")
+        return None
 
     def __init_subclass__(cls):
         super().__init_subclass__()

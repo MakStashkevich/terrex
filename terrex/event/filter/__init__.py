@@ -6,8 +6,10 @@ from .player import (
     IncomingMessage,
     ItemOwnedByMe,
     ItemOwnedByOther,
+    ControlBy,
     LoginPlayer,
     OutgoingMessage,
+    ControlPlayer,
 )
 from .world import UpdateTileSection
 
@@ -22,8 +24,10 @@ __all__ = [
     "IncomingMessage",
     "ItemOwnedByMe",
     "ItemOwnedByOther",
+    "ControlBy",
     "LoginPlayer",
     "BlockPlayer",
+    "ControlPlayer",
     # item
     "ItemDrop",
     "UpdateItemDrop",

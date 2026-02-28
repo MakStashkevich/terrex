@@ -71,4 +71,5 @@ venv/
 *tshock*
 *.cs
 ._*
-_*/
+_*
+*.png

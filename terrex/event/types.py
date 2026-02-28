@@ -1,6 +1,5 @@
 from re import Match
-
-from terrex.net.enum.chat_command import ChatCommand
+from typing import Any
 
 
 class BaseEvent:
@@ -40,10 +39,10 @@ class InitializedEvent(BaseEvent):
 
 
 class ChatEvent(RegexEvent):
-    def __init__(
-        self, packet, player_id: int, text: str, chat_command_id: ChatCommand | None = None
-    ):
+    def __init__(self, packet, player_id: int, text: str, chat_command_id: Any | None = None):
         super().__init__(packet)
+        from terrex.net.enum.chat_command import ChatCommand
+
         self.player_id: int = player_id
         self.text: str = text
         self.chat_command_id: ChatCommand | None = chat_command_id
@@ -59,6 +58,35 @@ class WorldSectionUpdateEvent(BaseEvent):
             return
 
         self.section = section
+
+
+class PlayerControlUpdateEvent(BaseEvent):
+    def __init__(
+        self,
+        packet,
+        player_id: int,
+        control,
+        selected_item_id: int,
+        position,
+        velocity,
+        mount_type: int,
+        potion_of_return_original_use_position,
+        potion_of_return_home_position,
+        net_camera_target,
+    ):
+        super().__init__(packet)
+        from terrex.net.player_control import PlayerControl
+        from terrex.net.structure.vec2 import Vec2
+
+        self.player_id: int = player_id
+        self.control: PlayerControl = control
+        self.selected_item_id: int = selected_item_id
+        self.position: Vec2 = position
+        self.velocity: Vec2 = velocity
+        self.mount_type: int = mount_type
+        self.potion_of_return_original_use_position: Vec2 = potion_of_return_original_use_position
+        self.potion_of_return_home_position: Vec2 = potion_of_return_home_position
+        self.net_camera_target: Vec2 = net_camera_target
 
 
 class ItemOwnerChangedEvent(BaseEvent):

@@ -9,7 +9,7 @@ class PlayerBuffs(SyncPacket):
 
     def __init__(self, player_id: int = 0, buffs: list[int] | None = None):
         self.player_id = player_id
-        self.buffs = buffs or []
+        self.buffs: list[int] = buffs or []
 
     def read(self, reader: Reader):
         self.player_id = reader.read_byte()
@@ -19,6 +19,12 @@ class PlayerBuffs(SyncPacket):
             if buff == 0:  # packet every end on 0 ushort
                 break  # packet ended
             self.buffs.append(buff)
+
+    async def handle(self, world, player, evman):
+        if not self.player_id in world.players:
+            return
+        current_player = world.players[self.player_id]
+        current_player.buffs = self.buffs
 
     def write(self, writer: Writer):
         writer.write_byte(self.player_id)

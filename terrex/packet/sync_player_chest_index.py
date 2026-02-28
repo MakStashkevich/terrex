@@ -14,6 +14,12 @@ class SyncPlayerChestIndex(ServerPacket):
     def read(self, reader: Reader) -> None:
         self.player_id = reader.read_byte()
         self.chest_id = reader.read_short()
+        
+    async def handle(self, world, player, evman):
+        if not self.player_id in world.players:
+            return
+        current_player = world.players[self.player_id]
+        current_player.chest_id = self.chest_id
 
     def write(self, writer: Writer) -> None:
         raise NotImplementedError(

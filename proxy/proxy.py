@@ -200,7 +200,8 @@ def forward(
                     log_payload = ""
                     if packet.id not in IGNORED_PACKET_IDS:
                         try:
-                            log_payload = stringify_value(vars(packet))
+                            attrs = {k: getattr(packet, k) for k in dir(packet) if not k.startswith('_') and not k in ('handle', 'read', 'write', 'id') and not callable(getattr(packet, k))}
+                            log_payload = stringify_value(attrs)
                         except RecursionError:
                             log_payload = f"**recursion depth exceeded in logging** id={packet_id} ({pkt_name})"
 

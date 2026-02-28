@@ -47,6 +47,12 @@ class SyncEquipment(SyncPacket):
         self.stack = reader.read_short()
         self.prefix = reader.read_byte()
         self.item_netid = reader.read_ushort()
+        
+    async def handle(self, world, player, evman):
+        if not self.player_id in world.players:
+            return
+        # current_player = world.players[self.player_id]
+        # todo: save player equipment
 
     def write(self, writer: Writer):
         writer.write_byte(self.player_id)

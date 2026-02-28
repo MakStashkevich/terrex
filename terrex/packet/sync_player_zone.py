@@ -44,6 +44,9 @@ class SyncPlayerZone(SyncPacket):
         writer.write_byte(self.town_npc_count)
 
     async def handle(self, world, player, evman):
-        player.zone.update(
+        if not self.player_id in world.players:
+            return
+        current_player = world.players[self.player_id]
+        current_player.zone.update(
             zone1=self.zone1, zone2=self.zone2, zone3=self.zone3, zone4=self.zone4, zone5=self.zone5
         )
