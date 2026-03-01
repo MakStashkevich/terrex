@@ -80,6 +80,7 @@ ALLOWED_CLASSES: dict[TerrariaPath, list[str]] = {
 # and have nothing to do with the actual names in the game code.
 #
 # P.P.S. I will ask you not to change them, so as not to break the logic of Terrex.
+# https://docs.tmodloader.net/docs/stable/class_message_i_d.html
 correct_message_keys_map = {
     'Unknown42': 'PlayerMana',
     'Unknown57': 'UpdateGoodEvil',
@@ -89,6 +90,29 @@ correct_message_keys_map = {
     'Unknown67': 'TShockPlaceholder',
     'Unknown68': 'ClientUUID',
 }
+
+# netmodeId
+# https://github.com/tModLoader/tModLoader/blob/1.4.4/patches/tModLoader/Terraria/ID/NetmodeID.cs#L9
+
+# todo: add tModLoader packets
+# https://github.com/tModLoader/tModLoader/blob/1.4.4/patches/tModLoader/Terraria/ID/MessageID.TML.cs
+# https://github.com/tModLoader/tModLoader/blob/a3f102d1eac053758ba1dc97fdaa1bf06ebdc4d0/patches/tModLoader/Terraria/MessageBuffer.cs.patch#L836
+
+# InGameChangeConfig = 249 (https://github.com/tModLoader/tModLoader/blob/a3f102d1eac053758ba1dc97fdaa1bf06ebdc4d0/patches/tModLoader/Terraria/ModLoader/Config/ConfigManager.cs#L310)
+# ModPacket = 250
+# https://github.com/tModLoader/tModLoader/blob/a3f102d1eac053758ba1dc97fdaa1bf06ebdc4d0/patches/tModLoader/Terraria/ModLoader/ModNet.cs#L629
+# https://github.com/tModLoader/tModLoader/blob/a3f102d1eac053758ba1dc97fdaa1bf06ebdc4d0/patches/tModLoader/Terraria/ModLoader/ModNet.cs#L467
+# (https://github.com/tModLoader/tModLoader/blob/1.4.4/patches/tModLoader/Terraria/ModLoader/ModPacket.cs)
+
+# SyncMods = 251 
+# https://github.com/tModLoader/tModLoader/blob/a3f102d1eac053758ba1dc97fdaa1bf06ebdc4d0/patches/tModLoader/Terraria/ModLoader/ModNet.cs#L182
+# (https://github.com/tModLoader/tModLoader/blob/a3f102d1eac053758ba1dc97fdaa1bf06ebdc4d0/patches/tModLoader/Terraria/ModLoader/ModNet.cs#L133)
+
+# ModFile = 252 
+# https://github.com/tModLoader/tModLoader/blob/a3f102d1eac053758ba1dc97fdaa1bf06ebdc4d0/patches/tModLoader/Terraria/ModLoader/ModNet.cs#L467
+# (https://docs.tmodloader.net/docs/stable/class_message_i_d.html#a21a0d8c9621eac2957bb691dce582481)
+
+# KeepAliveDuringModReload = 253 (Does nothing.)
 
 
 class CsToPyParser:
