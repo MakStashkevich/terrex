@@ -58,14 +58,14 @@ def test_movement(start_pos: Vec2, goal_pos: Vec2, filename: str = None):
     max_ticks = 2000
     positions = []
 
-    while player.position.distance_to(goal_pos) > TILE_SIZE / 2 and ticks < max_ticks:
+    while player.position.distance_to(goal_pos) > TILE_SIZE and ticks < max_ticks:
         old_pos = Vec2(player.position.x, player.position.y)
         player.update(ticks)
         if player.position != old_pos:
             positions.append((player.position.x, player.position.y))
         if ticks % 10 == 0:
             print(
-                f"Tick {ticks}: pos={player.position}, vel={player.velocity}, control L/R/J/D/U={player.control.left}/{player.control.right}/{player.control.jump}/{player.control.down}/{player.control.up}, on_ground={player.is_on_ground()}, can_stand={player.can_stand(player.position)}"
+                f"Tick {ticks}: pos={player.position}, vel={player.velocity}, control L/R/J/D={player.control.left}/{player.control.right}/{player.control.jump}/{player.control.down}, on_ground={player.is_on_ground()}, can_stand={player.can_stand(player.position)}"
             )
         ticks += 1
 

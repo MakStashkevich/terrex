@@ -16,32 +16,32 @@ from terrex.world.world import World
 tile_data = TileNPCData()
 
 
+DEFAULT_WIDTH: int = 20
+DEFAULT_HEIGHT: int = 42
+
+TILE_SIZE: float = 16.0
+PLAYER_WIDTH: float = 20.0
+PLAYER_HEIGHT: float = 42.0
+GRAVITY: float = 0.4
+MAX_FALL_SPEED: float = 10.0
+JUMP_SPEED: float = 5.01
+RUN_ACCELERATION: float = 0.08
+RUN_SLOWDOWN: float = 0.2
+MAX_RUN_SPEED: float = 3.0
+JUMP_HEIGHT_TILES: float = 15.0
+
+MAX_JUMP_H: float = JUMP_HEIGHT_TILES * TILE_SIZE
+
+
 class Player(Entity):
     name: StrVar = StrVar("terrex", max_len=20)
     _target_position: Vec2 | None = None
 
-    # const
-    DEFAULT_WIDTH: ConstVar = ConstVar(20)
-    DEFAULT_HEIGHT: ConstVar = ConstVar(42)
-
-    TILE_SIZE: float = 16.0
-    PLAYER_WIDTH: float = 20.0
-    PLAYER_HEIGHT: float = 42.0
-    GRAVITY: float = 0.4
-    MAX_FALL_SPEED: float = 10.0
-    JUMP_SPEED: float = 5.01
-    RUN_ACCELERATION: float = 0.08
-    RUN_SLOWDOWN: float = 0.2
-    MAX_RUN_SPEED: float = 3.0
-    JUMP_HEIGHT_TILES: float = 15.0
-
-    # size
-    width: IntVar = IntVar(int(DEFAULT_WIDTH))
-    height: IntVar = IntVar(int(DEFAULT_HEIGHT))
-
     # frame
     body_frame: Rectangle = Rectangle()
     leg_frame: Rectangle = Rectangle()
+    # head_frame: Rectangle = Rectangle()
+    # hair_frame: Rectangle = Rectangle()
 
     # connection flags
     initialized: BoolVar = BoolVar(False)
@@ -61,10 +61,6 @@ class Player(Entity):
 
     # controls
     control: PlayerControl = PlayerControl()
-    position: Vec2 = Vec2(0, 0)
-    velocity: Vec2 = Vec2(0, 0)
-    gravity: float = 0.4  # default
-    jump_height: int = 0
 
     # skin
     skin_variant: IntVar = IntVar(0)
@@ -134,7 +130,12 @@ class Player(Entity):
     stinky: BoolVar = BoolVar(False)
 
     def __init__(self, world: World):
+        super().__init__()
         self.world = world
+
+        # size
+        self.width: int = DEFAULT_WIDTH
+        self.height: int = DEFAULT_HEIGHT
 
         # frame
         self.body_frame.width = 40
@@ -147,7 +148,6 @@ class Player(Entity):
         for _ in range(0, 72):
             self.inventory.append("Dummy Item")
 
-        self.MAX_JUMP_H = self.JUMP_HEIGHT_TILES * self.TILE_SIZE
         self.jump_hold_frames = 0
         self.gravity_dir = 1.0
 
@@ -170,23 +170,23 @@ class Player(Entity):
         return tile_solid_top[ttype] if isinstance(tile_solid_top, list) else False
 
     def world_to_tile(self, x: float, y: float) -> tuple[int, int]:
-        return int(x // self.TILE_SIZE), int(y // self.TILE_SIZE)
+        return int(x // TILE_SIZE), int(y // TILE_SIZE)
 
     def can_stand(self, pos: Vec2) -> bool:
-        left = int(pos.x // self.TILE_SIZE)
-        right = int((pos.x + self.PLAYER_WIDTH - 1) // self.TILE_SIZE)
-        top = int(pos.y // self.TILE_SIZE)
-        bottom = int((pos.y + self.PLAYER_HEIGHT - 1) // self.TILE_SIZE)
+        left = int(pos.x // TILE_SIZE)
+        right = int((pos.x + self.width) // TILE_SIZE)
+        top = int(pos.y // TILE_SIZE)
+        bottom = int((pos.y + self.height) // TILE_SIZE)
         max_ty = self.world.max_tiles_y
         max_tx = self.world.max_tiles_x
         if bottom >= max_ty or left < 0 or right >= max_tx or top < 0:
             return False
-        for ty in range(top, bottom + 1):
-            for tx in range(left, right + 1):
+        for ty in range(top, bottom):
+            for tx in range(left, right):
                 if self.is_tile_solid_top(tx, ty):
                     if (
                         ty == bottom
-                        and pos.y + self.PLAYER_HEIGHT > (ty + 1) * self.TILE_SIZE
+                        and pos.y + self.height > (ty + 1) * TILE_SIZE
                         and not self.control.down
                     ):
                         return False
@@ -197,92 +197,125 @@ class Player(Entity):
     def is_on_ground(self, pos: Vec2 = None) -> bool:
         if pos is None:
             pos = self.position
-        below = pos.y + self.PLAYER_HEIGHT
-        tile_ty = int(below // self.TILE_SIZE)
-        left = int(pos.x // self.TILE_SIZE)
-        right = int((pos.x + self.PLAYER_WIDTH - 1) // self.TILE_SIZE)
+        below = pos.y + self.height + 1
+        tile_ty = int(below // TILE_SIZE)
+        left = int(pos.x // TILE_SIZE)
+        right = int((pos.x + self.width) // TILE_SIZE)
         max_ty = self.world.max_tiles_y
         if tile_ty >= max_ty:
             return False
-        for tx in range(left, right + 1):
+        for tx in range(left, right):
             if self.is_tile_solid(tx, tile_ty) or self.is_tile_solid_top(tx, tile_ty):
                 return True
         return False
 
-    def update(self, tick: int):
-        if self._target_position is None or self.position == self._target_position:
+    def update(self, _: int):
+        # https://github.com/tModLoader/tModLoader/wiki/Geometry
+        if self._target_position is None or self.position.distance_to(self._target_position) < TILE_SIZE:
             self.control.left = False
             self.control.right = False
             self.control.jump = False
             self.control.down = False
+            self.velocity = Vec2()
             return
 
         # Compute control based on target
         dx = self._target_position.x - self.position.x
         dy = self._target_position.y - self.position.y
-        self.gravity_dir = 1.0 if dy >= 0 else -1.0
-        self.control.left = dx < -self.TILE_SIZE / 2
-        self.control.right = dx > self.TILE_SIZE / 2
-        self.control.down = dy > 0 and self.is_on_ground()
-        self.control.jump = dy < 0
+
+        self.control.left = dx < -TILE_SIZE
+        self.control.right = dx > TILE_SIZE
+
+        is_horisontal_moving: bool = bool(self.control.left or self.control.right)
+        is_on_ground: bool = self.is_on_ground()
+
+        # print(f'self._target_position.y={self._target_position.y}, self.center.y={self.center.y}, dy={dy}, dy > 0={dy > 0}')
+        if is_on_ground and dy < 0:
+            px_left = int(self.position.x // TILE_SIZE)
+            px_right = int((self.position.x + self.width) // TILE_SIZE)
+            py_top = int((self.position.y) // TILE_SIZE)
+            for ty_offset in range(0, 4):
+                for tx_offset in range(-1, 3):
+                    front_tx = px_left - tx_offset if self.control.left else px_right + tx_offset
+                    above_ty = py_top - ty_offset
+                    if (
+                        front_tx > 0
+                        and above_ty > 0
+                        and (
+                            self.is_tile_solid(front_tx, above_ty)
+                            or self.is_tile_solid_top(front_tx, above_ty)
+                        )
+                    ):
+                        self.control.jump = True
+                        break
+            self.control.down = False
+        elif is_on_ground and dy > 0:
+            self.control.jump = False
+            self.control.down = True
+        else:
+            self.control.down = False
+            self.control.jump = False
 
         # Horizontal movement
-        if self.control.left:
-            if self.velocity.x > -self.MAX_RUN_SPEED:
-                self.velocity.x -= self.RUN_ACCELERATION
-        elif self.control.right:
-            if self.velocity.x < self.MAX_RUN_SPEED:
-                self.velocity.x += self.RUN_ACCELERATION
+        if is_horisontal_moving and self.position.distance_to(self._target_position) > abs(
+            self.velocity.x
+        ):
+            if self.control.left:
+                if self.velocity.x > -MAX_RUN_SPEED:
+                    self.velocity.x -= RUN_ACCELERATION
+            elif self.control.right:
+                if self.velocity.x < MAX_RUN_SPEED:
+                    self.velocity.x += RUN_ACCELERATION
         else:
-            if self.velocity.x > self.RUN_SLOWDOWN:
-                self.velocity.x -= self.RUN_SLOWDOWN
-            elif self.velocity.x < -self.RUN_SLOWDOWN:
-                self.velocity.x += self.RUN_SLOWDOWN
+            if self.velocity.x > RUN_SLOWDOWN:
+                self.velocity.x -= RUN_SLOWDOWN
+            elif self.velocity.x < -RUN_SLOWDOWN:
+                self.velocity.x += RUN_SLOWDOWN
             else:
                 self.velocity.x = 0.0
 
         # Vertical movement
         # Set jump hold frames at takeoff (proportional)
-        if self.control.jump and self.is_on_ground() and self.jump_hold_frames == 0:
+        if self.control.jump and is_on_ground and self.jump_hold_frames == 0:
             dy = self._target_position.y - self.position.y
             required_h_up = -dy if dy < 0 else 0.0
-            scale = min(1.0, required_h_up / self.MAX_JUMP_H)
-            self.jump_hold_frames = int(50 * scale)
+            self.jump_hold_frames = int(required_h_up // JUMP_HEIGHT_TILES)
 
         # Gravity
-        self.velocity.y += self.GRAVITY * self.gravity_dir
+        self.velocity.y += GRAVITY * self.gravity_dir
 
         # Jump hold override (Terraria style)
         if self.jump_hold_frames > 0:
-            if self.velocity.y == 0.0:
-                self.jump_hold_frames = 0
+            self.velocity.y = -self.gravity_dir * JUMP_SPEED
+            self.jump_hold_frames -= 1
+
+        if not self.control.jump and not is_on_ground:
+            if self.gravity_dir == 1.0:
+                if self.velocity.y > MAX_FALL_SPEED:
+                    self.velocity.y = MAX_FALL_SPEED
             else:
-                self.velocity.y = self.gravity_dir * self.JUMP_SPEED
-                self.jump_hold_frames -= 1
-
-        if self.velocity.y > self.MAX_FALL_SPEED:
-            self.velocity.y = self.MAX_FALL_SPEED
-
+                if self.velocity.y < -MAX_FALL_SPEED:
+                    self.velocity.y = -MAX_FALL_SPEED
+                    
         # Tentative new position (DT = 1 tick)
         new_pos = Vec2(self.position.x + self.velocity.x, self.position.y + self.velocity.y)
 
-        # Resolve ground collision
-        below = new_pos.y + self.PLAYER_HEIGHT
-        tile_ty = int(below // self.TILE_SIZE)
-        left_tx = int(new_pos.x // self.TILE_SIZE)
-        right_tx = int((new_pos.x + self.PLAYER_WIDTH - 1) // self.TILE_SIZE)
-        landed = False  # not used????
-        max_ty = self.world.max_tiles_y
-        if tile_ty < max_ty:
-            for tx in range(left_tx, right_tx + 1):
-                if self.is_tile_solid(tx, tile_ty) or (
-                    self.is_tile_solid_top(tx, tile_ty) and not self.control.down
-                ):
-                    if below <= (tile_ty + 1) * self.TILE_SIZE:
-                        new_pos.y = tile_ty * self.TILE_SIZE - self.PLAYER_HEIGHT
-                        self.velocity.y = 0.0
-                        landed = True
-                        break
+        # Resolve ground collision only during fall (v.y >= 0)
+        if self.velocity.y >= 0:
+            below = new_pos.y + self.height
+            tile_ty = int(below // TILE_SIZE)
+            left_tx = int(new_pos.x // TILE_SIZE)
+            right_tx = int((new_pos.x + self.width) // TILE_SIZE)
+            max_ty = self.world.max_tiles_y
+            if tile_ty < max_ty:
+                for tx in range(left_tx, right_tx):
+                    if self.is_tile_solid(tx, tile_ty) or (
+                        self.is_tile_solid_top(tx, tile_ty) and not self.control.down
+                    ):
+                        if below <= (tile_ty + 1) * TILE_SIZE:
+                            new_pos.y = tile_ty * TILE_SIZE - self.height
+                            self.velocity.y = 0.0
+                            break
 
         # Validate new position
         if not self.can_stand(new_pos):
