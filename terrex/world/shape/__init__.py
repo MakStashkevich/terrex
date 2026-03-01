@@ -2,7 +2,7 @@
 Shape module for world generation in Terrex.
 """
 
-from .base import GenAction, GenShape, Point, RectangleArea
+from .base import GenAction, GenShape, Point
 from .circle import Circle
 from .half_circle import HalfCircle
 from .mound import Mound
@@ -12,7 +12,6 @@ from .tail import Tail
 
 __all__ = [
     'Point',
-    'RectangleArea',
     'GenAction',
     'GenShape',
     'Rectangle',

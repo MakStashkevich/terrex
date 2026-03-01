@@ -6,48 +6,25 @@ Exact port with numpy meshgrid for bulk vectorized actions.
 
 import numpy as np
 
-from .base import GenAction, GenActionBulk, GenShape, Point, RectangleArea
+from .base import GenAction, GenActionBulk, GenShape, Point
 
 
 class Rectangle(GenShape):
     """Rectangular area shape."""
 
-    def __init__(self, area: RectangleArea | None = None, quit_on_fail: bool = False):
+    x: int = 0
+    y: int = 0
+    width: int = 0
+    height: int = 0
+
+    def __init__(
+        self, x: int = 0, y: int = 0, width: int = 0, height: int = 0, quit_on_fail: bool = False
+    ):
         super().__init__(quit_on_fail)
-        self._area = area or RectangleArea()
-
-    @property
-    def width(self) -> int:
-        return self._area.width
-
-    @width.setter
-    def width(self, value: int) -> None:
-        self._area.width = value
-
-    @property
-    def height(self) -> int:
-        return self._area.height
-
-    @height.setter
-    def height(self, value: int) -> None:
-        self._area.height = value
-
-    @property
-    def x(self) -> int:
-        return self._area.left
-
-    @property
-    def y(self) -> int:
-        return self._area.top
-
-    @classmethod
-    def from_size(cls, width: int, height: int, quit_on_fail: bool = False):
-        """Constructor matching C#: Rectangle(int width, int height)"""
-        return cls(RectangleArea(0, 0, width, height), quit_on_fail)
-
-    def SetArea(self, area: RectangleArea):
-        """SetArea as in C#"""
-        self._area = area
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
 
     def perform(self, origin: Point, action: GenAction) -> bool:
         # Numpy fast path for vectorized actions

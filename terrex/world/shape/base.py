@@ -17,24 +17,6 @@ class Point:
     y: int
 
 
-@dataclass
-class RectangleArea:
-    """Equivalent to Microsoft.Xna.Framework.Rectangle (using left/top instead of X/Y)"""
-
-    left: int = 0
-    top: int = 0
-    width: int = 0
-    height: int = 0
-
-    @property
-    def right(self) -> int:
-        return self.left + self.width
-
-    @property
-    def bottom(self) -> int:
-        return self.top + self.height
-
-
 class GenAction:
     """Base action applied to tile (x,y). Returns False on error."""
 

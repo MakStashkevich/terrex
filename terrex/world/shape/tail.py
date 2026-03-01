@@ -17,14 +17,14 @@ from .base import GenAction, GenActionBulk, GenShape, Point
 class Vector2D:
     """Local port of ReLogic.Utilities.Vector2D"""
 
-    X: float
-    Y: float
+    x: float
+    y: float
 
     def __add__(self, other: "Vector2D") -> "Vector2D":
-        return Vector2D(self.X + other.X, self.Y + other.Y)
+        return Vector2D(self.x + other.x, self.y + other.y)
 
     def __mul__(self, scalar: float) -> "Vector2D":
-        return Vector2D(self.X * scalar, self.Y * scalar)
+        return Vector2D(self.x * scalar, self.y * scalar)
 
     __rmul__ = __mul__  # commutative multiplication
 
@@ -44,8 +44,8 @@ class Tail(GenShape):
     def perform(self, origin: Point, action: GenAction) -> bool:
         # Compute tile coordinates (offsets are in world units? but scaled to tiles)
         start_tile = origin
-        end_tile_x = int(origin.x + self._endOffset.X)
-        end_tile_y = int(origin.y + self._endOffset.Y)
+        end_tile_x = int(origin.x + self._endOffset.x)
+        end_tile_y = int(origin.y + self._endOffset.y)
 
         points = self._bresenham_thick(
             start_tile.x, start_tile.y, end_tile_x, end_tile_y, self._width
