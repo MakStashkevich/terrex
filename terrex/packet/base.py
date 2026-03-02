@@ -2,12 +2,10 @@ import inspect
 from abc import ABC, abstractmethod
 from typing import Any
 
-from terrex.event.manager import EventManager
+from terrex.event.context import EventHandleContext
 from terrex.net.enum.mode import NetMode
 from terrex.net.streamer import Reader, Writer
-from terrex.player.player import Player
 from terrex.util.stringify import stringify_value
-from terrex.world.world import World
 
 packet_registry: dict[int, type["Packet"]] = {}
 
@@ -21,7 +19,7 @@ class Packet(ABC):
     def write(self, writer: Writer) -> None:
         raise NotImplementedError("Method write must be overridden")
 
-    async def handle(self, world: World, player: Player, evman: EventManager) -> None:
+    async def handle(self, ctx: EventHandleContext) -> None:
         """Optional method to handle the packet"""
         return None
 

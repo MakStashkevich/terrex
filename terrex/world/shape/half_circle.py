@@ -3,6 +3,7 @@ Ported from Terraria source: Terraria.WorldBuilding.Shapes.HalfCircle
 """
 
 from math import sqrt
+from typing import Any
 
 import numpy as np
 
@@ -22,8 +23,8 @@ class HalfCircle(GenShape):
 
         # Fast bulk path
         if isinstance(action, GenActionBulk):
-            xs_all = []
-            ys_all = []
+            xs_all: list[Any] = []
+            ys_all: list[Any] = []
 
             if self._bottomHalf:
                 y_start, y_end = origin.y, origin.y + self._radius

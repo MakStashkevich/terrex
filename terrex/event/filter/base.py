@@ -1,6 +1,6 @@
 from typing import Generic, TypeVar
 
-from terrex.event.context import EventContext
+from terrex.event.context import EventFilterContext
 
 from ..types import BaseEvent
 
@@ -8,9 +8,9 @@ E = TypeVar("E", bound=BaseEvent)
 
 
 class EventFilter(Generic[E]):
-    _event_type: type[E]
+    event_type: type[E]
 
-    def matches(self, ctx: EventContext) -> E | None:
+    def matches(self, ctx: EventFilterContext) -> E | None:
         raise NotImplementedError
 
     def __and__(self, other: "EventFilter[E]") -> "EventFilter[E]":
@@ -26,10 +26,10 @@ class EventFilter(Generic[E]):
 
 class EventTypeFilter(EventFilter[E]):
     def __init__(self, event_type: type[E]):
-        self._event_type = event_type
+        self.event_type = event_type
 
-    def matches(self, ctx: EventContext) -> E | None:
-        if isinstance(ctx.event, self._event_type):
+    def matches(self, ctx: EventFilterContext) -> E | None:
+        if isinstance(ctx.event, self.event_type):
             return ctx.event
         return None
 

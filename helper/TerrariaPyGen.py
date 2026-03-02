@@ -104,11 +104,11 @@ correct_message_keys_map = {
 # https://github.com/tModLoader/tModLoader/blob/a3f102d1eac053758ba1dc97fdaa1bf06ebdc4d0/patches/tModLoader/Terraria/ModLoader/ModNet.cs#L467
 # (https://github.com/tModLoader/tModLoader/blob/1.4.4/patches/tModLoader/Terraria/ModLoader/ModPacket.cs)
 
-# SyncMods = 251 
+# SyncMods = 251
 # https://github.com/tModLoader/tModLoader/blob/a3f102d1eac053758ba1dc97fdaa1bf06ebdc4d0/patches/tModLoader/Terraria/ModLoader/ModNet.cs#L182
 # (https://github.com/tModLoader/tModLoader/blob/a3f102d1eac053758ba1dc97fdaa1bf06ebdc4d0/patches/tModLoader/Terraria/ModLoader/ModNet.cs#L133)
 
-# ModFile = 252 
+# ModFile = 252
 # https://github.com/tModLoader/tModLoader/blob/a3f102d1eac053758ba1dc97fdaa1bf06ebdc4d0/patches/tModLoader/Terraria/ModLoader/ModNet.cs#L467
 # (https://docs.tmodloader.net/docs/stable/class_message_i_d.html#a21a0d8c9621eac2957bb691dce582481)
 
@@ -406,7 +406,7 @@ class CsToPyParser:
                 default_bool = ids_list[0].lower() == "true"
                 ids_list = ids_list[1:]
             if ids_list:
-                parts = []
+                parts: list[str] = []
 
                 for item in ids_list:
                     if item.isdigit():
@@ -431,7 +431,7 @@ class CsToPyParser:
                 return f"factory.create_bool_set({default_bool})"
         elif set_type == "Int":
             default_int = -1
-            pairs = []
+            pairs: list[str] = []
             if items and all(c.replace("-", "").isdigit() for c in items[:2] if items[:2]):
                 default_int = int(items[0])
                 pairs = items[1:]
@@ -479,7 +479,7 @@ class CsToPyParser:
                 r"new\s+(?:int|byte|short|sbyte|ushort|bool)\s*\[\s*[^]]*\s*\]\s*\{([^}]+)\}"
             )
             inner_contents = re.findall(sub_pattern, content)
-            py_subs = []
+            py_subs: list[str] = []
             for inner_content in inner_contents:
                 inner_content = inner_content.strip()
                 inner_content = re.sub(r"\s*,\s*", ",", inner_content)
@@ -530,10 +530,10 @@ class CsToPyParser:
             '"""',
             "",
         ]
-        out = []
+        out: list[str] = []
 
-        def is_pure_enum(consts):
-            return consts and all(val.lstrip("-").isdigit() for val in consts.values())
+        def is_pure_enum(consts: dict[str, str]) -> bool:
+            return all(val.lstrip("-").isdigit() for val in consts.values())
 
         top_path = self.top_class or ""
         top_consts = self.classes.get(top_path, {})
@@ -631,7 +631,7 @@ class CsToPyParser:
 
         out.append("")
 
-        sets_map = {}
+        sets_map: dict[str, list[tuple[str, str]]] = {}
         for owner_path, sets_dict in self.sets_by_class.items():
             if not owner_path:
                 # example not owner path on SpecificallyImmuneTo from NPCID:
@@ -673,7 +673,7 @@ class CsToPyParser:
 
 
 def find_cs_files(folder: Path, max_depth: int = 3) -> list[Path]:
-    cs_paths = []
+    cs_paths: list[Path] = []
 
     def walk(p: Path, depth: int):
         if depth > max_depth:

@@ -1,5 +1,6 @@
 import time
 
+from terrex.event.context import EventHandleContext
 from terrex.event.types import PlayerControlUpdateEvent
 from terrex.id import MessageID
 from terrex.net.player_control import PlayerControl
@@ -77,18 +78,18 @@ class PlayerControls(SyncPacket):
         if self.control.has_net_camera_target:
             self.net_camera_target = Vec2.read(reader)
 
-    async def handle(self, world, player, evman):
-        if not self.player_id in world.players:
+    async def handle(self, ctx: EventHandleContext):
+        if not self.player_id in ctx.world.players:
             # print(f'player_id={self.player_id} moved to position={self.position} with velocity={self.velocity} left={self.control.left}, right={self.control.right}, up={self.control.up}, down={self.control.down}, jump={self.control.jump} time={time.time()}')
             return
 
-        current_player = world.players[self.player_id]
+        current_player = ctx.world.players[self.player_id]
         current_player.position = self.position
         current_player.velocity = self.velocity
         current_player.control = self.control
         # todo: update player mount, item and other
 
-        evman.raise_event(
+        ctx.evman.raise_event(
             PlayerControlUpdateEvent(
                 self,
                 self.player_id,

@@ -1,7 +1,3 @@
-import heapq
-from dataclasses import dataclass
-from typing import List, Optional
-import itertools
 import numpy as np
 from PIL import Image, ImageDraw
 
@@ -18,6 +14,10 @@ TILE_SIZE = 16
 MAP_WIDTH = 30
 MAP_HEIGHT = 15
 
+# original tile types from Terraria
+TILE_STONE_BLOCK = 1
+TILE_WOOD_PLATFORM = 19
+
 # Генерация карты
 # 0 = пусто, 1 = solid, 2 = solidTop
 MAP = np.zeros((MAP_HEIGHT, MAP_WIDTH), dtype=np.uint8)
@@ -25,10 +25,10 @@ MAP = np.zeros((MAP_HEIGHT, MAP_WIDTH), dtype=np.uint8)
 # Горизонтальные платформы solidTop (type=19)
 for y in range(1, MAP_HEIGHT - 1, 2):
     for x_base in range(4, MAP_WIDTH - 3, 5):
-        MAP[y, x_base : x_base + 3] = 19  # Wood Platform
+        MAP[y, x_base : x_base + 3] = TILE_WOOD_PLATFORM
 
 # Пол - solid (type=1)
-MAP[MAP_HEIGHT - 1, :] = 1  # Stone Block
+MAP[MAP_HEIGHT - 1, :] = TILE_STONE_BLOCK
 
 GRAVITY = 0.4
 MAX_FALL_SPEED = 10.0
@@ -46,17 +46,17 @@ for y in range(MAP_HEIGHT):
             world.tiles.set(x, y, Tile(type=int(MAP[y, x])))
 
 
-def test_movement(start_pos: Vec2, goal_pos: Vec2, filename: str = None):
+def test_movement(start_pos: Vec2, goal_pos: Vec2, filename: str | None = None):
     player = Player(world)
     player.position = start_pos
     player.velocity = Vec2(0, 0)
-    player._target_position = goal_pos
+    player.target_position = goal_pos
 
     print(f"Test to {goal_pos}: start at {start_pos}")
 
     ticks = 0
     max_ticks = 2000
-    positions = []
+    positions: list[tuple[float, float]] = []
 
     while player.position.distance_to(goal_pos) > TILE_SIZE and ticks < max_ticks:
         old_pos = Vec2(player.position.x, player.position.y)
@@ -78,7 +78,7 @@ def test_movement(start_pos: Vec2, goal_pos: Vec2, filename: str = None):
     return reached, ticks
 
 
-def draw_pil(positions: List[tuple], filename: str):
+def draw_pil(positions: list[tuple[float, float]], filename: str):
     width = MAP_WIDTH * TILE_SIZE
     height = MAP_HEIGHT * TILE_SIZE
     img = Image.new("RGB", (width, height), (30, 30, 30))
@@ -88,9 +88,9 @@ def draw_pil(positions: List[tuple], filename: str):
     for y, row in enumerate(MAP):
         for x, t in enumerate(row):
             color = None
-            if t == 1:  # Stone block
+            if t == TILE_STONE_BLOCK:
                 color = (0, 0, 0)
-            elif t == 19:  # Wood Platform
+            elif t == TILE_WOOD_PLATFORM:
                 color = (128, 128, 128)
             if color:
                 draw.rectangle(

@@ -300,7 +300,7 @@ def generate_color_code(cs_content: str, code_lines: list[str]):
             continue
         m = array_assign_pattern.match(line_clean)
         if m:
-            vvar_type, var_name, source_array, source_index = m.groups()
+            _, var_name, source_array, source_index = m.groups()
             code_lines.append(f"{spacer}{var_name} = {source_array}[{source_index}]")
             continue
         m = color_assign_pattern.match(line_clean)

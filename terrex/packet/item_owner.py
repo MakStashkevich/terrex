@@ -1,3 +1,4 @@
+from terrex.event.context import EventHandleContext
 from terrex.event.types import ItemOwnerChangedEvent
 from terrex.id import MessageID
 from terrex.net.streamer import Reader, Writer
@@ -19,6 +20,6 @@ class ItemOwner(SyncPacket):
         writer.write_short(self.item_id)
         writer.write_byte(self.player_id)
 
-    async def handle(self, world, player, evman):
-        world.item_owner_index[self.item_id] = self.player_id
-        evman.raise_event(ItemOwnerChangedEvent(self, self.item_id, self.player_id))
+    async def handle(self, ctx: EventHandleContext):
+        ctx.world.item_owner_index[self.item_id] = self.player_id
+        ctx.evman.raise_event(ItemOwnerChangedEvent(self, self.item_id, self.player_id))

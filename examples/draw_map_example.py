@@ -8,14 +8,26 @@ from terrex.event.filter import IncomingMessage, NewMessage
 from terrex.net.enum.section_size import SectionSize
 from terrex.net.structure.vec2 import Vec2
 from terrex.world.map_helper import MapHelper
-from terrex.world.world import World
+
+
+host: str = "127.0.0.1"
+port: int = 8888
+password: str = "4444"
+
+client = Terrex(host, port, server_password=password)
+
+
+@client.on(NewMessage(r"^map$") & IncomingMessage())
+async def handle_map_command_from_other_player() -> None:
+    """Generates map image on 'map' command without blocking event loop."""
+    await client.send_message("Starting map image generation...", True)
+    await draw_map_image(client)
+    await client.send_message("Map image successfully generated!")
 
 
 async def draw_map_image(client: Terrex) -> Image.Image:
     """Heavy synchronous task demonstrating that sync handlers run in separate threads."""
     world = client.world
-    if not isinstance(world, World):
-        raise TypeError("world must be a World instance")
 
     height: int = max(1, world.max_tiles_y)
     width: int = max(1, world.max_tiles_x)
@@ -36,7 +48,7 @@ async def draw_map_image(client: Terrex) -> Image.Image:
         for section_x in sections_x:
             # teleport to center section
             section_center = Vec2.from_tile_pos(
-                section_x - (SectionSize.Width / 2), section_y - (SectionSize.Height / 2)
+                int(section_x - (SectionSize.Width / 2)), int(section_y - (SectionSize.Height / 2))
             )
             await client.teleport(section_center)
             await asyncio.sleep(0.01)
@@ -87,19 +99,7 @@ async def draw_map_image(client: Terrex) -> Image.Image:
 
 async def main() -> None:
     """Main entry point to the draw map example."""
-    host: str = "127.0.0.1"
-    port: int = 8888
-    password: str = "4444"
-
-    async with Terrex(host, port, server_password=password) as client:
-
-        @client.on(NewMessage(r"^map$") & IncomingMessage())
-        async def handle_map_command_from_other_player() -> None:
-            """Generates map image on 'map' command without blocking event loop."""
-            await client.send_message("Starting map image generation...", True)
-            await draw_map_image(client)
-            await client.send_message("Map image successfully generated!")
-
+    async with client:
         await client.run_until_disconnected()
 
 

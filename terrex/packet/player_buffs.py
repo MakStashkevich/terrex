@@ -1,3 +1,4 @@
+from terrex.event.context import EventHandleContext
 from terrex.id import MessageID
 from terrex.net.streamer import Reader, Writer
 from terrex.packet.base import SyncPacket
@@ -20,10 +21,10 @@ class PlayerBuffs(SyncPacket):
                 break  # packet ended
             self.buffs.append(buff)
 
-    async def handle(self, world, player, evman):
-        if not self.player_id in world.players:
+    async def handle(self, ctx: EventHandleContext):
+        if not self.player_id in ctx.world.players:
             return
-        current_player = world.players[self.player_id]
+        current_player = ctx.world.players[self.player_id]
         current_player.buffs = self.buffs
 
     def write(self, writer: Writer):

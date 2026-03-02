@@ -7,12 +7,12 @@ PACKETS_DIR = Path(__file__).parent.parent / "terrex/packets"
 INIT_FILE = PACKETS_DIR / "__init__.py"
 
 
-def camel_to_snake(name):
+def camel_to_snake(name: str) -> str:
     name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", name).lower()
 
 
-def get_main_class_name(file_path):
+def get_main_class_name(file_path: Path) -> str | None:
     with open(file_path) as f:
         tree = ast.parse(f.read(), filename=str(file_path))
     for node in ast.walk(tree):
@@ -26,7 +26,7 @@ def get_main_class_name(file_path):
 
 
 def main():
-    files_to_rename = []
+    files_to_rename: list[tuple[Path, Path]] = []
     for file_path in PACKETS_DIR.glob("*.py"):
         if file_path.name in ["__init__.py", "packet_ids.py", "base.py"]:
             continue

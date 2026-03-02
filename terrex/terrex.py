@@ -1,9 +1,9 @@
 import asyncio
-import concurrent
+from concurrent.futures import Future
 import inspect
 import threading
 from collections.abc import Awaitable, Callable, Coroutine
-from typing import Any, ParamSpec, TypeVar, cast
+from typing import Any, Optional, ParamSpec, Type, TypeVar, cast
 
 from terrex.client import Client
 from terrex.event.dispatcher import Dispatcher
@@ -17,15 +17,19 @@ from terrex.net.protocol import PROTOCOLS
 from terrex.net.structure.vec2 import Vec2
 from terrex.net.tile_npc_data import TileNPCData
 from terrex.player.player import Player
+from terrex.types import DecoratedHandler
 from terrex.world.world import World
 
 from . import packet
 from .event import EventManager
+from .event.types import BaseEvent
+from .event.filter.base import EventFilter
+from collections.abc import Awaitable, Callable
 
 # The latest supported version of Terraria
 TERRARIA_VERSION = (1, 4, 5, 5)
 
-E = TypeVar("E")
+E = TypeVar("E", bound=BaseEvent)
 P = ParamSpec("P")
 T = TypeVar("T")
 
@@ -36,7 +40,7 @@ tile_data = TileNPCData()
 class Terrex:
     """A class that handles basic functions of a terraria bot like movement and login"""
 
-    _async_thread_tasks: set[asyncio.Task] = set()
+    _async_thread_tasks: set[asyncio.Task[None]] = set()
     loop: asyncio.AbstractEventLoop | None = None
     _loop_thread_id: int | None = None
 
@@ -48,10 +52,10 @@ class Terrex:
     # Defaults to 7777, because that is the default port for the server
     def __init__(
         self,
-        ip,
+        ip: str,
         port: int = 7777,
         server_password: str = "",
-        version: tuple = TERRARIA_VERSION,
+        version: tuple[int, int, int, int] | tuple[int, int, int, int, int] = TERRARIA_VERSION,
         player: Player | None = None,
     ):
         if version not in PROTOCOLS:
@@ -66,7 +70,7 @@ class Terrex:
         self.evman = EventManager(dispatcher)
 
         self.client = Client(ip, port, protocol, server_password, self)
-        self._movement_task: asyncio.Task | None = None
+        self._movement_task: asyncio.Task[None] | None = None
 
     async def send_message(self, text: str, wait: bool = False):
         """
@@ -123,42 +127,42 @@ class Terrex:
                 raise NotImplementedError("Use HitSwitch() packet to enable portal tile")
             case TeleportType.RodOfDiscord:
                 # todo: not tested
-                await self.client._teleport_entity(position, type, player_teleport=True)
+                await self.client.teleport_entity(position, type, player_teleport=True)
                 return
             case TeleportType.TeleportationPotion:
-                await self.client._request_teleport(type=TeleportRequestType.TeleportationPotion)
+                await self.client.request_teleport(type=TeleportRequestType.TeleportationPotion)
                 return
             case TeleportType.RecallPotion:
-                await self.client._teleport_entity(position, type, player_teleport=True)
+                await self.client.teleport_entity(position, type, player_teleport=True)
                 return
             case TeleportType.Portal:
                 raise NotImplementedError("Deprecated, use TeleportPlayerThroughPortal() packet")
             case TeleportType.MagicConch:
-                await self.client._request_teleport(type=TeleportRequestType.MagicConch)
+                await self.client.request_teleport(type=TeleportRequestType.MagicConch)
                 return
             case TeleportType.DebugTeleport:
                 raise NotImplementedError("Never used")
             case TeleportType.DemonConch:
-                await self.client._request_teleport(type=TeleportRequestType.DemonConch)
+                await self.client.request_teleport(type=TeleportRequestType.DemonConch)
                 return
             case TeleportType.PotionOfReturn:
                 # todo: not tested
-                await self.client._teleport_entity(position, type, player_teleport=True)
+                await self.client.teleport_entity(position, type, player_teleport=True)
                 return
             case TeleportType.TeleportationPylon:
                 if not pylon_type:
                     raise ValueError("Pylon type is required")
-                await self.client._request_teleport_pylon(
+                await self.client.request_teleport_pylon(
                     int(position.x), int(position.y), pylon_type
                 )
                 return
             case TeleportType.QueenSlimeHook:
-                await self.client._teleport_entity(
+                await self.client.teleport_entity(
                     position, type, player_teleport=False
                 )  # hook is not player teleporter
                 return
             case TeleportType.ShellphoneSpawn:
-                await self.client._request_teleport(type=TeleportRequestType.Shellphone_Spawn)
+                await self.client.request_teleport(type=TeleportRequestType.Shellphone_Spawn)
                 return
             case TeleportType.ShimmerTownNPCTransform:
                 raise NotImplementedError("Only for NPC server logic")
@@ -170,10 +174,10 @@ class Terrex:
     def get_event_manager(self):
         return self.evman
 
-    def on(self, filter: EventFilter):
+    def on(self, filter: EventFilter[E]) -> Callable[[DecoratedHandler], DecoratedHandler]:
         return self.evman.on_event(filter)
 
-    def _task_done_callback(self, task: asyncio.Task):
+    def _task_done_callback(self, task: asyncio.Task[None]):
         """
         Removes a completed task from the internal task set
         and safely retrieves any exception to prevent
@@ -194,7 +198,7 @@ class Terrex:
         func: Callable[P, T | Awaitable[T]],
         *args: P.args,
         **kwargs: P.kwargs,
-    ) -> concurrent.futures.Future[T]:
+    ) -> Future[T]:
         """
         Must be called from a different thread than the event loop.
         Executes `func` (sync or async) inside the loop.
@@ -225,7 +229,7 @@ class Terrex:
 
             coro = wrapper()
 
-        future: concurrent.futures.Future[T] = asyncio.run_coroutine_threadsafe(
+        future: Future[T] = asyncio.run_coroutine_threadsafe(
             cast(Coroutine[Any, Any, T], coro), loop
         )
         return future
@@ -247,8 +251,14 @@ class Terrex:
         await self.start_movement_scheduler()
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[Any],
+    ) -> Optional[bool]:
         await self.stop()
+        return None
 
     async def run_until_disconnected(self):
         try:
@@ -261,7 +271,7 @@ class Terrex:
             await self.stop()
 
     def move_to(self, target: Vec2) -> None:
-        self.player._target_position = target
+        self.player.target_position = target
 
     async def start_movement_scheduler(self) -> None:
         if self._movement_task is not None and not self._movement_task.done():
@@ -275,8 +285,6 @@ class Terrex:
 
     async def _movement_loop(self) -> None:
         tick = 0
-        old_position = self.player.position
-        old_velocity = self.player.velocity
         old_control_left = self.player.control.left
         old_control_right = self.player.control.right
         old_control_jump = self.player.control.jump
@@ -285,18 +293,14 @@ class Terrex:
         while self.client.running:
             self.player.update(tick)
             changed = (
-                self.player.position != old_position
-                or self.player.velocity != old_velocity
-                or self.player.control.left != old_control_left
+                self.player.control.left != old_control_left
                 or self.player.control.right != old_control_right
                 or self.player.control.jump != old_control_jump
                 or self.player.control.down != old_control_down
                 or self.player.control.up != old_control_up
             )
             if changed:
-                await self.client._update_controls()
-                old_position = self.player.position
-                old_velocity = self.player.velocity
+                await self.client.update_controls()
                 old_control_left = self.player.control.left
                 old_control_right = self.player.control.right
                 old_control_jump = self.player.control.jump

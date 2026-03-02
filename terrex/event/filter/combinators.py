@@ -1,6 +1,6 @@
 from typing import Generic
 
-from terrex.event.context import EventContext
+from terrex.event.context import EventFilterContext
 
 from .base import E, EventFilter
 
@@ -19,14 +19,14 @@ class AndFilter(EventFilter[E], Generic[E]):
             else:
                 self.filters.append(f)
 
-        event_type = self.filters[0]._event_type
+        event_type = self.filters[0].event_type
         for f in self.filters:
-            if f._event_type is not event_type:
+            if f.event_type is not event_type:
                 raise TypeError("All filters in AndFilter must have the same event type")
 
-        self._event_type = event_type
+        self.event_type = event_type
 
-    def matches(self, ctx: EventContext) -> E | None:
+    def matches(self, ctx: EventFilterContext) -> E | None:
         result: E | None = None
         for f in self.filters:
             result = f.matches(ctx)
@@ -52,14 +52,14 @@ class OrFilter(EventFilter[E], Generic[E]):
             else:
                 self.filters.append(f)
 
-        event_type = self.filters[0]._event_type
+        event_type = self.filters[0].event_type
         for f in self.filters:
-            if f._event_type is not event_type:
+            if f.event_type is not event_type:
                 raise TypeError("All filters in OrFilter must have the same event type")
 
-        self._event_type = event_type
+        self.event_type = event_type
 
-    def matches(self, ctx: EventContext) -> E | None:
+    def matches(self, ctx: EventFilterContext) -> E | None:
         for f in self.filters:
             result = f.matches(ctx)
             if result is not None:

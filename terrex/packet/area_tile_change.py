@@ -1,3 +1,4 @@
+from terrex.event.context import EventHandleContext
 from terrex.id import MessageID, TileChangeType, TileID
 from terrex.net.bits_byte import BitsByte
 from terrex.net.enum.mode import NetMode
@@ -91,11 +92,9 @@ class AreaTileChange(SyncPacket):
 
                 self.tiles.set(x, y, tile)
 
-    async def handle(self, world, player, evman):
+    async def handle(self, ctx: EventHandleContext):
         for (x, y), tile in self.tiles.items():
-            if not isinstance(tile, Tile):
-                continue
-            world.tiles.set(x, y, tile)
+            ctx.world.tiles.set(x, y, tile)
 
     def write(self, writer: Writer):
         writer.write_short(self.tile_x)

@@ -1,3 +1,4 @@
+from terrex.event.context import EventHandleContext
 from terrex.id import MessageID
 from terrex.net.streamer import Reader, Writer
 from terrex.packet.base import ClientPacket
@@ -16,10 +17,10 @@ class SyncLoadout(ClientPacket):
         self.loadout_index = reader.read_byte()
         self.accessory_visibility = reader.read_ushort()
 
-    async def handle(self, world, player, evman):
-        if not self.player_id in world.players:
+    async def handle(self, ctx: EventHandleContext):
+        if not self.player_id in ctx.world.players:
             return
-        current_player = world.players[self.player_id]
+        current_player = ctx.world.players[self.player_id]
         current_player.loadout_index = self.loadout_index
         current_player.accessory_visibility = self.accessory_visibility
 

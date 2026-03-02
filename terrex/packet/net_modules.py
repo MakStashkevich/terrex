@@ -1,3 +1,4 @@
+from terrex.event.context import EventHandleContext
 from terrex.event.types import ChatEvent
 from terrex.id import MessageID
 from terrex.net.module import (
@@ -21,8 +22,6 @@ class NetModules(SyncPacket):
         module_cls = net_module_registry.get(module_id)
         if module_cls is None:
             raise ValueError(f"Unknown NetModule variant: {module_id}")
-        if not issubclass(module_cls, NetModule):
-            raise ValueError(f"Registry entry for {module_id} is not a subclass of NetModule")
         module = module_cls()
         module.read(reader)
         self.module = module
@@ -33,7 +32,7 @@ class NetModules(SyncPacket):
         writer.write_ushort(self.module.id)
         self.module.write(writer)
 
-    async def handle(self, world, player, evman):
+    async def handle(self, ctx: EventHandleContext):
         if (
             isinstance(self.module, NetTextModule)
             and self.module.author_id is not None
@@ -41,7 +40,7 @@ class NetModules(SyncPacket):
             # ignore client chat commands
             and self.module.chat_command_id is None
         ):
-            evman.raise_event(
+            ctx.evman.raise_event(
                 ChatEvent(
                     self,
                     self.module.author_id,

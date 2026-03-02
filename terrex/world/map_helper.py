@@ -1,7 +1,12 @@
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from terrex.net.structure.rgb import Rgb as Color
 from terrex.world.world_gen import WorldGen
+
+if TYPE_CHECKING:
+    from terrex.world.world import World
+    from terrex.net.structure.tile import Tile
 
 
 @dataclass
@@ -83,16 +88,10 @@ class MapHelper:
 
     @classmethod
     def create_map_tile(
-        cls, world, x: int, y: int, base_light: int, background_override: int = 0
+        cls, world: "World", x: int, y: int, base_light: int, background_override: int = 0
     ) -> MapTile:
-        from terrex.net.structure.tile import Tile
-        from terrex.world.world import World
-
-        if not isinstance(world, World):
-            raise TypeError("world must be a World instance")
-
         tile = world.tiles.get(x, y)
-        if not isinstance(tile, Tile):
+        if tile is None:
             return MapTile(0, 0, 0)
 
         color = 0
@@ -118,24 +117,15 @@ class MapHelper:
     @classmethod
     def get_tile_type(
         cls,
-        world,
+        world: "World",
         x: int,
         y: int,
-        tile,
+        tile: "Tile",
         new_color: int,
         new_light: int,
         base_type: int,
         base_option: int,
     ) -> tuple[int, int, int, int]:
-        from terrex.net.structure.tile import Tile
-        from terrex.world.world import World
-
-        if not isinstance(world, World):
-            raise TypeError("world must be a World instance")
-
-        if not isinstance(tile, Tile):
-            raise TypeError("tile must be a Tile instance")
-
         debug_show_unbreakable = getattr(cls, 'show_unbreakable_wall', False)
         if (not debug_show_unbreakable or tile.wall != 350) and tile.active:
             tile_type = tile.type
@@ -178,13 +168,16 @@ class MapHelper:
 
     @classmethod
     def get_wall_type(
-        cls, x: int, y: int, tile, new_color: int, new_light: int, base_type: int, base_option: int
+        cls,
+        x: int,
+        y: int,
+        tile: "Tile",
+        new_color: int,
+        new_light: int,
+        base_type: int,
+        base_option: int,
     ) -> tuple[int, int, int, int]:
         from terrex.id import WallID
-        from terrex.net.structure.tile import Tile
-
-        if not isinstance(tile, Tile):
-            raise TypeError("tile must be a Tile instance")
 
         is_invisible_wall = tile.invisible_wall
         if tile.wall > 0 and tile.fullbright_wall and not is_invisible_wall:
@@ -214,12 +207,7 @@ class MapHelper:
         return new_color, new_light, base_type, base_option
 
     @classmethod
-    def get_background_type(cls, world, x: int, y: int, light: int) -> tuple[int, int]:
-        from terrex.world.world import World
-
-        if not isinstance(world, World):
-            raise TypeError("world must be a World instance")
-
+    def get_background_type(cls, world: "World", x: int, y: int, light: int) -> tuple[int, int]:
         if y < world.world_surface:
             if world.remix_world:
                 light = 5
@@ -259,17 +247,8 @@ class MapHelper:
 
     @classmethod
     def get_tile_base_option(
-        cls, world, x: int, y: int, tile_type: int, tile, base_option: int
+        cls, world: "World", x: int, y: int, tile_type: int, tile: "Tile", base_option: int
     ) -> int:
-        from terrex.net.structure.tile import Tile
-        from terrex.world.world import World
-
-        if not isinstance(world, World):
-            raise TypeError("world must be a World instance")
-
-        if not isinstance(tile, Tile):
-            raise TypeError("tile must be a Tile instance")
-
         if tile_type == 89:
             frame_div = tile.frame_x // 54
             if frame_div in (0, 21, 23):
@@ -688,12 +667,9 @@ class MapHelper:
         return base_option
 
     @classmethod
-    def calc_sky_gradient(cls, world, sky_position: int, max_sky_gradients: int, y: int) -> int:
-        from terrex.world.world import World
-
-        if not isinstance(world, World):
-            raise TypeError("world must be a World instance")
-
+    def calc_sky_gradient(
+        cls, world: "World", sky_position: int, max_sky_gradients: int, y: int
+    ) -> int:
         world_surface = world.world_surface
         num = int((max_sky_gradients - 1) * (y / world_surface))
         num = min(255, num)  # byte

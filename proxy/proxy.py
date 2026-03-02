@@ -3,6 +3,7 @@ import socket
 import sys
 import threading
 from datetime import datetime
+from typing import Literal
 
 from proxy.config import config
 from proxy.parser import IncrementalParser
@@ -170,6 +171,8 @@ def forward(
         #     data = client_packet_middleware(data)
 
         # Determine traffic files
+        flush_bin_idx: Literal[0, 1] | None = None
+        flush_txt_idx: Literal[0, 1] | None = None
         if direction == "STC":
             traffic_bin = config.server_traffic_bin
             traffic_txt = config.server_traffic_txt
@@ -240,13 +243,13 @@ def forward(
         except OSError:
             break
 
-    # Final flush to ensure all data is written before exit
-    if config.flush_bin[flush_bin_idx]:
-        with config.lock:
-            if traffic_txt is not None:
-                traffic_txt.flush()
-            if traffic_bin is not None:
-                traffic_bin.flush()
+        # Final flush to ensure all data is written before exit
+        if config.flush_bin[flush_bin_idx]:
+            with config.lock:
+                if traffic_txt is not None:
+                    traffic_txt.flush()
+                if traffic_bin is not None:
+                    traffic_bin.flush()
 
     print(f"{direction} task exited")
     read_sock.close()

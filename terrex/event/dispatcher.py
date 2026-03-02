@@ -3,21 +3,22 @@ import concurrent.futures
 import inspect
 from collections.abc import Awaitable, Callable
 from functools import partial
-from typing import Any
+from typing import TYPE_CHECKING, Any, TypeVar
 
-from terrex.event.context import EventContext
+from terrex.event.context import EventFilterContext
 
 from .filter.base import EventFilter, StopPropagation
 from .types import BaseEvent
 
+if TYPE_CHECKING:
+    from terrex.terrex import Terrex
+
+
+E = TypeVar("E", bound=BaseEvent)
+
 
 class Dispatcher:
-    def __init__(self, terrex):
-        from terrex.terrex import Terrex
-
-        if not isinstance(terrex, Terrex):
-            raise TypeError("terrex must be a Terrex instance")
-
+    def __init__(self, terrex: "Terrex"):
         self._terrex = terrex
         self._handlers: dict[
             type[BaseEvent],
@@ -31,11 +32,11 @@ class Dispatcher:
 
     def register(
         self,
-        filter: EventFilter,
+        filter: EventFilter[E],
         callback: Callable[[Any], Awaitable[None]] | Callable[[Any], None],
         priority: int = 0,
     ) -> None:
-        key = filter._event_type
+        key = filter.event_type
         self._handlers.setdefault(key, []).append((priority, filter, callback))
         self._handlers[key].sort(key=lambda x: x[0], reverse=True)
 
@@ -44,7 +45,7 @@ class Dispatcher:
             return
 
         loop = asyncio.get_running_loop()
-        ctx = EventContext(self._terrex, event)
+        ctx = EventFilterContext(self._terrex, event)
 
         for _, filter, callback in self._handlers.get(type(event), []):
             matched_event = filter.matches(ctx)

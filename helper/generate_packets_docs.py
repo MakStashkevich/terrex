@@ -7,7 +7,7 @@ sys.path.insert(0, '.')
 
 from terrex.id import MessageID
 from terrex.packet import packet_registry
-from terrex.packet.base import ClientPacket, ServerPacket
+from terrex.packet.base import ClientPacket, Packet, ServerPacket
 
 size_map = {
     'byte': '1',
@@ -40,7 +40,7 @@ canonical_types = {
 }
 
 
-def get_direction(packet_cls):
+def get_direction(packet_cls: type[Packet]):
     if issubclass(packet_cls, ClientPacket):
         return 'Client -> Server'
     elif issubclass(packet_cls, ServerPacket):
@@ -70,23 +70,27 @@ for pid in message_ids:
     for start, end, ver in version_ranges:
         if start <= pid <= end:
             if current_version != ver:
-                md += textwrap.dedent(f"""
+                md += textwrap.dedent(
+                    f"""
 <div align="center">
 <h1>[ i ] Packets {start}-{end} have been added on versions {ver}</h1>
 </div>
 
-""")
+"""
+                )
                 current_version = ver
             break
 
     if pid not in packet_registry:
         msg_id = MessageID(pid)
         cls_name = msg_id.name
-        md += textwrap.dedent(f"""## {cls_name} [{pid}]
+        md += textwrap.dedent(
+            f"""## {cls_name} [{pid}]
 ### Unknown Direction
 
 > {'The packet has not been implemented yet.' if pid > 0 else 'It will never be implemented.'}
-""")
+"""
+        )
         continue
 
     cls = packet_registry[pid]
@@ -100,7 +104,7 @@ for pid in message_ids:
     except OSError:
         table = ''
     else:
-        fields = []
+        fields: list[str] = []
 
         # Hardcoded fields for packets
         if pid == 1:

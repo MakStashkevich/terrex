@@ -71,7 +71,7 @@ class Tail(GenShape):
         width: thickness radius (full width ≈ 2*width + 1)
         Uses square approximation around each line point.
         """
-        points = []
+        points: list[tuple[int, int]] = []
         dx = abs(x1 - x0)
         dy = abs(y1 - y0)
         sx = 1 if x0 < x1 else -1

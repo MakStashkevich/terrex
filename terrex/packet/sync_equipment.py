@@ -1,3 +1,4 @@
+from terrex.event.context import EventHandleContext
 from terrex.id import MessageID
 from terrex.net.streamer import Reader, Writer
 from terrex.packet.base import SyncPacket
@@ -48,8 +49,8 @@ class SyncEquipment(SyncPacket):
         self.prefix = reader.read_byte()
         self.item_netid = reader.read_ushort()
         
-    async def handle(self, world, player, evman):
-        if not self.player_id in world.players:
+    async def handle(self, ctx: EventHandleContext):
+        if not self.player_id in ctx.world.players:
             return
         # current_player = world.players[self.player_id]
         # todo: save player equipment

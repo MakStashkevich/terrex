@@ -3,6 +3,7 @@ Ported from Terraria source: Terraria.WorldBuilding.Shapes.Circle
 """
 
 from math import sqrt
+from typing import Any
 
 import numpy as np
 
@@ -13,7 +14,7 @@ class Circle(GenShape):
     """Elliptical (oval) shape with independent horizontal and vertical radius."""
 
     def __init__(
-        self, horizontal_radius: int, vertical_radius: int = 0, quit_on_fail: bool = False
+        self, horizontal_radius: int, vertical_radius: int | None = None, quit_on_fail: bool = False
     ):
         super().__init__(quit_on_fail)
         if vertical_radius is None:
@@ -31,8 +32,8 @@ class Circle(GenShape):
 
         # Fast bulk path for GenActionBulk
         if isinstance(action, GenActionBulk):
-            xs_all = []
-            ys_all = []
+            xs_all: list[Any] = []
+            ys_all: list[Any] = []
             for i in range(origin.y - self._verticalRadius, origin.y + self._verticalRadius + 1):
                 y = self._horizontalRadius / self._verticalRadius * (i - origin.y)
                 v = num - y * y

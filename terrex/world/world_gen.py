@@ -1,8 +1,13 @@
+from typing import TYPE_CHECKING
+
 from terrex.id.TileID import TileIDSets
 from terrex.net.structure.rgb import Rgb as Color
 from terrex.net.tile_npc_data import TileNPCData
 from terrex.world.shape.base import Point
 from terrex.world.shape.rectangle import Rectangle
+
+if TYPE_CHECKING:
+    from terrex.world.world import World
 
 tile_data = TileNPCData()
 
@@ -56,13 +61,8 @@ class WorldGen:
 
     @classmethod
     def get_biome_influence(
-        cls, world, start_x: int, end_x: int, start_y: int, end_y: int
+        cls, world: "World", start_x: int, end_x: int, start_y: int, end_y: int
     ) -> tuple[int, int, int]:
-        from terrex.world.world import World
-
-        if not isinstance(world, World):
-            raise TypeError("world must be a World instance")
-
         corrupt_count = 0
         crimson_count = 0
         hallowed_count = 0
@@ -82,13 +82,8 @@ class WorldGen:
 
     @classmethod
     def get_cactus_type(
-        cls, world, tile_x: int, tile_y: int, frame_x: int, frame_y: int
+        cls, world: "World", tile_x: int, tile_y: int, frame_x: int, frame_y: int
     ) -> tuple[bool, bool, bool]:
-        from terrex.world.world import World
-
-        if not isinstance(world, World):
-            raise TypeError("world must be a World instance")
-
         evil = False
         good = False
         crimson = False
@@ -135,16 +130,11 @@ class WorldGen:
         return evil, good, crimson
 
     @classmethod
-    def in_world_point(cls, world, p: Point, fluff: int = 0) -> bool:
+    def in_world_point(cls, world: "World", p: Point, fluff: int = 0) -> bool:
         return cls.in_world(world, p.x, p.y, fluff)
 
     @classmethod
-    def in_world(cls, world, x: int, y: int, fluff: int = 0) -> bool:
-        from terrex.world.world import World
-
-        if not isinstance(world, World):
-            raise TypeError("world must be a World instance")
-
+    def in_world(cls, world: "World", x: int, y: int, fluff: int = 0) -> bool:
         if (
             x < fluff
             or x >= world.max_tiles_x - fluff
@@ -155,12 +145,7 @@ class WorldGen:
         return True
 
     @classmethod
-    def in_world_rect(cls, world, rect: Rectangle, fluff: int = 0) -> bool:
-        from terrex.world.world import World
-
-        if not isinstance(world, World):
-            raise TypeError("world must be a World instance")
-
+    def in_world_rect(cls, world: "World", rect: Rectangle, fluff: int = 0) -> bool:
         x = rect.x
         y = rect.y
         max_x = rect.x + rect.width

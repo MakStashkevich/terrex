@@ -1,3 +1,4 @@
+from terrex.event.context import EventHandleContext
 from terrex.event.types import ItemDroppedEvent, ItemDropUpdateEvent
 from terrex.id import MessageID
 from terrex.item.item import Item
@@ -45,16 +46,16 @@ class SyncItem(SyncPacket):
         writer.write_byte(self.no_delay)
         writer.write_short(self.item_net_id)
 
-    async def handle(self, world, player, evman):
+    async def handle(self, ctx: EventHandleContext):
         # todo: fix Item props
         item = Item(
             self.item_id, self.item_net_id, self.pos, self.vel, self.prefix, self.stack_size
         )
 
-        if self.item_id in world.items:
-            evman.raise_event(ItemDropUpdateEvent(self, item))
+        if self.item_id in ctx.world.items:
+            ctx.evman.raise_event(ItemDropUpdateEvent(self, item))
         else:
-            world.items[self.item_id] = item
-            if self.item_id not in world.item_owner_index:
-                world.item_owner_index[self.item_id] = 255
-            evman.raise_event(ItemDroppedEvent(self, item))
+            ctx.world.items[self.item_id] = item
+            if self.item_id not in ctx.world.item_owner_index:
+                ctx.world.item_owner_index[self.item_id] = 255
+            ctx.evman.raise_event(ItemDroppedEvent(self, item))

@@ -1,9 +1,13 @@
 from dataclasses import dataclass, field
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from terrex.net.streamer import Reader
 from terrex.net.tile_stack import TileStack
 from terrex.world.world import World
+
+
+if TYPE_CHECKING:
+    from terrex.entity.tile_entity import TileEntity
 
 
 @dataclass
@@ -15,7 +19,7 @@ class WorldSection:
     tiles: TileStack = field(default_factory=lambda: TileStack())
     chests: dict[int, Any] = field(default_factory=lambda: {})
     signs: dict[int, Any] = field(default_factory=lambda: {})
-    tile_entities: list = field(default_factory=lambda: [])
+    tile_entities: list["TileEntity"] = field(default_factory=lambda: [])
 
     def read(self, reader: Reader, world: World) -> None:
         from terrex.entity.tile_entity import read_tile_entity
@@ -35,6 +39,8 @@ class WorldSection:
                     copied_tile = world.tiles.get(x, y)
                     if copied_tile is None:
                         copied_tile = Tile()
+                    if tile is None:
+                        tile = Tile()
                     copied_tile.copy_from(tile)
                     world.tiles.set(x, y, copied_tile)
                     self.tiles.set(x, y, copied_tile)
@@ -59,23 +65,20 @@ class WorldSection:
         n_entities = reader.read_short()
         for _ in range(n_entities):
             tile_entity = read_tile_entity(reader)
-            world.tile_entities.append(tile_entity)
-            self.tile_entities.append(tile_entity)
+            if tile_entity:
+                world.tile_entities.append(tile_entity)
+                self.tile_entities.append(tile_entity)
 
     def __repr__(self) -> str:
         return (
-            "WorldSection("
-            + ", ".join(
-                [
-                    f"x_start={self.x_start}",
-                    f"y_start={self.y_start}",
-                    f"width={self.width}",
-                    f"height={self.height}",
-                    f"tiles_size={len(self.tiles)}",
-                    f"chests_size={len(self.chests)}",
-                    f"signs_size={len(self.signs)}",
-                    f"tile_entities_size={len(self.tile_entities)})",
-                ]
-            )
-            + ")"
+            f"WorldSection("
+            f"x_start={self.x_start}, "
+            f"y_start={self.y_start}, "
+            f"width={self.width}, "
+            f"height={self.height}, "
+            f"tiles_size={len(self.tiles)}, "
+            f"chests_size={len(self.chests)}, "
+            f"signs_size={len(self.signs)}, "
+            f"tile_entities_size={len(self.tile_entities)}"
+            f")"
         )

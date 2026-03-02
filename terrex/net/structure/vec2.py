@@ -39,4 +39,4 @@ class Vec2:
     def distance_to(self, other: 'Vec2') -> float:
         dx = self.x - other.x
         dy = self.y - other.y
-        return (dx * dx + dy * dy) ** 0.5
+        return float((dx * dx + dy * dy) ** 0.5)

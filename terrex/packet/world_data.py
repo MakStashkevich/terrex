@@ -1,3 +1,4 @@
+from terrex.event.context import EventHandleContext
 from terrex.id import MessageID
 from terrex.net.streamer import Reader
 from terrex.packet.base import ServerPacket
@@ -159,7 +160,8 @@ class WorldData(ServerPacket):
         self.lobby_id = reader.read_ulong()
         self.sandstorm_severity = reader.read_float()
 
-    async def handle(self, world, player, evman):
+    async def handle(self, ctx: EventHandleContext):
+        world = ctx.world
         world.time = self.time
         world.day_info = self.day_info
         world.moon_phase = self.moon_phase

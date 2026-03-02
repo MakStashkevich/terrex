@@ -1,3 +1,4 @@
+from terrex.event.context import EventHandleContext
 from terrex.id import MessageID
 from terrex.net.streamer import Reader
 from terrex.packet.base import ServerPacket
@@ -14,10 +15,10 @@ class PlayerActive(ServerPacket):
         self.player_id = reader.read_byte()
         self.active = reader.read_bool()
 
-    async def handle(self, world, player, evman):
+    async def handle(self, ctx: EventHandleContext):
         if not self.active:
             return
 
         from terrex.player import Player
 
-        world.players[self.player_id] = Player(world)
+        ctx.world.players[self.player_id] = Player(ctx.world)

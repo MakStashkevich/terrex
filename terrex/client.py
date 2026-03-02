@@ -1,8 +1,10 @@
 import asyncio
 import struct
 import time
+from typing import TYPE_CHECKING
 
 from terrex import packet
+from terrex.event.context import EventHandleContext
 from terrex.id import MessageID
 from terrex.localization.localization import get_translation
 from terrex.net import module
@@ -19,7 +21,8 @@ from terrex.net.streamer import Reader, Writer
 from terrex.net.structure.vec2 import Vec2
 from terrex.packet.base import Packet, packet_registry
 
-PLAYER_UUID = "01032c81-623f-4435-85e5-e0ec816b09ca"
+if TYPE_CHECKING:
+    from terrex.terrex import Terrex
 
 
 class Client:
@@ -29,13 +32,8 @@ class Client:
         port: int,
         protocol: int,
         server_password: str,
-        terrex,
+        terrex: "Terrex",
     ):
-        from terrex.terrex import Terrex
-
-        if not isinstance(terrex, Terrex):
-            raise TypeError("terrex must be a Terrex instance")
-
         self.host = host
         self.port = port
         self.protocol = protocol
@@ -48,20 +46,20 @@ class Client:
 
         self.reader: asyncio.StreamReader | None = None
         self.writer: asyncio.StreamWriter | None = None
-        self.send_queue: asyncio.Queue = asyncio.Queue()
-        self.recv_queue: asyncio.Queue = asyncio.Queue()
+        self.send_queue: asyncio.Queue[tuple[Packet | None, asyncio.Event | None]] = asyncio.Queue()
+        self.recv_queue: asyncio.Queue[Packet] = asyncio.Queue()
         self.running = False
         self.connected_to_server = False
-        self.reader_task: asyncio.Task | None = None
-        self.writer_task: asyncio.Task | None = None
-        self.ping_task: asyncio.Task | None = None
+        self.reader_task: asyncio.Task[None] | None = None
+        self.writer_task: asyncio.Task[None] | None = None
+        self.ping_task: asyncio.Task[None] | None = None
         self.current_ping = 0
         self._waiting_ping = False
         self._ping_last_sent = 0.0
         self._ping_start_time = 0.0
 
-        self.handle_queue: asyncio.Queue = asyncio.Queue()
-        self.handle_task: asyncio.Task | None = None
+        self.handle_queue: asyncio.Queue[Packet | None] = asyncio.Queue()
+        self.handle_task: asyncio.Task[None] | None = None
 
     async def connect(self) -> None:
         """Connect to the server and perform a handshake."""
@@ -97,8 +95,6 @@ class Client:
         """Get a (blocking) package."""
         try:
             pkt = await self.recv_queue.get()
-            if not isinstance(pkt, Packet):
-                return None
             return pkt
         except asyncio.TimeoutError:
             return None
@@ -106,9 +102,7 @@ class Client:
     async def try_recv(self) -> Packet | None:
         """Get a non-blocking package."""
         try:
-            pkt = await self.recv_queue.get_nowait()
-            if not isinstance(pkt, Packet):
-                return None
+            pkt = self.recv_queue.get_nowait()
             return pkt
         except asyncio.QueueEmpty:
             return None
@@ -234,7 +228,7 @@ class Client:
                 player_info.ate_artisan_bread = self.player.ate_artisan_bread
                 await self.send(player_info)
 
-                await self.send(packet.ClientUUID(PLAYER_UUID))
+                await self.send(packet.ClientUUID(self.player.uuid))
                 await self.send(
                     packet.PlayerLifeMana(
                         player_id=self.player.id,
@@ -375,11 +369,11 @@ class Client:
                 self.player.control.inverted_gravity = True
                 self.player.control.is_void_vault_enabled = True
                 self.player.control.right_direction = True
-                await self._update_controls()
+                await self.update_controls()
 
                 self.player.control.auto_reuse_all_weapons = True
-                await self._update_controls()
-                
+                await self.update_controls()
+
                 # -------- end repeated block --------
 
                 await self.send(
@@ -432,12 +426,10 @@ class Client:
             while self.running and self.writer is not None:
                 try:
                     item = await self.send_queue.get()
-                    if item is None:
-                        break
                     packet, sent_event = item
+                    if packet is None:
+                        break
                     if not self.running:
-                        continue
-                    if not isinstance(packet, Packet):
                         continue
                     writer = Writer(protocol_version=self.protocol, net_mode=NetMode.CLIENT)
                     writer.write_byte(packet.id)
@@ -447,7 +439,7 @@ class Client:
                     full_packet = len_bytes + payload
                     self.writer.write(full_packet)
                     await self.writer.drain()
-                    if sent_event and isinstance(sent_event, asyncio.Event):
+                    if sent_event:
                         sent_event.set()
                 except asyncio.TimeoutError:
                     continue
@@ -494,6 +486,7 @@ class Client:
     async def _handle_loop(self) -> None:
         """Handle event-handles packets in a separate thread."""
         try:
+            ctx = EventHandleContext(self.terrex)
             while self.running:
                 try:
                     packet: Packet | None = await self.handle_queue.get()
@@ -501,9 +494,7 @@ class Client:
                         break
                     if not self.running:
                         continue
-                    if not isinstance(packet, Packet):
-                        continue
-                    await packet.handle(self.world, self.player, self.evman)
+                    await packet.handle(ctx)
                 except asyncio.TimeoutError:
                     continue
                 except Exception as e:
@@ -530,7 +521,7 @@ class Client:
 
         # Signal queues to stop
         try:
-            await self.send_queue.put(None)
+            await self.send_queue.put((None, None))
         except Exception:
             pass
 
@@ -553,10 +544,10 @@ class Client:
             if t and not t.done():
                 t.cancel()
 
-    async def _request_teleport(self, type: TeleportRequestType) -> None:
+    async def request_teleport(self, type: TeleportRequestType) -> None:
         await self.send(packet.RequestTeleportationByServer(type=type))
 
-    async def _teleport_entity(
+    async def teleport_entity(
         self, position: Vec2, type: TeleportType, player_teleport: bool = True
     ) -> None:
         await self.send(
@@ -569,7 +560,7 @@ class Client:
             )
         )
 
-    async def _request_teleport_pylon(self, x: int, y: int, type: TeleportPylonType) -> None:
+    async def request_teleport_pylon(self, x: int, y: int, type: TeleportPylonType) -> None:
         await self.send(
             packet.NetModules(
                 module=module.NetTeleportPylonModule.create(
@@ -581,7 +572,7 @@ class Client:
             )
         )
 
-    async def _update_controls(self) -> None:
+    async def update_controls(self) -> None:
         # todo: add all values to player
         await self.send(
             packet.PlayerControls(

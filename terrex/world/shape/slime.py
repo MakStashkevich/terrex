@@ -5,7 +5,7 @@ Slime-like blob shape: rounded top, tapered bottom.
 """
 
 from math import sqrt
-from typing import cast
+from typing import Any, cast
 
 import numpy as np
 
@@ -28,8 +28,8 @@ class Slime(GenShape):
         num1 = (self._radius + 1) ** 2
         use_bulk = isinstance(action, GenActionBulk) and not self._quitOnFail
 
-        xs_all = []
-        ys_all = []
+        xs_all: list[Any] = []
+        ys_all: list[Any] = []
 
         # Upper part (full ellipse)
         for i in range(origin.y - int(num * self._yScale), origin.y + 1):
@@ -60,6 +60,6 @@ class Slime(GenShape):
         if use_bulk and xs_all:
             xs = np.concatenate(xs_all)
             ys = np.concatenate(ys_all)
-            return cast(bool, cast(GenActionBulk, action).apply_bulk(xs, ys))
+            return cast(GenActionBulk, action).apply_bulk(xs, ys)
 
         return True

@@ -1,6 +1,6 @@
 from collections.abc import Callable
 
-from terrex.event.context import EventContext
+from terrex.event.context import EventFilterContext
 from terrex.event.types import (
     BlockedEvent,
     ChatEvent,
@@ -13,15 +13,15 @@ from .base import E, EventFilter, EventTypeFilter
 
 
 class PlayerFilter(EventFilter[E]):
-    _event_type: type[E]
+    event_type: type[E]
 
-    def __init__(self, event_type: type[E], predicate: Callable[[E, EventContext], bool]):
-        self._event_type = event_type
+    def __init__(self, event_type: type[E], predicate: Callable[[E, EventFilterContext], bool]):
+        self.event_type = event_type
         self.predicate = predicate
 
-    def matches(self, ctx: EventContext) -> E | None:
+    def matches(self, ctx: EventFilterContext) -> E | None:
         event = ctx.event
-        if not isinstance(event, self._event_type):
+        if not isinstance(event, self.event_type):
             return None
         if not self.predicate(event, ctx):
             return None

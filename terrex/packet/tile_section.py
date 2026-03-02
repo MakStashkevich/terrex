@@ -1,5 +1,6 @@
 import zlib
 
+from terrex.event.context import EventHandleContext
 from terrex.event.types import WorldSectionUpdateEvent
 from terrex.id import MessageID
 from terrex.net.streamer import Reader
@@ -21,7 +22,7 @@ class TileSection(ServerPacket):
 
         self.section_reader = section_reader
 
-    async def handle(self, world, player, evman):
+    async def handle(self, ctx: EventHandleContext):
         if self.width < 0 or self.width > 200 or self.height < 0 or self.height > 150:
             return
 
@@ -31,8 +32,6 @@ class TileSection(ServerPacket):
         from terrex.net.structure.world_section import WorldSection
 
         section = WorldSection(self.x_start, self.y_start, self.width, self.height)
-        section.read(self.section_reader, world)
+        section.read(self.section_reader, ctx.world)
 
-        print(f"Loaded {section}")
-
-        evman.raise_event(WorldSectionUpdateEvent(self, section))
+        ctx.evman.raise_event(WorldSectionUpdateEvent(self, section))

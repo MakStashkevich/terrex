@@ -101,13 +101,13 @@ class Reader:
         self.index += 8
         return res
 
-    def read_7bit_encoded_int(reader) -> int:
+    def read_7bit_encoded_int(self) -> int:
         """Reads a .NET 7-bit encoded int (variable-length)."""
         value = 0
         shift = 0
 
         while True:
-            b = reader.read_byte()
+            b = self.read_byte()
             value |= (b & 0x7F) << shift
             if (b & 0x80) == 0:
                 break

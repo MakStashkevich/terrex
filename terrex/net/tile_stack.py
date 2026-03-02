@@ -1,21 +1,18 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from terrex.net.structure.tile import Tile
 
 
 class TileStack:
     def __init__(self) -> None:
-        from terrex.net.structure.tile import Tile
-
-        self._tiles: dict[tuple[int, int], Tile] = {}
+        self._tiles: dict[tuple[int, int], "Tile"] = {}
 
     def get(self, x: int, y: int):
         return self._tiles.get((x, y), None)
 
-    def set(self, x: int, y: int, tile) -> None:
-        from terrex.net.structure.tile import Tile
-
-        if not isinstance(tile, Tile):
-            raise TypeError("tile must be a Tile instance")
-
+    def set(self, x: int, y: int, tile: "Tile") -> None:
         self._tiles[(x, y)] = tile
 
     def values(self):
